@@ -1,0 +1,11 @@
+package internal
+
+import (
+	"kp-management/internal/pkg/conf"
+	"kp-management/internal/pkg/dal"
+)
+
+func InitProjects() {
+	conf.MustInitConf()
+	dal.MustInitMySQL()
+}

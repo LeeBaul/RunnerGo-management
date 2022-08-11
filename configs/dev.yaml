@@ -1,0 +1,10 @@
+http:
+  port: 8080
+
+mysql:
+  username: "root"
+  passport: "jJWp01F73zx2F5tqcZt6"
+  ip: "127.0.0.1"
+  port: 23306
+  dbname: "apipost"
+  charset: "utf8mb4"
