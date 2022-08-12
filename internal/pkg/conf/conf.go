@@ -21,7 +21,7 @@ type Http struct {
 type MySQL struct {
 	Username string `yaml:"username"`
 	Passport string `yaml:"passport"`
-	IP       string `yaml:"ip"`
+	Host     string `yaml:"host"`
 	Port     int    `yaml:"port"`
 	DBName   string `yaml:"dbname"`
 	Charset  string `yaml:"charset"`

@@ -2,9 +2,9 @@ http:
   port: 8080
 
 mysql:
-  username: "root"
-  passport: "jJWp01F73zx2F5tqcZt6"
-  ip: "127.0.0.1"
-  port: 23306
-  dbname: "apipost"
+  username: "test_read_only"
+  passport: "db#01^st$Post"
+  host: "rm-2zem14s80lyu5c4z7.mysql.rds.aliyuncs.com"
+  port: 3306
+  dbname: "kunpeng"
   charset: "utf8mb4"

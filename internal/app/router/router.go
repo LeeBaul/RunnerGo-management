@@ -31,9 +31,22 @@ func RegisterRouter(r *gin.Engine) {
 	team := api.Group("/v1/team")
 	team.GET("/list", handler.ListTeam)
 
-	// 接口
+	// 接口、文件夹
+	target := api.Group("/v1/target")
+	target.POST("/create", handler.CreateTarget)
+	target.GET("/list", handler.ListTarget)
+
+	// 项目
+	project := api.Group("/v1/project")
+	project.POST("/create")
+	project.GET("/scene/list")
 
 	// 场景
+	scene := api.Group("/v1/scene")
+	scene.POST("/create")
+	scene.POST("/save")
+
+	// 接口
 
 	// 测试计划
 	plan := api.Group("/v1/plan")

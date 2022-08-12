@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	dsn := "root:jJWp01F73zx2F5tqcZt6@tcp(127.0.0.1:23306)/apipost?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := "test_read_only:db#01^st$Post@tcp(rm-2zem14s80lyu5c4z7.mysql.rds.aliyuncs.com:3306)/kunpeng?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
@@ -20,7 +20,8 @@ func main() {
 	g.UseDB(db)
 
 	g.ApplyBasic(
-		g.GenerateModel("machine"),
+		g.GenerateModel("target"),
+		g.GenerateModel("api"),
 	)
 
 	g.Execute()
