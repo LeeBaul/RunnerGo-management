@@ -1,24 +1,24 @@
 package rao
 
 type SaveFolderReq struct {
-	TargetID   string   `json:"target_id"`
-	ParentID   string   `json:"parent_id"`
+	TargetID   int64    `json:"target_id"`
+	ParentID   int64    `json:"parent_id"`
 	TargetType string   `json:"target_type"`
 	Name       string   `json:"name"`
 	Method     string   `json:"method"`
-	Sort       int      `json:"sort"`
-	TypeSort   int      `json:"type_sort"`
-	Version    int      `json:"version"`
+	Sort       int32    `json:"sort"`
+	TypeSort   int32    `json:"type_sort"`
+	Version    int32    `json:"version"`
 	Request    *Request `json:"request"`
 	Script     *Script  `json:"script"`
 }
 
 type Request struct {
-	Description string        `json:"description"`
-	Header      *Header       `json:"header"`
-	Query       []interface{} `json:"query"`
-	Body        *Body         `json:"body"`
-	Auth        *Auth         `json:"auth"`
+	Description string       `json:"description"`
+	Header      []*Parameter `json:"header"`
+	Query       []*Parameter `json:"query"`
+	Body        []*Parameter `json:"body"`
+	Auth        *Auth        `json:"auth"`
 }
 
 type Script struct {

@@ -18,7 +18,7 @@ func SaveFolder(ctx context.Context, req *rao.SaveFolderReq) error {
 			return err
 		}
 
-		if err := tx.Folder.WithContext(ctx).Save(folder); err != nil {
+		if err := tx.Folder.WithContext(ctx).Where(tx.Folder.TargetID.Eq(folder.TargetID)).Save(folder); err != nil {
 			return err
 		}
 
