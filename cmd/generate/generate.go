@@ -22,6 +22,7 @@ func main() {
 	g.ApplyBasic(
 		g.GenerateModel("target"),
 		g.GenerateModel("api"),
+		g.GenerateModel("folder"),
 	)
 
 	g.Execute()

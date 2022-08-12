@@ -37,3 +37,7 @@ func ErrorWithMsg(c *gin.Context, code int, msg string) {
 func SuccessWithData(c *gin.Context, data interface{}) {
 	display(c, errno.Ok, errno.CodeMsgMap[errno.Ok], errno.CodeAlertMap[errno.Ok], data)
 }
+
+func Success(c *gin.Context) {
+	display(c, errno.Ok, errno.CodeMsgMap[errno.Ok], errno.CodeAlertMap[errno.Ok], struct{}{})
+}
