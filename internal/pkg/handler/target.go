@@ -8,12 +8,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CreateTarget(ctx *gin.Context) {
+func SaveTarget(ctx *gin.Context) {
 	var req rao.CreateTargetReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
 		return
 	}
+
 }
 
 func ListTarget(ctx *gin.Context) {

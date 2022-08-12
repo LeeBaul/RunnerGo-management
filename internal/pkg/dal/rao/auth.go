@@ -3,8 +3,8 @@ package rao
 type Auth struct {
 	Type   string     `json:"type"`
 	Kv     *KV        `json:"kv"`
-	Bearer *Bearer    `json:"bearer"`
-	Basic  *AuthBasic `json:"basic"`
+	Bearer *Bearer `json:"bearer"`
+	Basic  *Basic  `json:"basic"`
 }
 
 type Bearer struct {
@@ -16,7 +16,7 @@ type KV struct {
 	Value string `json:"value"`
 }
 
-type AuthBasic struct {
+type Basic struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }

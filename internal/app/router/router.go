@@ -37,7 +37,7 @@ func RegisterRouter(r *gin.Engine) {
 
 	// 接口
 	target := api.Group("/v1/target")
-	target.POST("/create", handler.CreateTarget)
+	target.POST("/save", handler.SaveTarget)
 	target.GET("/list", handler.ListTarget)
 
 	// // 项目

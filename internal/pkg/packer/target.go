@@ -21,3 +21,7 @@ func TransFolderReqToTarget(folder *rao.SaveFolderReq) *model.Target {
 		// todo user_id
 	}
 }
+
+func TransTargetReqToTarget(target *rao.CreateTargetReq) *model.Target {
+	return nil
+}
