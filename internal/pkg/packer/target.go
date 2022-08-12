@@ -23,5 +23,18 @@ func TransFolderReqToTarget(folder *rao.SaveFolderReq) *model.Target {
 }
 
 func TransTargetReqToTarget(target *rao.CreateTargetReq) *model.Target {
-	return nil
+	return &model.Target{
+		ID:            target.TargetID,
+		TargetType:    target.TargetType,
+		Name:          target.Name,
+		ParentID:      target.ParentID,
+		Method:        target.Method,
+		Sort:          target.Sort,
+		TypeSort:      target.TypeSort,
+		Status:        1,
+		Version:       target.Version,
+		CreatedUserID: 0,
+		RecentUserID:  0,
+		// todo user_id
+	}
 }

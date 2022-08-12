@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"kp-management/internal/pkg/biz/api"
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/response"
 	"kp-management/internal/pkg/dal/rao"
@@ -15,6 +16,13 @@ func SaveTarget(ctx *gin.Context) {
 		return
 	}
 
+	if err := api.SaveAPI(ctx, &req); err != nil {
+		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
 }
 
 func ListTarget(ctx *gin.Context) {
