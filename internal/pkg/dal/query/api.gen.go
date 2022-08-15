@@ -37,6 +37,7 @@ func newAPI(db *gorm.DB) aPI {
 	_aPI.Description = field.NewString(tableName, "description")
 	_aPI.CreatedAt = field.NewTime(tableName, "created_at")
 	_aPI.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_aPI.DeletedAt = field.NewField(tableName, "deleted_at")
 
 	_aPI.fillFieldMap()
 
@@ -57,6 +58,7 @@ type aPI struct {
 	Description field.String
 	CreatedAt   field.Time
 	UpdatedAt   field.Time
+	DeletedAt   field.Field
 
 	fieldMap map[string]field.Expr
 }
@@ -83,6 +85,7 @@ func (a *aPI) updateTableName(table string) *aPI {
 	a.Description = field.NewString(table, "description")
 	a.CreatedAt = field.NewTime(table, "created_at")
 	a.UpdatedAt = field.NewTime(table, "updated_at")
+	a.DeletedAt = field.NewField(table, "deleted_at")
 
 	a.fillFieldMap()
 
@@ -105,7 +108,7 @@ func (a *aPI) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (a *aPI) fillFieldMap() {
-	a.fieldMap = make(map[string]field.Expr, 10)
+	a.fieldMap = make(map[string]field.Expr, 11)
 	a.fieldMap["id"] = a.ID
 	a.fieldMap["target_id"] = a.TargetID
 	a.fieldMap["url"] = a.URL
@@ -116,6 +119,7 @@ func (a *aPI) fillFieldMap() {
 	a.fieldMap["description"] = a.Description
 	a.fieldMap["created_at"] = a.CreatedAt
 	a.fieldMap["updated_at"] = a.UpdatedAt
+	a.fieldMap["deleted_at"] = a.DeletedAt
 }
 
 func (a aPI) clone(db *gorm.DB) aPI {

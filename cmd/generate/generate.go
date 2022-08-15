@@ -24,6 +24,7 @@ func main() {
 		g.GenerateModel("api"),
 		g.GenerateModel("folder"),
 		g.GenerateModel("group"),
+		g.GenerateModel("operation"),
 	)
 
 	g.Execute()

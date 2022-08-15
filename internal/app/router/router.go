@@ -55,7 +55,7 @@ func RegisterRouter(r *gin.Engine) {
 
 	// 操作日志
 	operation := api.Group("/v1/operation")
-	operation.GET("/list")
+	operation.GET("/list", handler.ListOperation)
 
 	// 测试报告
 	report := api.Group("/v1/report")
