@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"kp-management/internal/pkg/biz/api"
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/response"
 	"kp-management/internal/pkg/dal/rao"
+	"kp-management/internal/pkg/logic/api"
 
 	"github.com/gin-gonic/gin"
 )
