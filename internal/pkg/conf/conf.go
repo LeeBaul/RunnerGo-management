@@ -11,10 +11,15 @@ var Conf Config
 
 type Config struct {
 	Http  Http  `yaml:"http"`
+	GRPC  GRPC  `yaml:"grpc"`
 	MySQL MySQL `yaml:"mysql"`
 }
 
 type Http struct {
+	Port int `yaml:"port"`
+}
+
+type GRPC struct {
 	Port int `yaml:"port"`
 }
 
