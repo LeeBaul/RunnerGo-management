@@ -16,6 +16,7 @@ func Use(db *gorm.DB) *Query {
 		db:     db,
 		API:    newAPI(db),
 		Folder: newFolder(db),
+		Group:  newGroup(db),
 		Target: newTarget(db),
 	}
 }
@@ -25,6 +26,7 @@ type Query struct {
 
 	API    aPI
 	Folder folder
+	Group  group
 	Target target
 }
 
@@ -35,6 +37,7 @@ func (q *Query) clone(db *gorm.DB) *Query {
 		db:     db,
 		API:    q.API.clone(db),
 		Folder: q.Folder.clone(db),
+		Group:  q.Group.clone(db),
 		Target: q.Target.clone(db),
 	}
 }
@@ -42,6 +45,7 @@ func (q *Query) clone(db *gorm.DB) *Query {
 type queryCtx struct {
 	API    *aPIDo
 	Folder *folderDo
+	Group  *groupDo
 	Target *targetDo
 }
 
@@ -49,6 +53,7 @@ func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
 		API:    q.API.WithContext(ctx),
 		Folder: q.Folder.WithContext(ctx),
+		Group:  q.Group.WithContext(ctx),
 		Target: q.Target.WithContext(ctx),
 	}
 }

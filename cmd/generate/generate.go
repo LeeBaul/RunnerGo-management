@@ -23,6 +23,7 @@ func main() {
 		g.GenerateModel("target"),
 		g.GenerateModel("api"),
 		g.GenerateModel("folder"),
+		g.GenerateModel("group"),
 	)
 
 	g.Execute()

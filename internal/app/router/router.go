@@ -41,17 +41,13 @@ func RegisterRouter(r *gin.Engine) {
 	target.POST("/save", handler.SaveTarget)
 	target.GET("/list", handler.ListTarget)
 
-	// // 项目
-	// project := api.Group("/v1/project")
-	// project.POST("/create")
-	// project.GET("/scene/list")
-	//
-	// // 场景
-	// scene := api.Group("/v1/scene")
-	// scene.POST("/create")
-	// scene.POST("/save")
+	// 分组
+	group := api.Group("/v1/group")
+	group.POST("/save", handler.SaveGroup)
 
-	// 接口
+	// 场景
+	scene := api.Group("/v1/scene")
+	scene.POST("/save")
 
 	// 测试计划
 	plan := api.Group("/v1/plan")

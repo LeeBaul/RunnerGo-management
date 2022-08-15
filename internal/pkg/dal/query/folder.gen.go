@@ -33,6 +33,7 @@ func newFolder(db *gorm.DB) folder {
 	_folder.Script = field.NewString(tableName, "script")
 	_folder.CreatedAt = field.NewTime(tableName, "created_at")
 	_folder.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_folder.DeletedAt = field.NewField(tableName, "deleted_at")
 
 	_folder.fillFieldMap()
 
@@ -49,6 +50,7 @@ type folder struct {
 	Script    field.String
 	CreatedAt field.Time
 	UpdatedAt field.Time
+	DeletedAt field.Field
 
 	fieldMap map[string]field.Expr
 }
@@ -71,6 +73,7 @@ func (f *folder) updateTableName(table string) *folder {
 	f.Script = field.NewString(table, "script")
 	f.CreatedAt = field.NewTime(table, "created_at")
 	f.UpdatedAt = field.NewTime(table, "updated_at")
+	f.DeletedAt = field.NewField(table, "deleted_at")
 
 	f.fillFieldMap()
 
@@ -93,13 +96,14 @@ func (f *folder) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (f *folder) fillFieldMap() {
-	f.fieldMap = make(map[string]field.Expr, 6)
+	f.fieldMap = make(map[string]field.Expr, 7)
 	f.fieldMap["id"] = f.ID
 	f.fieldMap["target_id"] = f.TargetID
 	f.fieldMap["request"] = f.Request
 	f.fieldMap["script"] = f.Script
 	f.fieldMap["created_at"] = f.CreatedAt
 	f.fieldMap["updated_at"] = f.UpdatedAt
+	f.fieldMap["deleted_at"] = f.DeletedAt
 }
 
 func (f folder) clone(db *gorm.DB) folder {

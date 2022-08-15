@@ -38,3 +38,20 @@ func TransTargetReqToTarget(target *rao.CreateTargetReq) *model.Target {
 		// todo user_id
 	}
 }
+
+func TransGroupReqToTarget(group *rao.SaveGroupReq) *model.Target {
+	return &model.Target{
+		ID:            group.TargetID,
+		TargetType:    group.TargetType,
+		Name:          group.Name,
+		ParentID:      group.ParentID,
+		Method:        group.Method,
+		Sort:          group.Sort,
+		TypeSort:      group.TypeSort,
+		Status:        1,
+		Version:       group.Version,
+		CreatedUserID: 0,
+		RecentUserID:  0,
+		// todo user_id
+	}
+}

@@ -10,10 +10,10 @@ import (
 	"gorm.io/gorm"
 )
 
-const TableNameFolder = "folder"
+const TableNameGroup = "group"
 
-// Folder mapped from table <folder>
-type Folder struct {
+// Group mapped from table <group>
+type Group struct {
 	ID        int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
 	TargetID  int64          `gorm:"column:target_id" json:"target_id"` // 目标id
 	Request   string         `gorm:"column:request;not null" json:"request"`
@@ -23,7 +23,7 @@ type Folder struct {
 	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`
 }
 
-// TableName Folder's table name
-func (*Folder) TableName() string {
-	return TableNameFolder
+// TableName Group's table name
+func (*Group) TableName() string {
+	return TableNameGroup
 }
