@@ -13,6 +13,16 @@ type SaveFolderReq struct {
 	Script     *Script  `json:"script"`
 }
 
+type SaveFolderResp struct {
+}
+
+type DeleteFolderReq struct {
+	TargetID int64 `json:"target_id"`
+}
+
+type DeleteFolderResp struct {
+}
+
 type Script struct {
 	PreScript       string `json:"pre_script"`
 	Test            string `json:"test"`

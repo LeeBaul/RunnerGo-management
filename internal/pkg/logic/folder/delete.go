@@ -2,14 +2,13 @@ package folder
 
 import (
 	"context"
-
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/query"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/packer"
 )
 
-func SaveFolder(ctx context.Context, req *rao.SaveFolderReq) error {
+func Save(ctx context.Context, req *rao.SaveFolderReq) error {
 	target := packer.TransFolderReqToTarget(req)
 	folder := packer.TransFolderReqToFolder(req)
 
@@ -19,6 +18,20 @@ func SaveFolder(ctx context.Context, req *rao.SaveFolderReq) error {
 		}
 
 		if err := tx.Folder.WithContext(ctx).Where(tx.Folder.TargetID.Eq(folder.TargetID)).Save(folder); err != nil {
+			return err
+		}
+
+		return nil
+	})
+}
+
+func Delete(ctx context.Context, targetID int64) error {
+	return query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
+		if _, err := tx.Target.WithContext(ctx).Where(tx.Target.ID.Eq(targetID)).Delete(); err != nil {
+			return err
+		}
+
+		if _, err := tx.Folder.WithContext(ctx).Where(tx.Folder.TargetID.Eq(targetID)).Delete(); err != nil {
 			return err
 		}
 

@@ -17,7 +17,7 @@ const dsnTemplate = "%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local"
 
 func MustInitMySQL() {
 	c := conf.Conf
-	dsn := fmt.Sprintf(dsnTemplate, c.MySQL.Username, c.MySQL.Passport, c.MySQL.IP, c.MySQL.Port, c.MySQL.DBName, c.MySQL.Charset)
+	dsn := fmt.Sprintf(dsnTemplate, c.MySQL.Username, c.MySQL.Passport, c.MySQL.Host, c.MySQL.Port, c.MySQL.DBName, c.MySQL.Charset)
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
