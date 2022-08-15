@@ -15,6 +15,7 @@ const TableNameTarget = "target"
 // Target mapped from table <target>
 type Target struct {
 	ID            int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"` // id
+	TeamID        int64          `gorm:"column:team_id;not null" json:"team_id"`
 	TargetType    string         `gorm:"column:target_type;not null" json:"target_type"`
 	Name          string         `gorm:"column:name;not null" json:"name"`
 	ParentID      int64          `gorm:"column:parent_id;not null" json:"parent_id"`

@@ -28,6 +28,7 @@ func newTarget(db *gorm.DB) target {
 	tableName := _target.targetDo.TableName()
 	_target.ALL = field.NewField(tableName, "*")
 	_target.ID = field.NewInt64(tableName, "id")
+	_target.TeamID = field.NewInt64(tableName, "team_id")
 	_target.TargetType = field.NewString(tableName, "target_type")
 	_target.Name = field.NewString(tableName, "name")
 	_target.ParentID = field.NewInt64(tableName, "parent_id")
@@ -52,6 +53,7 @@ type target struct {
 
 	ALL           field.Field
 	ID            field.Int64
+	TeamID        field.Int64
 	TargetType    field.String
 	Name          field.String
 	ParentID      field.Int64
@@ -82,6 +84,7 @@ func (t target) As(alias string) *target {
 func (t *target) updateTableName(table string) *target {
 	t.ALL = field.NewField(table, "*")
 	t.ID = field.NewInt64(table, "id")
+	t.TeamID = field.NewInt64(table, "team_id")
 	t.TargetType = field.NewString(table, "target_type")
 	t.Name = field.NewString(table, "name")
 	t.ParentID = field.NewInt64(table, "parent_id")
@@ -117,8 +120,9 @@ func (t *target) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (t *target) fillFieldMap() {
-	t.fieldMap = make(map[string]field.Expr, 14)
+	t.fieldMap = make(map[string]field.Expr, 15)
 	t.fieldMap["id"] = t.ID
+	t.fieldMap["team_id"] = t.TeamID
 	t.fieldMap["target_type"] = t.TargetType
 	t.fieldMap["name"] = t.Name
 	t.fieldMap["parent_id"] = t.ParentID

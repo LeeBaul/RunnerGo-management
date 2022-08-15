@@ -9,7 +9,7 @@ import (
 	"kp-management/internal/pkg/packer"
 )
 
-func SaveAPI(ctx context.Context, req *rao.CreateTargetReq) error {
+func Save(ctx context.Context, req *rao.CreateTargetReq) error {
 	target := packer.TransTargetReqToTarget(req)
 	api := packer.TransTargetReqToAPI(req)
 

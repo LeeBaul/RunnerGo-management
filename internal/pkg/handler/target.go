@@ -16,7 +16,7 @@ func SaveTarget(ctx *gin.Context) {
 		return
 	}
 
-	if err := api.SaveAPI(ctx, &req); err != nil {
+	if err := api.Save(ctx, &req); err != nil {
 		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
 		return
 	}
