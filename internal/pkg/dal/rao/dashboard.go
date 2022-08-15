@@ -4,8 +4,8 @@ type DashboardDefaultReq struct {
 }
 
 type DashboardDefaultResp struct {
-	PlanNum   int `json:"plan_num"`
-	SceneNum  int `json:"scene_num"`
-	ReportNum int `json:"report_num"`
-	APINum    int `json:"api_num"`
+	PlanNum   int64 `json:"plan_num"`
+	SceneNum  int64 `json:"scene_num"`
+	ReportNum int64 `json:"report_num"`
+	APINum    int64 `json:"api_num"`
 }
