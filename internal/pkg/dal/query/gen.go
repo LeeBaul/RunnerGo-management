@@ -19,6 +19,9 @@ func Use(db *gorm.DB) *Query {
 		Group:     newGroup(db),
 		Operation: newOperation(db),
 		Target:    newTarget(db),
+		Team:      newTeam(db),
+		User:      newUser(db),
+		UserTeam:  newUserTeam(db),
 	}
 }
 
@@ -30,6 +33,9 @@ type Query struct {
 	Group     group
 	Operation operation
 	Target    target
+	Team      team
+	User      user
+	UserTeam  userTeam
 }
 
 func (q *Query) Available() bool { return q.db != nil }
@@ -42,6 +48,9 @@ func (q *Query) clone(db *gorm.DB) *Query {
 		Group:     q.Group.clone(db),
 		Operation: q.Operation.clone(db),
 		Target:    q.Target.clone(db),
+		Team:      q.Team.clone(db),
+		User:      q.User.clone(db),
+		UserTeam:  q.UserTeam.clone(db),
 	}
 }
 
@@ -51,6 +60,9 @@ type queryCtx struct {
 	Group     *groupDo
 	Operation *operationDo
 	Target    *targetDo
+	Team      *teamDo
+	User      *userDo
+	UserTeam  *userTeamDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
@@ -60,6 +72,9 @@ func (q *Query) WithContext(ctx context.Context) *queryCtx {
 		Group:     q.Group.WithContext(ctx),
 		Operation: q.Operation.WithContext(ctx),
 		Target:    q.Target.WithContext(ctx),
+		Team:      q.Team.WithContext(ctx),
+		User:      q.User.WithContext(ctx),
+		UserTeam:  q.UserTeam.WithContext(ctx),
 	}
 }
 

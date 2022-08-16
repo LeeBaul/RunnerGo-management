@@ -25,6 +25,9 @@ func main() {
 		g.GenerateModel("folder"),
 		g.GenerateModel("group"),
 		g.GenerateModel("operation"),
+		g.GenerateModel("user"),
+		g.GenerateModel("team"),
+		g.GenerateModel("user_team"),
 	)
 
 	g.Execute()
