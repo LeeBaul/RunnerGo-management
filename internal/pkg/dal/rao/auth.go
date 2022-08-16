@@ -18,3 +18,15 @@ type AuthLoginReq struct {
 
 type AuthLoginResp struct {
 }
+
+type AuthUser struct {
+	Email    string      `json:"email"`
+	Nickname string      `json:"nickname"`
+	Teams    []*AuthTeam `json:"teams"`
+}
+
+type AuthTeam struct {
+	TeamID   int64  `json:"team_id"`
+	TeamName string `json:"team_name"`
+	Sort     int32  `json:"sort"`
+}

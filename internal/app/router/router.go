@@ -28,13 +28,15 @@ func RegisterRouter(r *gin.Engine) {
 	auth.POST("/signup", handler.AuthSignup)
 	auth.POST("/login", handler.AuthLogin)
 
-	// 首页
-	dashboard := api.Group("/v1/dashboard")
-	dashboard.GET("/default", handler.DashboardDefault)
-
 	// 团队
 	team := api.Group("/v1/team")
 	team.GET("/list", handler.ListTeam)
+	team.GET("/members", handler.TeamMembers)
+	team.POST("/invite", handler.TeamInvite)
+
+	// 首页
+	dashboard := api.Group("/v1/dashboard")
+	dashboard.GET("/default", handler.DashboardDefault)
 
 	// 文件夹
 	folder := api.Group("/v1/folder")

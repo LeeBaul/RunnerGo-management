@@ -7,3 +7,11 @@ import (
 func ListTeam(ctx *gin.Context) {
 
 }
+
+func TeamMembers(ctx *gin.Context) {
+
+}
+
+func TeamInvite(ctx *gin.Context) {
+
+}
