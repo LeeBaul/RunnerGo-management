@@ -23,6 +23,11 @@ func RegisterRouter(r *gin.Engine) {
 	// routers
 	api := r.Group("/management/api")
 
+	// 用户鉴权
+	auth := r.Group("/v1/auth")
+	auth.POST("/signup", handler.AuthSignup)
+	auth.POST("/login", handler.AuthLogin)
+
 	// 首页
 	dashboard := api.Group("/v1/dashboard")
 	dashboard.GET("/default", handler.DashboardDefault)

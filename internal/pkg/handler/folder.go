@@ -11,7 +11,7 @@ import (
 
 func SaveFolder(ctx *gin.Context) {
 	var req rao.SaveFolderReq
-	if err := ctx.ShouldBind(&req); err != nil {
+	if err := ctx.ShouldBindJSON(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
 		return
 	}
@@ -27,7 +27,7 @@ func SaveFolder(ctx *gin.Context) {
 
 func DeleteFolder(ctx *gin.Context) {
 	var req rao.DeleteFolderReq
-	if err := ctx.ShouldBind(&req); err != nil {
+	if err := ctx.ShouldBindJSON(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
 		return
 	}

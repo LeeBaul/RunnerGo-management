@@ -1,22 +1,20 @@
 package rao
 
-type Auth struct {
-	Type   string     `json:"type"`
-	Kv     *KV        `json:"kv"`
-	Bearer *Bearer `json:"bearer"`
-	Basic  *Basic  `json:"basic"`
+type AuthSignupReq struct {
+	Email          string `json:"email"`
+	Password       string `json:"password"`
+	RepeatPassword string `json:"repeat_password"`
+	Nickname       string `json:"nickname"`
+	VerifyCode     string `json:"verify_code"`
 }
 
-type Bearer struct {
-	Key string `json:"key"`
+type AuthSignupResp struct {
 }
 
-type KV struct {
-	Key   string `json:"key"`
-	Value string `json:"value"`
-}
-
-type Basic struct {
-	Username string `json:"username"`
+type AuthLoginReq struct {
+	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type AuthLoginResp struct {
 }

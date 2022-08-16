@@ -11,7 +11,7 @@ import (
 
 func SaveTarget(ctx *gin.Context) {
 	var req rao.CreateTargetReq
-	if err := ctx.ShouldBind(&req); err != nil {
+	if err := ctx.ShouldBindJSON(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
 		return
 	}
