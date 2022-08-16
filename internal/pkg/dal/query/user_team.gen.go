@@ -30,6 +30,7 @@ func newUserTeam(db *gorm.DB) userTeam {
 	_userTeam.ID = field.NewInt64(tableName, "id")
 	_userTeam.UserID = field.NewInt64(tableName, "user_id")
 	_userTeam.TeamID = field.NewInt64(tableName, "team_id")
+	_userTeam.Sort = field.NewInt32(tableName, "sort")
 
 	_userTeam.fillFieldMap()
 
@@ -43,6 +44,7 @@ type userTeam struct {
 	ID     field.Int64
 	UserID field.Int64
 	TeamID field.Int64
+	Sort   field.Int32
 
 	fieldMap map[string]field.Expr
 }
@@ -62,6 +64,7 @@ func (u *userTeam) updateTableName(table string) *userTeam {
 	u.ID = field.NewInt64(table, "id")
 	u.UserID = field.NewInt64(table, "user_id")
 	u.TeamID = field.NewInt64(table, "team_id")
+	u.Sort = field.NewInt32(table, "sort")
 
 	u.fillFieldMap()
 
@@ -84,10 +87,11 @@ func (u *userTeam) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (u *userTeam) fillFieldMap() {
-	u.fieldMap = make(map[string]field.Expr, 3)
+	u.fieldMap = make(map[string]field.Expr, 4)
 	u.fieldMap["id"] = u.ID
 	u.fieldMap["user_id"] = u.UserID
 	u.fieldMap["team_id"] = u.TeamID
+	u.fieldMap["sort"] = u.Sort
 }
 
 func (u userTeam) clone(db *gorm.DB) userTeam {

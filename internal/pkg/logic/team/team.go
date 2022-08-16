@@ -38,3 +38,10 @@ func ListMembersByTeamID(ctx context.Context, teamID int64) ([]*model.User, erro
 	u := query.Use(dal.DB()).User
 	return u.WithContext(ctx).Where(u.ID.In(userIDs...)).Find()
 }
+
+func InviteMember(ctx context.Context, teamID, userID int64) error {
+	return query.Use(dal.DB()).UserTeam.WithContext(ctx).Create(&model.UserTeam{
+		UserID: userID,
+		TeamID: teamID,
+	})
+}
