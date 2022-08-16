@@ -12,6 +12,6 @@ func TeamMembers(ctx *gin.Context) {
 
 }
 
-func TeamInvite(ctx *gin.Context) {
+func InviteMember(ctx *gin.Context) {
 
 }

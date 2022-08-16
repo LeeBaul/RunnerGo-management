@@ -32,7 +32,7 @@ func RegisterRouter(r *gin.Engine) {
 	team := api.Group("/v1/team")
 	team.GET("/list", handler.ListTeam)
 	team.GET("/members", handler.TeamMembers)
-	team.POST("/invite", handler.TeamInvite)
+	team.POST("/invite", handler.InviteMember)
 
 	// 首页
 	dashboard := api.Group("/v1/dashboard")
