@@ -176,6 +176,7 @@ pipeline {
                         config:"${env.WORKSPACE}/configs/test.yaml",
                 		WORKSPACE:"${env.WORKSPACE}/${appname}",
                         backfile: 'false',
+                        env: "test",
                         dport: '20123'
                 	])
             }

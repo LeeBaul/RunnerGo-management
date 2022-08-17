@@ -25,7 +25,7 @@
     - name: modify config
       synchronize: 
         src: "{{ config  }}"
-        dest: "{{ deploy_path }}/{{ project_name }}/config.yaml"
+        dest: "{{ deploy_path }}/{{ project_name }}/{{ env }}.yaml"
     - name: modfiy authority
       file: dest={{ deploy_path }}/{{ project_name }}/{{ app_name }}  mode=777   group=api owner=api
     - name: modfiy authority group
