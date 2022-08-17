@@ -1,0 +1,59 @@
+- name: deploy apipost project
+  hosts: all
+  vars:
+    backup_path: /data/backup
+  tasks:
+    - name: register variable
+      shell: date "+%F_%H-%M-%S"
+      register: bak_var
+    - name: 创建项目目录
+      file: path={{ deploy_path }}/{{ project_name }}  state=directory 
+    - name: 创建项目备份目录
+      file: path={{ backup_path  }}/{{ project_name }}  state=directory 
+    - name: backup file
+      archive: path={{ deploy_path }}/{{ project_name }} dest={{ backup_path  }}/{{ project_name }}/{{ project_name }}_{{ bak_var.stdout }}.tar.gz
+      when: backfile == 'true'
+    - name: updata project
+      synchronize: 
+        src: "{{ WORKSPACE  }}"
+        dest: "{{ deploy_path }}/{{ project_name }}/"
+        rsync_opts: 
+          - "--exclude=.git"
+          - "--exclude=Jenkinsfile"
+          - "--exclude=playbook.yaml"
+          - "--exclude=hosts"
+    - name: modify config
+      synchronize: 
+        src: "{{ config  }}"
+        dest: "{{ deploy_path }}/{{ project_name }}/config.yaml"
+    - name: modfiy authority
+      file: dest={{ deploy_path }}/{{ project_name }}/{{ app_name }}  mode=777   group=api owner=api
+    - name: modfiy authority group
+      file: dest={{ deploy_path }}/{{ project_name }}   recurse=yes  group=api owner=api 
+    - name: restart service
+      systemd:
+         name: "{{ app_name }}"
+         state: restarted
+         daemon_reload: yes
+      when: devsever is undefined
+    - name: restart service
+      systemd:
+         name: "{{ devsever }}"
+         state: restarted
+         daemon_reload: yes
+      when: devsever is defined
+    - name: check port
+      shell:   ss -ntlp |grep {{ dport }} | grep  -i {{ project_name }} | tr ":" " " | tr -d [  | awk '{print $5}'
+      register: hosts
+      until: hosts.stdout == dport
+      retries: 5
+      delay: 5      
+    - name: check backup file
+      shell: ls  -t1 {{ backup_path  }}/{{ project_name }}/{{ project_name }}*.gz  | tail  -n  +4
+      register: fileline_bak
+    - debug: var=fileline_bak.stdout_lines
+    - name: clean backup file 
+      file: path={{ item  }} state=absent
+      with_items: "{{  fileline_bak.stdout_lines }}"
+      when:
+        - (( fileline_bak.stdout_lines | length ) > 1)
