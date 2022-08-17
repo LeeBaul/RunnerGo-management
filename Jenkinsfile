@@ -126,7 +126,7 @@ pipeline {
         stage('编译golang'){
             steps {
                  sh '''
-                 /usr/local/go18/bin/go build -o ${appname} cmd/main.go
+                 /usr/local/go18/bin/go build -o ${appname} 
                  '''
             }
         }
