@@ -61,3 +61,7 @@ func AuthLogin(ctx *gin.Context) {
 		ExpireTimeSec: exp.Unix(),
 	})
 }
+
+func AuthRefresh(ctx *gin.Context) {
+
+}

@@ -9,9 +9,8 @@ type AuthSignupReq struct {
 }
 
 type AuthSignupResp struct {
-	User          *AuthUser `json:"user"`
-	Token         string    `json:"token"`
-	ExpireTimeSec int64     `json:"expire_time_sec"`
+	Token         string `json:"token"`
+	ExpireTimeSec int64  `json:"expire_time_sec"`
 }
 
 type AuthLoginReq struct {
@@ -20,19 +19,6 @@ type AuthLoginReq struct {
 }
 
 type AuthLoginResp struct {
-	User          *AuthUser `json:"user"`
-	Token         string    `json:"token"`
-	ExpireTimeSec int64     `json:"expire_time_sec"`
-}
-
-type AuthUser struct {
-	Email    string      `json:"email"`
-	Nickname string      `json:"nickname"`
-	Teams    []*AuthTeam `json:"teams"`
-}
-
-type AuthTeam struct {
-	TeamID   int64  `json:"team_id"`
-	TeamName string `json:"team_name"`
-	Sort     int32  `json:"sort"`
+	Token         string `json:"token"`
+	ExpireTimeSec int64  `json:"expire_time_sec"`
 }
