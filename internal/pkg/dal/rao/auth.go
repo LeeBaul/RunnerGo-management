@@ -5,10 +5,12 @@ type AuthSignupReq struct {
 	Password       string `json:"password"`
 	RepeatPassword string `json:"repeat_password"`
 	Nickname       string `json:"nickname"`
-	VerifyCode     string `json:"verify_code"`
+	//VerifyCode     string `json:"verify_code"`
 }
 
 type AuthSignupResp struct {
+	User  *AuthUser `json:"user"`
+	Token string    `json:"token"`
 }
 
 type AuthLoginReq struct {
@@ -17,6 +19,8 @@ type AuthLoginReq struct {
 }
 
 type AuthLoginResp struct {
+	User  *AuthUser `json:"user"`
+	Token string    `json:"token"`
 }
 
 type AuthUser struct {

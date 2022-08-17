@@ -54,3 +54,8 @@ func Login(ctx context.Context, email, password string) (*model.User, error) {
 
 	return user, nil
 }
+
+func GenerateJWT(u *model.User) (string, error) {
+	//todo jwt
+	return "", nil
+}
