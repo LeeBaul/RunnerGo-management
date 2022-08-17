@@ -28,7 +28,7 @@ func RegisterRouter(r *gin.Engine) {
 	auth := api.Group("/v1/auth")
 	auth.POST("/signup", handler.AuthSignup)
 	auth.POST("/login", handler.AuthLogin)
-	//auth.GET("/refresh_token", authMiddleware.RefreshHandler)
+	auth.GET("/refresh_token", handler.AuthRefresh)
 
 	// 开启接口鉴权
 	api.Use(middleware.JWT())

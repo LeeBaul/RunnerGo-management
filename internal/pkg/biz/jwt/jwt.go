@@ -49,3 +49,12 @@ func ParseToken(tokenString string) (int64, error) {
 
 	return 0, jwt.ErrTokenInvalidClaims
 }
+
+func RefreshToken(tokenString string) (string, time.Time, error) {
+	userID, err := ParseToken(tokenString)
+	if err != nil {
+		return "", time.Now(), err
+	}
+
+	return GenerateToken(userID)
+}
