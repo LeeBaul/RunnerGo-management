@@ -13,6 +13,7 @@ type Config struct {
 	Http  Http  `yaml:"http"`
 	GRPC  GRPC  `yaml:"grpc"`
 	MySQL MySQL `yaml:"mysql"`
+	JWT   JWT   `yaml:"jwt"`
 }
 
 type Http struct {
@@ -30,6 +31,11 @@ type MySQL struct {
 	Port     int    `yaml:"port"`
 	DBName   string `yaml:"dbname"`
 	Charset  string `yaml:"charset"`
+}
+
+type JWT struct {
+	Issuer string `yaml:"issuer"`
+	Secret string `yaml:"secret"`
 }
 
 func MustInitConf() {

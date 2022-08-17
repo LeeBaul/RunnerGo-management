@@ -27,6 +27,7 @@ func RegisterRouter(r *gin.Engine) {
 	auth := r.Group("/v1/auth")
 	auth.POST("/signup", handler.AuthSignup)
 	auth.POST("/login", handler.AuthLogin)
+	//auth.GET("/refresh_token", authMiddleware.RefreshHandler)
 
 	// 团队
 	team := api.Group("/v1/team")

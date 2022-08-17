@@ -8,3 +8,7 @@ mysql:
   port: 3306
   dbname: "kunpeng"
   charset: "utf8mb4"
+
+jwt:
+  issuer: "kp"
+  secret: "kp#123"
