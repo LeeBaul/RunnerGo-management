@@ -1,0 +1,14 @@
+http:
+  port: 20123
+
+mysql:
+  username: "test_read_only"
+  passport: "db#01^st$Post"
+  host: "rm-2zem14s80lyu5c4z7.mysql.rds.aliyuncs.com"
+  port: 3306
+  dbname: "kunpeng"
+  charset: "utf8mb4"
+
+jwt:
+  issuer: "kp"
+  secret: "kp#test"

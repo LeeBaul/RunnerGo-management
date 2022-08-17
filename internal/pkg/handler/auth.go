@@ -2,6 +2,7 @@ package handler
 
 import (
 	"kp-management/internal/pkg/biz/errno"
+	"kp-management/internal/pkg/biz/jwt"
 	"kp-management/internal/pkg/biz/response"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/logic/auth"
@@ -22,15 +23,16 @@ func AuthSignup(ctx *gin.Context) {
 		return
 	}
 
-	token, err := auth.GenerateJWT(u)
+	token, exp, err := jwt.GenerateToken(u.ID)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
 		return
 	}
 
 	response.SuccessWithData(ctx, rao.AuthSignupResp{
-		User:  nil,
-		Token: token,
+		User:          nil,
+		Token:         token,
+		ExpireTimeSec: exp.Unix(),
 	})
 }
 
@@ -47,14 +49,15 @@ func AuthLogin(ctx *gin.Context) {
 		return
 	}
 
-	token, err := auth.GenerateJWT(u)
+	token, exp, err := jwt.GenerateToken(u.ID)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
 		return
 	}
 
 	response.SuccessWithData(ctx, rao.AuthLoginResp{
-		User:  nil,
-		Token: token,
+		User:          nil,
+		Token:         token,
+		ExpireTimeSec: exp.Unix(),
 	})
 }

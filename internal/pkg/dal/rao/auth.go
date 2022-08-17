@@ -9,8 +9,9 @@ type AuthSignupReq struct {
 }
 
 type AuthSignupResp struct {
-	User  *AuthUser `json:"user"`
-	Token string    `json:"token"`
+	User          *AuthUser `json:"user"`
+	Token         string    `json:"token"`
+	ExpireTimeSec int64     `json:"expire_time_sec"`
 }
 
 type AuthLoginReq struct {
@@ -19,8 +20,9 @@ type AuthLoginReq struct {
 }
 
 type AuthLoginResp struct {
-	User  *AuthUser `json:"user"`
-	Token string    `json:"token"`
+	User          *AuthUser `json:"user"`
+	Token         string    `json:"token"`
+	ExpireTimeSec int64     `json:"expire_time_sec"`
 }
 
 type AuthUser struct {
