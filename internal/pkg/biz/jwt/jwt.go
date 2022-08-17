@@ -9,8 +9,8 @@ import (
 )
 
 func GenerateToken(userID int64) (string, time.Time, error) {
-	now := time.Date(2015, 10, 10, 12, 0, 0, 0, time.UTC)
-	exp := now.Add(24 * time.Hour)
+	now := time.Now()
+	exp := now.Add(24 * time.Hour * 365)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": userID,
@@ -19,7 +19,7 @@ func GenerateToken(userID int64) (string, time.Time, error) {
 		"nbf":     now.Unix(),
 		"exp":     exp.Unix(),
 	})
-	tokenString, err := token.SignedString(conf.Conf.JWT.Secret)
+	tokenString, err := token.SignedString([]byte(conf.Conf.JWT.Secret))
 
 	return tokenString, exp, err
 }
@@ -39,11 +39,22 @@ func ParseToken(tokenString string) (int64, error) {
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		if userID, ok := claims["user_id"]; ok {
-			if id, ok := userID.(int64); ok {
-				return id, nil
+
+			if i, ok := userID.(float64); ok {
+				return int64(i), nil
 			}
+
 		}
 	}
 
 	return 0, jwt.ErrTokenInvalidClaims
+}
+
+func RefreshToken(tokenString string) (string, time.Time, error) {
+	userID, err := ParseToken(tokenString)
+	if err != nil {
+		return "", time.Now(), err
+	}
+
+	return GenerateToken(userID)
 }

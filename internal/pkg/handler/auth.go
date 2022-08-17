@@ -30,7 +30,6 @@ func AuthSignup(ctx *gin.Context) {
 	}
 
 	response.SuccessWithData(ctx, rao.AuthSignupResp{
-		User:          nil,
 		Token:         token,
 		ExpireTimeSec: exp.Unix(),
 	})
@@ -56,7 +55,21 @@ func AuthLogin(ctx *gin.Context) {
 	}
 
 	response.SuccessWithData(ctx, rao.AuthLoginResp{
-		User:          nil,
+		Token:         token,
+		ExpireTimeSec: exp.Unix(),
+	})
+}
+
+func AuthRefresh(ctx *gin.Context) {
+	tokenString := ctx.GetHeader("Authorization")
+
+	token, exp, err := jwt.RefreshToken(tokenString)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
+		return
+	}
+
+	response.SuccessWithData(ctx, rao.AuthLoginResp{
 		Token:         token,
 		ExpireTimeSec: exp.Unix(),
 	})

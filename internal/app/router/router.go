@@ -1,6 +1,7 @@
 package router
 
 import (
+	"kp-management/internal/app/middleware"
 	"time"
 
 	"kp-management/internal/pkg/handler"
@@ -24,10 +25,13 @@ func RegisterRouter(r *gin.Engine) {
 	api := r.Group("/management/api")
 
 	// 用户鉴权
-	auth := r.Group("/v1/auth")
+	auth := api.Group("/v1/auth")
 	auth.POST("/signup", handler.AuthSignup)
 	auth.POST("/login", handler.AuthLogin)
-	//auth.GET("/refresh_token", authMiddleware.RefreshHandler)
+	auth.GET("/refresh_token", handler.AuthRefresh)
+
+	// 开启接口鉴权
+	api.Use(middleware.JWT())
 
 	// 团队
 	team := api.Group("/v1/team")
