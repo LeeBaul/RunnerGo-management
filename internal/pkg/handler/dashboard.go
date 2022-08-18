@@ -2,23 +2,35 @@ package handler
 
 import (
 	"kp-management/internal/pkg/biz/errno"
+	"kp-management/internal/pkg/biz/jwt"
 	"kp-management/internal/pkg/biz/response"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/logic/target"
+	"kp-management/internal/pkg/logic/user"
 
 	"github.com/gin-gonic/gin"
 )
 
 func DashboardDefault(ctx *gin.Context) {
-	var teamID int64
+	var req rao.DashboardDefaultReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
+	}
 
-	apiCnt, err := target.APICount(ctx, teamID)
+	apiCnt, err := target.APICount(ctx, req.TeamID)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
+		return
+	}
+
+	u, err := user.FirstByUserID(ctx, jwt.GetUserIDByCtx(ctx))
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
 		return
 	}
 
 	response.SuccessWithData(ctx, rao.DashboardDefaultResp{
+		User:      u,
 		PlanNum:   0,
 		SceneNum:  0,
 		ReportNum: 0,

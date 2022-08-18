@@ -26,5 +26,5 @@ type Member struct {
 	Avatar      string `json:"avatar"`
 	Email       string `json:"email"`
 	Nickname    string `json:"nickname"`
-	JoinTimeSec int64  `json:"join_time_sec"`
+	JoinTimeSec int64  `json:"join_time_sec,omitempty"`
 }
