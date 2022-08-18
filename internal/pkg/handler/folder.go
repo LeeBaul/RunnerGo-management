@@ -2,6 +2,7 @@ package handler
 
 import (
 	"kp-management/internal/pkg/biz/errno"
+	"kp-management/internal/pkg/biz/jwt"
 	"kp-management/internal/pkg/biz/response"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/logic/folder"
@@ -16,7 +17,7 @@ func SaveFolder(ctx *gin.Context) {
 		return
 	}
 
-	if err := folder.Save(ctx, &req); err != nil {
+	if err := folder.Save(ctx, jwt.GetUserIDByCtx(ctx), &req); err != nil {
 		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
 		return
 	}
