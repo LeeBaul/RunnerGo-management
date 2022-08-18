@@ -5,6 +5,8 @@ import (
 	"kp-management/internal/pkg/conf"
 	"time"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/golang-jwt/jwt/v4"
 )
 
@@ -57,4 +59,8 @@ func RefreshToken(tokenString string) (string, time.Time, error) {
 	}
 
 	return GenerateToken(userID)
+}
+
+func GetUserIDByCtx(c *gin.Context) int64 {
+	return c.GetInt64("user_id")
 }
