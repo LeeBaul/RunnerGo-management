@@ -19,13 +19,13 @@ func AuthSignup(ctx *gin.Context) {
 
 	u, err := auth.SignUp(ctx, req.Email, req.Password, req.Nickname)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.InvalidToken, err.Error())
 		return
 	}
 
 	token, exp, err := jwt.GenerateToken(u.ID)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.InvalidToken, err.Error())
 		return
 	}
 
@@ -44,13 +44,13 @@ func AuthLogin(ctx *gin.Context) {
 
 	u, err := auth.Login(ctx, req.Email, req.Password)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.InvalidToken, err.Error())
 		return
 	}
 
 	token, exp, err := jwt.GenerateToken(u.ID)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.InvalidToken, err.Error())
 		return
 	}
 
