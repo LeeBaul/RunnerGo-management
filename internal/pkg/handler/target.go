@@ -25,6 +25,10 @@ func SaveTarget(ctx *gin.Context) {
 	return
 }
 
+func DeleteTarget(ctx *gin.Context) {
+
+}
+
 func ListTarget(ctx *gin.Context) {
 
 }

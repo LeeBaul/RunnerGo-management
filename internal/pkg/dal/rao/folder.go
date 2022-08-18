@@ -16,10 +16,3 @@ type SaveFolderReq struct {
 
 type SaveFolderResp struct {
 }
-
-type DeleteFolderReq struct {
-	TargetID int64 `json:"target_id"`
-}
-
-type DeleteFolderResp struct {
-}

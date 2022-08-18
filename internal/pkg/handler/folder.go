@@ -25,19 +25,3 @@ func SaveFolder(ctx *gin.Context) {
 	response.Success(ctx)
 	return
 }
-
-func DeleteFolder(ctx *gin.Context) {
-	var req rao.DeleteFolderReq
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
-		return
-	}
-
-	if err := folder.Delete(ctx, req.TargetID); err != nil {
-		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
-		return
-	}
-
-	response.Success(ctx)
-	return
-}

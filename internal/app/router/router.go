@@ -46,11 +46,11 @@ func RegisterRouter(r *gin.Engine) {
 	// 文件夹
 	folder := api.Group("/v1/folder")
 	folder.POST("/save", handler.SaveFolder)
-	folder.POST("/delete", handler.DeleteFolder)
 
 	// 接口
 	target := api.Group("/v1/target")
 	target.POST("/save", handler.SaveTarget)
+	target.POST("/delete", handler.DeleteTarget)
 	target.GET("/list", handler.ListTarget)
 
 	// 分组
