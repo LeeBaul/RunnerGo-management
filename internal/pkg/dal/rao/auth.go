@@ -30,8 +30,10 @@ type AuthSendMailVerifyReq struct {
 type AuthSendMailVerifyResp struct {
 }
 
-type AuthUpdatePasswordReq struct {
+type AuthResetPasswordReq struct {
+	Password       string `json:"password"`
+	RepeatPassword string `json:"repeat_password"`
 }
 
-type AuthUpdatePasswordResp struct {
+type AuthResetPasswordResp struct {
 }

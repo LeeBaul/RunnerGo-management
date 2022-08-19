@@ -31,7 +31,7 @@ func RegisterRouter(r *gin.Engine) {
 	auth.POST("/refresh_token", handler.AuthRefresh)
 
 	auth.POST("/send_email_verify", handler.AuthSendMailVerify)
-	auth.POST("/update_password", handler.AuthUpdatePassword)
+	auth.POST("/reset_password", handler.AuthResetPassword)
 
 	// 开启接口鉴权
 	api.Use(middleware.JWT())
