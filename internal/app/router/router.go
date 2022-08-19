@@ -12,7 +12,7 @@ import (
 func RegisterRouter(r *gin.Engine) {
 	// cors
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"},
+		//AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"POST", "GET", "OPTIONS", "DELETE", "PUT", "PATCH"},
 		AllowHeaders:     []string{"Origin"},
 		ExposeHeaders:    []string{"Content-Length", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Content-Type"},
