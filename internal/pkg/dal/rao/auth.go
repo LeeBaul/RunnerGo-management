@@ -22,3 +22,16 @@ type AuthLoginResp struct {
 	Token         string `json:"token"`
 	ExpireTimeSec int64  `json:"expire_time_sec"`
 }
+
+type AuthSendMailVerifyReq struct {
+	Email string `json:"email"`
+}
+
+type AuthSendMailVerifyResp struct {
+}
+
+type AuthUpdatePasswordReq struct {
+}
+
+type AuthUpdatePasswordResp struct {
+}
