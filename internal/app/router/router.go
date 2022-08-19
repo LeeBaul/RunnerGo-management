@@ -2,24 +2,21 @@ package router
 
 import (
 	"kp-management/internal/app/middleware"
-	"time"
-
 	"kp-management/internal/pkg/handler"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func RegisterRouter(r *gin.Engine) {
 	// cors
-	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"POST", "GET", "OPTIONS", "DELETE", "PUT", "PATCH"},
-		AllowHeaders:     []string{"Origin"},
-		ExposeHeaders:    []string{"Content-Length", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Content-Type"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
+	//r.Use(cors.New(cors.Config{
+	//	AllowOrigins:     []string{"*"},
+	//	AllowMethods:     []string{"POST", "GET", "OPTIONS", "DELETE", "PUT", "PATCH"},
+	//	AllowHeaders:     []string{"Origin"},
+	//	ExposeHeaders:    []string{"Content-Length", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Content-Type"},
+	//	AllowCredentials: true,
+	//	MaxAge:           12 * time.Hour,
+	//}))
 
 	// routers
 	api := r.Group("/management/api")
@@ -28,9 +25,10 @@ func RegisterRouter(r *gin.Engine) {
 	auth := api.Group("/v1/auth")
 	auth.POST("/signup", handler.AuthSignup)
 	auth.POST("/login", handler.AuthLogin)
-	auth.GET("/refresh_token", handler.AuthRefresh)
-	auth.GET("/forget", handler.AuthForget)
-	auth.GET("/logout", handler.AuthLogout)
+	auth.POST("/refresh_token", handler.AuthRefresh)
+
+	auth.POST("/send_email_verify", handler.AuthSendMailVerify)
+	auth.POST("/update_password", handler.AuthUpdatePassword)
 
 	// 开启接口鉴权
 	api.Use(middleware.JWT())

@@ -33,6 +33,7 @@ func AuthSignup(ctx *gin.Context) {
 		Token:         token,
 		ExpireTimeSec: exp.Unix(),
 	})
+	return
 }
 
 func AuthLogin(ctx *gin.Context) {
@@ -58,6 +59,7 @@ func AuthLogin(ctx *gin.Context) {
 		Token:         token,
 		ExpireTimeSec: exp.Unix(),
 	})
+	return
 }
 
 func AuthRefresh(ctx *gin.Context) {
@@ -73,4 +75,16 @@ func AuthRefresh(ctx *gin.Context) {
 		Token:         token,
 		ExpireTimeSec: exp.Unix(),
 	})
+	return
+}
+
+func AuthSendMailVerify(ctx *gin.Context) {
+	var req rao.AuthSendMailVerifyReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
+		return
+	}
+}
+
+func AuthUpdatePassword(ctx *gin.Context) {
 }
