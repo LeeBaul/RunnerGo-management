@@ -37,11 +37,11 @@ type Body struct {
 }
 
 type Parameter struct {
-	IsChecked   string `json:"is_checked"`
+	IsChecked   int32  `json:"is_checked"`
 	Type        string `json:"type"`
 	Key         string `json:"key"`
 	Value       string `json:"value"`
-	NotNull     string `json:"not_null"`
+	NotNull     int32  `json:"not_null"`
 	Description string `json:"description"`
 }
 

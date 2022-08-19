@@ -27,6 +27,7 @@ func TransFolderReqToTarget(folder *rao.SaveFolderReq, userID int64) *model.Targ
 func TransTargetReqToTarget(target *rao.CreateTargetReq, userID int64) *model.Target {
 	return &model.Target{
 		ID:            target.TargetID,
+		TeamID:        target.TeamID,
 		TargetType:    consts.TargetTypeAPI,
 		Name:          target.Name,
 		ParentID:      target.ParentID,
@@ -38,6 +39,25 @@ func TransTargetReqToTarget(target *rao.CreateTargetReq, userID int64) *model.Ta
 		CreatedUserID: userID,
 		RecentUserID:  userID,
 	}
+}
+
+func TransTargetToFolderAPI(targets []*model.Target) []*rao.FolderAPI {
+	var ret []*rao.FolderAPI
+	for _, t := range targets {
+		ret = append(ret, &rao.FolderAPI{
+			TeamID:        t.TeamID,
+			TargetType:    t.TargetType,
+			Name:          t.Name,
+			ParentID:      t.ParentID,
+			Method:        t.Method,
+			Sort:          t.Sort,
+			TypeSort:      t.TypeSort,
+			Version:       t.Version,
+			CreatedUserID: t.CreatedUserID,
+			RecentUserID:  t.RecentUserID,
+		})
+	}
+	return ret
 }
 
 func TransGroupReqToTarget(group *rao.SaveGroupReq) *model.Target {

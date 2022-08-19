@@ -44,5 +44,21 @@ func DeleteTarget(ctx *gin.Context) {
 }
 
 func ListTarget(ctx *gin.Context) {
+	var req rao.ListTargetReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
+		return
+	}
 
+	targets, cnt, err := target.ListFolderAPI(ctx, req.TeamID, req.Size, (req.Page-1)*req.Size)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
+		return
+	}
+
+	response.SuccessWithData(ctx, rao.ListTargetResp{
+		Targets: targets,
+		Total:   cnt,
+	})
+	return
 }
