@@ -24,10 +24,10 @@ func TransFolderReqToTarget(folder *rao.SaveFolderReq, userID int64) *model.Targ
 	}
 }
 
-func TransTargetReqToTarget(target *rao.CreateTargetReq) *model.Target {
+func TransTargetReqToTarget(target *rao.CreateTargetReq, userID int64) *model.Target {
 	return &model.Target{
 		ID:            target.TargetID,
-		TargetType:    target.TargetType,
+		TargetType:    consts.TargetTypeAPI,
 		Name:          target.Name,
 		ParentID:      target.ParentID,
 		Method:        target.Method,
@@ -35,16 +35,15 @@ func TransTargetReqToTarget(target *rao.CreateTargetReq) *model.Target {
 		TypeSort:      target.TypeSort,
 		Status:        1,
 		Version:       target.Version,
-		CreatedUserID: 0,
-		RecentUserID:  0,
-		// todo user_id
+		CreatedUserID: userID,
+		RecentUserID:  userID,
 	}
 }
 
 func TransGroupReqToTarget(group *rao.SaveGroupReq) *model.Target {
 	return &model.Target{
 		ID:            group.TargetID,
-		TargetType:    group.TargetType,
+		TargetType:    consts.TargetTypeGroup,
 		Name:          group.Name,
 		ParentID:      group.ParentID,
 		Method:        group.Method,

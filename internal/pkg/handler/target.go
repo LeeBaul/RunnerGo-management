@@ -2,6 +2,7 @@ package handler
 
 import (
 	"kp-management/internal/pkg/biz/errno"
+	"kp-management/internal/pkg/biz/jwt"
 	"kp-management/internal/pkg/biz/response"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/logic/api"
@@ -17,7 +18,7 @@ func SaveTarget(ctx *gin.Context) {
 		return
 	}
 
-	if err := api.Save(ctx, &req); err != nil {
+	if err := api.Save(ctx, &req, jwt.GetUserIDByCtx(ctx)); err != nil {
 		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
 		return
 	}

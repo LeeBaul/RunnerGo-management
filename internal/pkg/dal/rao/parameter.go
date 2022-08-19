@@ -21,20 +21,20 @@ type Basic struct {
 	Password string `json:"password"`
 }
 
-//type Query struct {
-//	Parameter []*Parameter `json:"parameter"`
-//}
-//
-//type Header struct {
-//	Parameter []*Parameter `json:"parameter"`
-//}
-//
-//type Body struct {
-//	Mode      string       `json:"mode"`
-//	Parameter []*Parameter `json:"parameter"`
-//	Raw       string       `json:"raw"`
-//	RawPara   []*Parameter `json:"raw_para"`
-//}
+type Query struct {
+	Parameter []*Parameter `json:"parameter"`
+}
+
+type Header struct {
+	Parameter []*Parameter `json:"parameter"`
+}
+
+type Body struct {
+	Mode      string       `json:"mode"`
+	Parameter []*Parameter `json:"parameter"`
+	Raw       string       `json:"raw"`
+	RawPara   []*Parameter `json:"raw_para"`
+}
 
 type Parameter struct {
 	IsChecked   string `json:"is_checked"`
@@ -66,16 +66,15 @@ type Resful struct {
 }
 
 type Request struct {
-	URL         string       `json:"url"`
-	Description string       `json:"description"`
-	Auth        *Auth        `json:"auth"`
-	Body        []*Parameter `json:"body"`
-	Header      []*Parameter `json:"header"`
-	Query       []*Parameter `json:"query"`
-
-	Event  *Event  `json:"event"`
-	Cookie *Cookie `json:"cookie"`
-	Resful *Resful `json:"resful"`
+	URL         string  `json:"url"`
+	Description string  `json:"description"`
+	Auth        *Auth   `json:"auth"`
+	Body        *Body   `json:"body"`
+	Header      *Header `json:"header"`
+	Query       *Query  `json:"query"`
+	Event       *Event  `json:"event"`
+	Cookie      *Cookie `json:"cookie"`
+	Resful      *Resful `json:"resful"`
 }
 
 type Success struct {
