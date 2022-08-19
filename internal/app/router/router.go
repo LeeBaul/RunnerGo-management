@@ -29,6 +29,8 @@ func RegisterRouter(r *gin.Engine) {
 	auth.POST("/signup", handler.AuthSignup)
 	auth.POST("/login", handler.AuthLogin)
 	auth.GET("/refresh_token", handler.AuthRefresh)
+	auth.GET("/forget", handler.AuthForget)
+	auth.GET("/logout", handler.AuthLogout)
 
 	// 开启接口鉴权
 	api.Use(middleware.JWT())
@@ -36,12 +38,14 @@ func RegisterRouter(r *gin.Engine) {
 	// 团队
 	team := api.Group("/v1/team")
 	team.GET("/list", handler.ListTeam)
-	team.GET("/members", handler.TeamMembers)
+	team.GET("/members", handler.TeamMembers) // 邀请人
 	//team.POST("/invite", handler.InviteMember)
+	// 移出成员
 
 	// 首页
 	dashboard := api.Group("/v1/dashboard")
 	dashboard.GET("/default", handler.DashboardDefault)
+	//测试报告，运行中
 
 	// 文件夹
 	folder := api.Group("/v1/folder")

@@ -30,16 +30,7 @@ func JWT() gin.HandlerFunc {
 		}
 
 		c.Set("user_id", userID)
-		//c.Set(UserName, claims.Username)
 
 		c.Next()
 	}
 }
-
-//func GetUid(c *gin.Context) int64 {
-//	return c.GetInt64(UserId)
-//}
-
-//func GetUserName(c *gin.Context) string {
-//	return c.GetString(UserName)
-//}
