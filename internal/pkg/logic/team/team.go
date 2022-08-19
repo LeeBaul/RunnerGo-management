@@ -5,9 +5,11 @@ import (
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/query"
+	"kp-management/internal/pkg/dal/rao"
+	"kp-management/internal/pkg/packer"
 )
 
-func ListByUserID(ctx context.Context, userID int64) ([]*model.Team, error) {
+func ListByUserID(ctx context.Context, userID int64) ([]*rao.Team, error) {
 	ut := query.Use(dal.DB()).UserTeam
 	userTeams, err := ut.WithContext(ctx).Where(ut.UserID.Eq(userID)).Find()
 	if err != nil {
@@ -20,10 +22,15 @@ func ListByUserID(ctx context.Context, userID int64) ([]*model.Team, error) {
 	}
 
 	t := query.Use(dal.DB()).Team
-	return t.WithContext(ctx).Where(t.ID.In(teamIDs...)).Find()
+	teams, err := t.WithContext(ctx).Where(t.ID.In(teamIDs...)).Find()
+	if err != nil {
+		return nil, err
+	}
+
+	return packer.TransTeamsModelToResp(teams, userTeams), nil
 }
 
-func ListMembersByTeamID(ctx context.Context, teamID int64) ([]*model.User, error) {
+func ListMembersByTeamID(ctx context.Context, teamID int64) ([]*rao.Member, error) {
 	ut := query.Use(dal.DB()).UserTeam
 	userTeams, err := ut.WithContext(ctx).Where(ut.TeamID.Eq(teamID)).Find()
 	if err != nil {
@@ -36,7 +43,12 @@ func ListMembersByTeamID(ctx context.Context, teamID int64) ([]*model.User, erro
 	}
 
 	u := query.Use(dal.DB()).User
-	return u.WithContext(ctx).Where(u.ID.In(userIDs...)).Find()
+	users, err := u.WithContext(ctx).Where(u.ID.In(userIDs...)).Find()
+	if err != nil {
+		return nil, err
+	}
+
+	return packer.TransUsersModelToMembers(users, userTeams), nil
 }
 
 func InviteMember(ctx context.Context, teamID, userID int64) error {

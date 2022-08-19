@@ -37,7 +37,7 @@ func RegisterRouter(r *gin.Engine) {
 	team := api.Group("/v1/team")
 	team.GET("/list", handler.ListTeam)
 	team.GET("/members", handler.TeamMembers)
-	team.POST("/invite", handler.InviteMember)
+	//team.POST("/invite", handler.InviteMember)
 
 	// 首页
 	dashboard := api.Group("/v1/dashboard")
@@ -46,11 +46,11 @@ func RegisterRouter(r *gin.Engine) {
 	// 文件夹
 	folder := api.Group("/v1/folder")
 	folder.POST("/save", handler.SaveFolder)
-	folder.POST("/delete", handler.DeleteFolder)
 
 	// 接口
 	target := api.Group("/v1/target")
 	target.POST("/save", handler.SaveTarget)
+	target.POST("/delete", handler.DeleteTarget)
 	target.GET("/list", handler.ListTarget)
 
 	// 分组

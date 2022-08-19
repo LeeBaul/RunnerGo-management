@@ -30,7 +30,11 @@ func newUserTeam(db *gorm.DB) userTeam {
 	_userTeam.ID = field.NewInt64(tableName, "id")
 	_userTeam.UserID = field.NewInt64(tableName, "user_id")
 	_userTeam.TeamID = field.NewInt64(tableName, "team_id")
+	_userTeam.RoleID = field.NewInt64(tableName, "role_id")
 	_userTeam.Sort = field.NewInt32(tableName, "sort")
+	_userTeam.CreatedAt = field.NewTime(tableName, "created_at")
+	_userTeam.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_userTeam.DeletedAt = field.NewField(tableName, "deleted_at")
 
 	_userTeam.fillFieldMap()
 
@@ -40,11 +44,15 @@ func newUserTeam(db *gorm.DB) userTeam {
 type userTeam struct {
 	userTeamDo userTeamDo
 
-	ALL    field.Field
-	ID     field.Int64
-	UserID field.Int64
-	TeamID field.Int64
-	Sort   field.Int32
+	ALL       field.Field
+	ID        field.Int64
+	UserID    field.Int64
+	TeamID    field.Int64
+	RoleID    field.Int64
+	Sort      field.Int32
+	CreatedAt field.Time
+	UpdatedAt field.Time
+	DeletedAt field.Field
 
 	fieldMap map[string]field.Expr
 }
@@ -64,7 +72,11 @@ func (u *userTeam) updateTableName(table string) *userTeam {
 	u.ID = field.NewInt64(table, "id")
 	u.UserID = field.NewInt64(table, "user_id")
 	u.TeamID = field.NewInt64(table, "team_id")
+	u.RoleID = field.NewInt64(table, "role_id")
 	u.Sort = field.NewInt32(table, "sort")
+	u.CreatedAt = field.NewTime(table, "created_at")
+	u.UpdatedAt = field.NewTime(table, "updated_at")
+	u.DeletedAt = field.NewField(table, "deleted_at")
 
 	u.fillFieldMap()
 
@@ -87,11 +99,15 @@ func (u *userTeam) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (u *userTeam) fillFieldMap() {
-	u.fieldMap = make(map[string]field.Expr, 4)
+	u.fieldMap = make(map[string]field.Expr, 8)
 	u.fieldMap["id"] = u.ID
 	u.fieldMap["user_id"] = u.UserID
 	u.fieldMap["team_id"] = u.TeamID
+	u.fieldMap["role_id"] = u.RoleID
 	u.fieldMap["sort"] = u.Sort
+	u.fieldMap["created_at"] = u.CreatedAt
+	u.fieldMap["updated_at"] = u.UpdatedAt
+	u.fieldMap["deleted_at"] = u.DeletedAt
 }
 
 func (u userTeam) clone(db *gorm.DB) userTeam {

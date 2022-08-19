@@ -2,6 +2,7 @@ package rao
 
 type SaveFolderReq struct {
 	TargetID   int64    `json:"target_id"`
+	TeamID     int64    `json:"team_id"`
 	ParentID   int64    `json:"parent_id"`
 	TargetType string   `json:"target_type"`
 	Name       string   `json:"name"`
@@ -14,11 +15,4 @@ type SaveFolderReq struct {
 }
 
 type SaveFolderResp struct {
-}
-
-type DeleteFolderReq struct {
-	TargetID int64 `json:"target_id"`
-}
-
-type DeleteFolderResp struct {
 }

@@ -21,6 +21,10 @@ type Basic struct {
 	Password string `json:"password"`
 }
 
+type Query struct {
+	Parameter []*Parameter `json:"parameter"`
+}
+
 type Header struct {
 	Parameter []*Parameter `json:"parameter"`
 }
@@ -33,11 +37,11 @@ type Body struct {
 }
 
 type Parameter struct {
-	IsChecked   string `json:"is_checked"`
+	IsChecked   int32  `json:"is_checked"`
 	Type        string `json:"type"`
 	Key         string `json:"key"`
 	Value       string `json:"value"`
-	NotNull     string `json:"not_null"`
+	NotNull     int32  `json:"not_null"`
 	Description string `json:"description"`
 }
 
@@ -53,10 +57,6 @@ type Event struct {
 	Test      string `json:"test"`
 }
 
-type Query struct {
-	Parameter []*Parameter `json:"parameter"`
-}
-
 type Cookie struct {
 	Parameter []*Parameter `json:"parameter"`
 }
@@ -70,9 +70,9 @@ type Request struct {
 	Description string  `json:"description"`
 	Auth        *Auth   `json:"auth"`
 	Body        *Body   `json:"body"`
-	Event       *Event  `json:"event"`
 	Header      *Header `json:"header"`
 	Query       *Query  `json:"query"`
+	Event       *Event  `json:"event"`
 	Cookie      *Cookie `json:"cookie"`
 	Resful      *Resful `json:"resful"`
 }
