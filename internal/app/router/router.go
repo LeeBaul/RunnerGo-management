@@ -72,13 +72,13 @@ func RegisterRouter(r *gin.Engine) {
 	plan := api.Group("/v1/plan")
 	plan.GET("/list")
 
-	// 操作日志
-	operation := api.Group("/v1/operation")
-	operation.GET("/list", handler.ListOperation)
-
 	// 测试报告
 	report := api.Group("/v1/report")
 	report.GET("/list")
+
+	// 操作日志
+	operation := api.Group("/v1/operation")
+	operation.GET("/list", handler.ListOperation)
 
 	// 机器管理
 

@@ -11,12 +11,12 @@ import (
 
 func ListOperation(ctx *gin.Context) {
 	var req rao.ListOperationReq
-	if err := ctx.ShouldBindJSON(&req); err != nil {
+	if err := ctx.ShouldBind(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
 		return
 	}
 
-	operations, err := operation.List(ctx, 1, 10, 10)
+	operations, total, err := operation.List(ctx, req.TeamID, req.Size, (req.Page-1)*req.Size)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
 		return
@@ -24,6 +24,7 @@ func ListOperation(ctx *gin.Context) {
 
 	response.SuccessWithData(ctx, rao.ListOperationResp{
 		Operations: operations,
+		Total:      total,
 	})
 	return
 }

@@ -1,10 +1,14 @@
 package rao
 
 type ListOperationReq struct {
+	TeamID int64 `query:"team_id"`
+	Page   int   `query:"page"`
+	Size   int   `query:"size"`
 }
 
 type ListOperationResp struct {
 	Operations []*Operation `json:"operations"`
+	Total      int64        `json:"total"`
 }
 
 type Operation struct {

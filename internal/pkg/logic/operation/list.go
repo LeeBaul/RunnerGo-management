@@ -8,11 +8,17 @@ import (
 	"kp-management/internal/pkg/packer"
 )
 
-func List(ctx context.Context, teamID int64, size, limit int32) ([]*rao.Operation, error) {
+func List(ctx context.Context, teamID int64, limit, offset int) ([]*rao.Operation, int64, error) {
 	tx := query.Use(dal.DB()).Operation
-	operations, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID)).Find()
+	operations, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID)).
+		Limit(limit).Offset(offset).Order(tx.UpdatedAt.Desc()).Find()
 	if err != nil {
-		return nil, err
+		return nil, 0, err
+	}
+
+	cnt, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID)).Count()
+	if err != nil {
+		return nil, 0, err
 	}
 
 	var userIDs []int64
@@ -23,8 +29,8 @@ func List(ctx context.Context, teamID int64, size, limit int32) ([]*rao.Operatio
 	u := query.Use(dal.DB()).User
 	users, err := u.WithContext(ctx).Where(u.ID.In(userIDs...)).Find()
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return packer.TransOperationModelToResp(operations, users), nil
+	return packer.TransOperationModelToResp(operations, users), cnt, nil
 }

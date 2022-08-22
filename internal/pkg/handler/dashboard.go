@@ -25,7 +25,7 @@ func DashboardDefault(ctx *gin.Context) {
 		return
 	}
 
-	operations, err := operation.List(ctx, 1, 10, 10)
+	operations, _, err := operation.List(ctx, req.TeamID, 5, 0)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
 		return
