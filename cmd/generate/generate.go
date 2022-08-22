@@ -21,8 +21,8 @@ func main() {
 
 	g.ApplyBasic(
 		g.GenerateModel("target"),
-		g.GenerateModel("api"),
-		g.GenerateModel("folder"),
+		//g.GenerateModel("api"),
+		//g.GenerateModel("folder"),
 		g.GenerateModel("group"),
 		g.GenerateModel("operation"),
 		g.GenerateModel("user"),
