@@ -9,6 +9,10 @@ mysql:
   dbname: "kunpeng"
   charset: "utf8mb4"
 
+mongodb:
+  dsn: "mongodb://kunpeng:kYjJpU8BYvb4EJ9x@dds-8vb14448e6c8d6241844-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/kunpeng?replicaSet=mgset-509843895"
+  database: "kunpeng"
+
 jwt:
   issuer: "kp"
   secret: "kp#test"
