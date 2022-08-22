@@ -86,5 +86,5 @@ func AuthSendMailVerify(ctx *gin.Context) {
 	}
 }
 
-func AuthUpdatePassword(ctx *gin.Context) {
+func AuthResetPassword(ctx *gin.Context) {
 }

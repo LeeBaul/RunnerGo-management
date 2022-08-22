@@ -13,7 +13,6 @@ func RegisterRouter(r *gin.Engine) {
 	// cors
 	r.Use(cors.New(cors.Config{
 		//AllowOrigins:     []string{"*"},
-
 		AllowMethods:     []string{"POST", "GET", "OPTIONS", "DELETE", "PUT", "PATCH"},
 		AllowHeaders:     []string{"Origin"},
 		ExposeHeaders:    []string{"Content-Length", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Content-Type"},
@@ -31,7 +30,7 @@ func RegisterRouter(r *gin.Engine) {
 	auth.POST("/refresh_token", handler.AuthRefresh)
 
 	auth.POST("/send_email_verify", handler.AuthSendMailVerify)
-	auth.POST("/update_password", handler.AuthUpdatePassword)
+	auth.POST("/reset_password", handler.AuthResetPassword)
 
 	// 开启接口鉴权
 	api.Use(middleware.JWT())
