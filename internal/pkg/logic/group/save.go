@@ -2,25 +2,38 @@ package group
 
 import (
 	"context"
+	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/query"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/packer"
+
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func Save(ctx context.Context, req *rao.SaveGroupReq) error {
 	target := packer.TransGroupReqToTarget(req)
 	group := packer.TransGroupReqToGroup(req)
 
+	collection := dal.GetMongo().Database(dal.MongoD()).Collection(consts.CollectGroup)
+
 	return query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
-		if err := tx.Target.WithContext(ctx).Save(target); err != nil {
+
+		if target.ID == 0 {
+			if err := tx.Target.WithContext(ctx).Create(target); err != nil {
+				return err
+			}
+
+			group.TargetID = target.ID
+			collection.InsertOne(ctx, group)
+		}
+
+		if _, err := tx.Target.WithContext(ctx).Omit(tx.Target.CreatedUserID).Updates(target); err != nil {
 			return err
 		}
 
-		if err := tx.Group.WithContext(ctx).Where(tx.Group.TargetID.Eq(group.TargetID)).Save(group); err != nil {
-			return err
-		}
+		_, err := collection.UpdateOne(ctx, bson.D{{"target_id", target.ID}}, bson.M{"$set": group})
 
-		return nil
+		return err
 	})
 }
