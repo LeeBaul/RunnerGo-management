@@ -15,5 +15,16 @@ func List(ctx context.Context, teamID int64, size, limit int32) ([]*rao.Operatio
 		return nil, err
 	}
 
-	return packer.TransOperationModelToResp(operations), nil
+	var userIDs []int64
+	for _, o := range operations {
+		userIDs = append(userIDs, o.UserID)
+	}
+
+	u := query.Use(dal.DB()).User
+	users, err := u.WithContext(ctx).Where(u.ID.In(userIDs...)).Find()
+	if err != nil {
+		return nil, err
+	}
+
+	return packer.TransOperationModelToResp(operations, users), nil
 }
