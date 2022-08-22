@@ -26,3 +26,9 @@ func ListByStatus(ctx context.Context, teamID int64, status int32, limit, offset
 
 	return packer.TransPlansToResp(ret), cnt, nil
 }
+
+func CountByTeamID(ctx context.Context, teamID int64) (int64, error) {
+	tx := query.Use(dal.DB()).Plan
+
+	return tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID)).Count()
+}

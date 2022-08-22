@@ -20,6 +20,7 @@ type Report struct {
 	RunUserID int64     `gorm:"column:run_user_id;not null" json:"run_user_id"`
 	CreatedAt time.Time `gorm:"column:created_at;not null" json:"created_at"`
 	UpdatedAt time.Time `gorm:"column:updated_at;not null" json:"updated_at"`
+	TeamID    int64     `gorm:"column:team_id;not null" json:"team_id"`
 }
 
 // TableName Report's table name

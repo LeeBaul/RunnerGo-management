@@ -6,6 +6,8 @@ import (
 	"kp-management/internal/pkg/biz/response"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/logic/operation"
+	"kp-management/internal/pkg/logic/plan"
+	"kp-management/internal/pkg/logic/report"
 	"kp-management/internal/pkg/logic/target"
 	"kp-management/internal/pkg/logic/user"
 
@@ -31,7 +33,25 @@ func DashboardDefault(ctx *gin.Context) {
 		return
 	}
 
-	apiCnt, err := target.APICount(ctx, req.TeamID)
+	apiCnt, err := target.APICountByTeamID(ctx, req.TeamID)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
+		return
+	}
+
+	sceneCnt, err := target.SceneCountByTeamID(ctx, req.TeamID)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
+		return
+	}
+
+	planCnt, err := plan.CountByTeamID(ctx, req.TeamID)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
+		return
+	}
+
+	reportCnt, err := report.CountByTeamID(ctx, req.TeamID)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
 		return
@@ -40,9 +60,9 @@ func DashboardDefault(ctx *gin.Context) {
 	response.SuccessWithData(ctx, rao.DashboardDefaultResp{
 		User:       u,
 		Operations: operations,
-		PlanNum:    0,
-		SceneNum:   0,
-		ReportNum:  0,
+		PlanNum:    planCnt,
+		SceneNum:   sceneCnt,
+		ReportNum:  reportCnt,
 		APINum:     apiCnt,
 	})
 }
