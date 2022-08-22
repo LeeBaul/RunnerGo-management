@@ -3,12 +3,11 @@ package packer
 import (
 	"encoding/json"
 	"fmt"
-
-	"kp-management/internal/pkg/dal/model"
+	"kp-management/internal/pkg/dal/mao"
 	"kp-management/internal/pkg/dal/rao"
 )
 
-func TransTargetReqToAPI(target *rao.CreateTargetReq) *model.API {
+func TransTargetReqToAPI(target *rao.CreateTargetReq) *mao.API {
 	if target.Request == nil {
 		fmt.Sprintln(fmt.Errorf("target.request not found request"))
 		return nil
@@ -34,7 +33,7 @@ func TransTargetReqToAPI(target *rao.CreateTargetReq) *model.API {
 		fmt.Sprintln(fmt.Errorf("target.request.auth json marshal err %w", err))
 	}
 
-	return &model.API{
+	return &mao.API{
 		TargetID:    target.TargetID,
 		URL:         target.URL,
 		Header:      string(headerByte),

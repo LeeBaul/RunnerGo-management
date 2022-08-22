@@ -8,4 +8,5 @@ import (
 func InitProjects() {
 	conf.MustInitConf()
 	dal.MustInitMySQL()
+	dal.MustInitMongo()
 }

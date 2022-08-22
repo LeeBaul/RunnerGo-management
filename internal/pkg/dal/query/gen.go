@@ -14,10 +14,10 @@ import (
 func Use(db *gorm.DB) *Query {
 	return &Query{
 		db:        db,
-		API:       newAPI(db),
-		Folder:    newFolder(db),
 		Group:     newGroup(db),
 		Operation: newOperation(db),
+		Plan:      newPlan(db),
+		Report:    newReport(db),
 		Target:    newTarget(db),
 		Team:      newTeam(db),
 		User:      newUser(db),
@@ -28,10 +28,10 @@ func Use(db *gorm.DB) *Query {
 type Query struct {
 	db *gorm.DB
 
-	API       aPI
-	Folder    folder
 	Group     group
 	Operation operation
+	Plan      plan
+	Report    report
 	Target    target
 	Team      team
 	User      user
@@ -43,10 +43,10 @@ func (q *Query) Available() bool { return q.db != nil }
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
 		db:        db,
-		API:       q.API.clone(db),
-		Folder:    q.Folder.clone(db),
 		Group:     q.Group.clone(db),
 		Operation: q.Operation.clone(db),
+		Plan:      q.Plan.clone(db),
+		Report:    q.Report.clone(db),
 		Target:    q.Target.clone(db),
 		Team:      q.Team.clone(db),
 		User:      q.User.clone(db),
@@ -55,10 +55,10 @@ func (q *Query) clone(db *gorm.DB) *Query {
 }
 
 type queryCtx struct {
-	API       *aPIDo
-	Folder    *folderDo
 	Group     *groupDo
 	Operation *operationDo
+	Plan      *planDo
+	Report    *reportDo
 	Target    *targetDo
 	Team      *teamDo
 	User      *userDo
@@ -67,10 +67,10 @@ type queryCtx struct {
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
-		API:       q.API.WithContext(ctx),
-		Folder:    q.Folder.WithContext(ctx),
 		Group:     q.Group.WithContext(ctx),
 		Operation: q.Operation.WithContext(ctx),
+		Plan:      q.Plan.WithContext(ctx),
+		Report:    q.Report.WithContext(ctx),
 		Target:    q.Target.WithContext(ctx),
 		Team:      q.Team.WithContext(ctx),
 		User:      q.User.WithContext(ctx),

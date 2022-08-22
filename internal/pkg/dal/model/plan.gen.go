@@ -10,20 +10,20 @@ import (
 	"gorm.io/gorm"
 )
 
-const TableNameFolder = "folder"
+const TableNamePlan = "plan"
 
-// Folder mapped from table <folder>
-type Folder struct {
+// Plan mapped from table <plan>
+type Plan struct {
 	ID        int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	TargetID  int64          `gorm:"column:target_id" json:"target_id"` // 目标id
-	Request   string         `gorm:"column:request;not null" json:"request"`
-	Script    string         `gorm:"column:script;not null" json:"script"`
+	TeamID    int64          `gorm:"column:team_id;not null" json:"team_id"`
+	Name      string         `gorm:"column:name;not null" json:"name"`
+	Status    int32          `gorm:"column:status;not null" json:"status"`
 	CreatedAt time.Time      `gorm:"column:created_at;not null" json:"created_at"`
 	UpdatedAt time.Time      `gorm:"column:updated_at;not null" json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`
 }
 
-// TableName Folder's table name
-func (*Folder) TableName() string {
-	return TableNameFolder
+// TableName Plan's table name
+func (*Plan) TableName() string {
+	return TableNamePlan
 }

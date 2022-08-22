@@ -21,13 +21,16 @@ func main() {
 
 	g.ApplyBasic(
 		g.GenerateModel("target"),
-		g.GenerateModel("api"),
-		g.GenerateModel("folder"),
+		//g.GenerateModel("api"),
+		//g.GenerateModel("folder"),
 		g.GenerateModel("group"),
 		g.GenerateModel("operation"),
 		g.GenerateModel("user"),
 		g.GenerateModel("team"),
 		g.GenerateModel("user_team"),
+
+		g.GenerateModel("plan"),
+		g.GenerateModel("report"),
 	)
 
 	g.Execute()
