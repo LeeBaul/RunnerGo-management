@@ -16,6 +16,7 @@ func DashboardDefault(ctx *gin.Context) {
 	var req rao.DashboardDefaultReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
+		return
 	}
 
 	u, err := user.FirstByUserID(ctx, jwt.GetUserIDByCtx(ctx))

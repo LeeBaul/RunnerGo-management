@@ -16,6 +16,8 @@ func Use(db *gorm.DB) *Query {
 		db:        db,
 		Group:     newGroup(db),
 		Operation: newOperation(db),
+		Plan:      newPlan(db),
+		Report:    newReport(db),
 		Target:    newTarget(db),
 		Team:      newTeam(db),
 		User:      newUser(db),
@@ -28,6 +30,8 @@ type Query struct {
 
 	Group     group
 	Operation operation
+	Plan      plan
+	Report    report
 	Target    target
 	Team      team
 	User      user
@@ -41,6 +45,8 @@ func (q *Query) clone(db *gorm.DB) *Query {
 		db:        db,
 		Group:     q.Group.clone(db),
 		Operation: q.Operation.clone(db),
+		Plan:      q.Plan.clone(db),
+		Report:    q.Report.clone(db),
 		Target:    q.Target.clone(db),
 		Team:      q.Team.clone(db),
 		User:      q.User.clone(db),
@@ -51,6 +57,8 @@ func (q *Query) clone(db *gorm.DB) *Query {
 type queryCtx struct {
 	Group     *groupDo
 	Operation *operationDo
+	Plan      *planDo
+	Report    *reportDo
 	Target    *targetDo
 	Team      *teamDo
 	User      *userDo
@@ -61,6 +69,8 @@ func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
 		Group:     q.Group.WithContext(ctx),
 		Operation: q.Operation.WithContext(ctx),
+		Plan:      q.Plan.WithContext(ctx),
+		Report:    q.Report.WithContext(ctx),
 		Target:    q.Target.WithContext(ctx),
 		Team:      q.Team.WithContext(ctx),
 		User:      q.User.WithContext(ctx),

@@ -45,7 +45,8 @@ func RegisterRouter(r *gin.Engine) {
 	// 首页
 	dashboard := api.Group("/v1/dashboard")
 	dashboard.GET("/default", handler.DashboardDefault)
-	//测试报告，运行中
+	dashboard.GET("/underway_plans", handler.ListUnderwayPlan)
+	//测试报告
 
 	// 文件夹
 	folder := api.Group("/v1/folder")
@@ -54,8 +55,10 @@ func RegisterRouter(r *gin.Engine) {
 	// 接口
 	target := api.Group("/v1/target")
 	target.POST("/save", handler.SaveTarget)
-	target.POST("/delete", handler.DeleteTarget)
 	target.GET("/list", handler.ListTarget)
+
+	target.POST("/trash")
+	target.POST("/delete", handler.DeleteTarget)
 
 	// 分组
 	group := api.Group("/v1/group")
@@ -67,7 +70,7 @@ func RegisterRouter(r *gin.Engine) {
 
 	// 测试计划
 	plan := api.Group("/v1/plan")
-	plan.GET("/list/underway", handler.ListUnderwayPlan)
+	plan.GET("/list")
 
 	// 操作日志
 	operation := api.Group("/v1/operation")
