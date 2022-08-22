@@ -10,10 +10,11 @@ import (
 var Conf Config
 
 type Config struct {
-	Http  Http  `yaml:"http"`
-	GRPC  GRPC  `yaml:"grpc"`
-	MySQL MySQL `yaml:"mysql"`
-	JWT   JWT   `yaml:"jwt"`
+	Http    Http    `yaml:"http"`
+	GRPC    GRPC    `yaml:"grpc"`
+	MySQL   MySQL   `yaml:"mysql"`
+	JWT     JWT     `yaml:"jwt"`
+	MongoDB MongoDB `yaml:"mongodb"`
 }
 
 type Http struct {
@@ -36,6 +37,11 @@ type MySQL struct {
 type JWT struct {
 	Issuer string `yaml:"issuer"`
 	Secret string `yaml:"secret"`
+}
+
+type MongoDB struct {
+	DSN      string `yaml:"dsn"`
+	Database string `yaml:"database"`
 }
 
 func MustInitConf() {

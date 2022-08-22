@@ -2,15 +2,20 @@ package folder
 
 import (
 	"context"
+	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/query"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/packer"
+
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func Save(ctx context.Context, userID int64, req *rao.SaveFolderReq) error {
 	target := packer.TransFolderReqToTarget(req, userID)
 	folder := packer.TransFolderReqToFolder(req)
+
+	collection := dal.GetMongo().Database(dal.MongoD()).Collection(consts.CollectFolder)
 
 	return query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
 		if target.ID == 0 {
@@ -19,21 +24,17 @@ func Save(ctx context.Context, userID int64, req *rao.SaveFolderReq) error {
 			}
 
 			folder.TargetID = target.ID
-			if err := tx.Folder.WithContext(ctx).Create(folder); err != nil {
-				return err
-			}
+			_, err := collection.InsertOne(ctx, folder)
 
-			return nil
+			return err
 		}
 
 		if _, err := tx.Target.WithContext(ctx).Omit(tx.Target.CreatedUserID).Updates(target); err != nil {
 			return err
 		}
 
-		if _, err := tx.Folder.WithContext(ctx).Where(tx.Folder.TargetID.Eq(folder.ID)).Updates(folder); err != nil {
-			return err
-		}
+		_, err := collection.UpdateOne(ctx, bson.D{{"target_id", target.ID}}, bson.M{"$set": folder})
 
-		return nil
+		return err
 	})
 }
