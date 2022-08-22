@@ -42,7 +42,7 @@ func TransTargetReqToTarget(target *rao.CreateTargetReq, userID int64) *model.Ta
 }
 
 func TransTargetToFolderAPI(targets []*model.Target) []*rao.FolderAPI {
-	var ret []*rao.FolderAPI
+	ret := make([]*rao.FolderAPI, 0)
 	for _, t := range targets {
 		ret = append(ret, &rao.FolderAPI{
 			TeamID:        t.TeamID,
