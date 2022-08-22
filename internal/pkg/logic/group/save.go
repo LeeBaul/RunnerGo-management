@@ -25,7 +25,9 @@ func Save(ctx context.Context, req *rao.SaveGroupReq) error {
 			}
 
 			group.TargetID = target.ID
-			collection.InsertOne(ctx, group)
+			_, err := collection.InsertOne(ctx, group)
+
+			return err
 		}
 
 		if _, err := tx.Target.WithContext(ctx).Omit(tx.Target.CreatedUserID).Updates(target); err != nil {
