@@ -7,7 +7,6 @@ import (
 )
 
 func TransFolderReqToTarget(folder *rao.SaveFolderReq, userID int64) *model.Target {
-
 	return &model.Target{
 		ID:            folder.TargetID,
 		TeamID:        folder.TeamID,
@@ -60,9 +59,10 @@ func TransTargetToFolderAPI(targets []*model.Target) []*rao.FolderAPI {
 	return ret
 }
 
-func TransGroupReqToTarget(group *rao.SaveGroupReq) *model.Target {
+func TransGroupReqToTarget(group *rao.SaveGroupReq, userID int64) *model.Target {
 	return &model.Target{
 		ID:            group.TargetID,
+		TeamID:        group.TeamID,
 		TargetType:    consts.TargetTypeGroup,
 		Name:          group.Name,
 		ParentID:      group.ParentID,
@@ -71,8 +71,7 @@ func TransGroupReqToTarget(group *rao.SaveGroupReq) *model.Target {
 		TypeSort:      group.TypeSort,
 		Status:        1,
 		Version:       group.Version,
-		CreatedUserID: 0,
-		RecentUserID:  0,
-		// todo user_id
+		CreatedUserID: userID,
+		RecentUserID:  userID,
 	}
 }
