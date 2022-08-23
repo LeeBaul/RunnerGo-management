@@ -5,4 +5,7 @@ const (
 	TargetTypeAPI    = "api"
 	TargetTypeGroup  = "group"
 	TargetTypeScene  = "scene"
+
+	TargetStatusNormal = 1
+	TargetStatusTrash  = 2
 )

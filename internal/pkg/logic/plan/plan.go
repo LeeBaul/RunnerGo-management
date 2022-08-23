@@ -11,14 +11,9 @@ import (
 
 func ListByStatus(ctx context.Context, teamID int64, status int32, limit, offset int) ([]*rao.Plan, int64, error) {
 	tx := query.Use(dal.DB()).Plan
-	ret, err := tx.WithContext(ctx).
-		Where(tx.TeamID.Eq(teamID), tx.Status.Eq(status)).
-		Order(tx.UpdatedAt.Desc()).Limit(limit).Offset(offset).Find()
-	if err != nil {
-		return nil, 0, err
-	}
+	ret, cnt, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID), tx.Status.Eq(status)).
+		Order(tx.UpdatedAt.Desc()).FindByPage(offset, limit)
 
-	cnt, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID), tx.Status.Eq(status)).Count()
 	if err != nil {
 		return nil, 0, err
 	}

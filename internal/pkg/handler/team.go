@@ -36,8 +36,37 @@ func TeamMembers(ctx *gin.Context) {
 	response.SuccessWithData(ctx, rao.ListMembersResp{
 		Members: members,
 	})
+	return
 }
 
 func InviteMember(ctx *gin.Context) {
+	var req rao.InviteMemberReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
+		return
+	}
 
+	if err := team.InviteMember(ctx, req.TeamID, req.MemberEmail); err != nil {
+		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
+}
+
+func RemoveMember(ctx *gin.Context) {
+	var req rao.RemoveMemberReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
+		return
+	}
+
+	if err := team.RemoveMember(ctx, req.TeamID, req.MemberID); err != nil {
+		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
 }

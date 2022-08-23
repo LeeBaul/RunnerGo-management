@@ -27,6 +27,14 @@ func SaveTarget(ctx *gin.Context) {
 	return
 }
 
+func TrashTarget(ctx *gin.Context) {
+	var req rao.DeleteTargetReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
+		return
+	}
+}
+
 func DeleteTarget(ctx *gin.Context) {
 	var req rao.DeleteTargetReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
