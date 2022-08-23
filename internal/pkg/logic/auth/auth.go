@@ -6,6 +6,7 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
+	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/query"
@@ -32,6 +33,7 @@ func SignUp(ctx context.Context, email, password, nickname string) (*model.User,
 		return tx.UserTeam.WithContext(ctx).Create(&model.UserTeam{
 			UserID: user.ID,
 			TeamID: team.ID,
+			RoleID: consts.RoleTypeOwner,
 		})
 	})
 

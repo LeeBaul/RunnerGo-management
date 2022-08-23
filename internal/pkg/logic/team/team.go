@@ -3,6 +3,7 @@ package team
 import (
 	"context"
 
+	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/query"
@@ -52,9 +53,22 @@ func ListMembersByTeamID(ctx context.Context, teamID int64) ([]*rao.Member, erro
 	return packer.TransUsersModelToMembers(users, userTeams), nil
 }
 
-func InviteMember(ctx context.Context, teamID, userID int64) error {
+func InviteMember(ctx context.Context, teamID int64, email string) error {
+	tx := query.Use(dal.DB()).User
+	u, err := tx.WithContext(ctx).Where(tx.Email.Eq(email)).First()
+	if err != nil {
+		return err
+	}
+
 	return query.Use(dal.DB()).UserTeam.WithContext(ctx).Create(&model.UserTeam{
-		UserID: userID,
+		UserID: u.ID,
 		TeamID: teamID,
+		RoleID: consts.RoleTypeMember,
 	})
+}
+
+func RemoveMember(ctx context.Context, teamID, memberID int64) error {
+	tx := query.Use(dal.DB()).UserTeam
+	_, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID), tx.UserID.Eq(memberID)).Delete()
+	return err
 }

@@ -11,13 +11,8 @@ import (
 
 func List(ctx context.Context, teamID int64, limit, offset int) ([]*rao.Operation, int64, error) {
 	tx := query.Use(dal.DB()).Operation
-	operations, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID)).
-		Limit(limit).Offset(offset).Order(tx.UpdatedAt.Desc()).Find()
-	if err != nil {
-		return nil, 0, err
-	}
-
-	cnt, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID)).Count()
+	operations, cnt, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID)).
+		Order(tx.UpdatedAt.Desc()).FindByPage(offset, limit)
 	if err != nil {
 		return nil, 0, err
 	}

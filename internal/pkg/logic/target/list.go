@@ -11,20 +11,11 @@ import (
 )
 
 func ListFolderAPI(ctx context.Context, teamID int64, limit, offset int) ([]*rao.FolderAPI, int64, error) {
-
 	tx := query.Use(dal.DB()).Target
-	targets, err := tx.WithContext(ctx).
+	targets, cnt, err := tx.WithContext(ctx).
 		Where(tx.TeamID.Eq(teamID), tx.TargetType.In(consts.TargetTypeFolder, consts.TargetTypeAPI)).
 		Order(tx.Sort.Desc(), tx.CreatedAt.Desc()).
-		Limit(limit).Offset(offset).Find()
-
-	if err != nil {
-		return nil, 0, err
-	}
-
-	cnt, err := tx.WithContext(ctx).
-		Where(tx.TeamID.Eq(teamID), tx.TargetType.In(consts.TargetTypeFolder, consts.TargetTypeAPI)).
-		Count()
+		FindByPage(offset, limit)
 
 	if err != nil {
 		return nil, 0, err

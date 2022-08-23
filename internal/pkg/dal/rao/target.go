@@ -21,6 +21,13 @@ type CreateTargetReq struct {
 type CreateTargetResp struct {
 }
 
+type TrashTargetReq struct {
+	TargetID int64 `json:"target_id"`
+}
+
+type TrashTargetResp struct {
+}
+
 type DeleteTargetReq struct {
 	TargetID int64 `json:"target_id"`
 }
