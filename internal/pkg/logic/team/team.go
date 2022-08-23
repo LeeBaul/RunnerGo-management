@@ -54,16 +54,18 @@ func ListMembersByTeamID(ctx context.Context, teamID int64) ([]*rao.Member, erro
 }
 
 func InviteMember(ctx context.Context, teamID int64, email []string) error {
+	var userIDs []int64
+
 	tx := query.Use(dal.DB()).User
-	users, err := tx.WithContext(ctx).Where(tx.Email.In(email...)).Find()
+	err := tx.WithContext(ctx).Where(tx.Email.In(email...)).Pluck(tx.ID, &userIDs)
 	if err != nil {
 		return err
 	}
 
 	var ut []*model.UserTeam
-	for _, u := range users {
+	for _, userID := range userIDs {
 		ut = append(ut, &model.UserTeam{
-			UserID: u.ID,
+			UserID: userID,
 			TeamID: teamID,
 			RoleID: consts.RoleTypeMember,
 		})
