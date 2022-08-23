@@ -53,18 +53,23 @@ func ListMembersByTeamID(ctx context.Context, teamID int64) ([]*rao.Member, erro
 	return packer.TransUsersModelToMembers(users, userTeams), nil
 }
 
-func InviteMember(ctx context.Context, teamID int64, email string) error {
+func InviteMember(ctx context.Context, teamID int64, email []string) error {
 	tx := query.Use(dal.DB()).User
-	u, err := tx.WithContext(ctx).Where(tx.Email.Eq(email)).First()
+	users, err := tx.WithContext(ctx).Where(tx.Email.In(email...)).Find()
 	if err != nil {
 		return err
 	}
 
-	return query.Use(dal.DB()).UserTeam.WithContext(ctx).Create(&model.UserTeam{
-		UserID: u.ID,
-		TeamID: teamID,
-		RoleID: consts.RoleTypeMember,
-	})
+	var ut []*model.UserTeam
+	for _, u := range users {
+		ut = append(ut, &model.UserTeam{
+			UserID: u.ID,
+			TeamID: teamID,
+			RoleID: consts.RoleTypeMember,
+		})
+	}
+
+	return query.Use(dal.DB()).UserTeam.WithContext(ctx).CreateInBatches(ut, 5)
 }
 
 func RemoveMember(ctx context.Context, teamID, memberID int64) error {
