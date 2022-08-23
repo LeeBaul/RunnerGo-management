@@ -16,8 +16,12 @@ type ListReportsResp struct {
 }
 
 type Report struct {
-	ReportID int64  `json:"report_id"`
-	Name     string `json:"name"`
-	Mode     int32  `json:"mode"`
-	Status   int32  `json:"status"`
+	ReportID    int64  `json:"report_id"`
+	Name        string `json:"name"`
+	Mode        int32  `json:"mode"`
+	Status      int32  `json:"status"`
+	RunTimeSec  int64  `json:"run_time_sec"`
+	LastTimeSec int64  `json:"last_time_sec"`
+	RunUserID   int64  `json:"run_user_id"`
+	RunUserName string `json:"run_user_name"`
 }

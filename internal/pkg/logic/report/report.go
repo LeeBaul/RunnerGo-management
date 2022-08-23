@@ -36,7 +36,6 @@ func ListByTeamID(ctx context.Context, teamID int64, limit, offset int, keyword 
 
 		if len(users) > 0 {
 			conditions[1] = tx.RunUserID.Eq(users[0].ID)
-			//conditions = append(conditions, tx.RunUserID.Eq(users[0].ID))
 		}
 	}
 
@@ -59,5 +58,16 @@ func ListByTeamID(ctx context.Context, teamID int64, limit, offset int, keyword 
 		return nil, 0, err
 	}
 
-	return packer.TransReportModelToResp(reports), cnt, nil
+	var userIDs []int64
+	for _, r := range reports {
+		userIDs = append(userIDs, r.RunUserID)
+	}
+
+	u := query.Use(dal.DB()).User
+	users, err := u.WithContext(ctx).Where(u.ID.In(userIDs...)).Find()
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return packer.TransReportModelToResp(reports, users), cnt, nil
 }
