@@ -30,6 +30,7 @@ func TransUsersModelToMembers(users []*model.User, userTeams []*model.UserTeam) 
 			if ut.UserID == u.ID {
 				ret = append(ret, &rao.Member{
 					Avatar:      "", // todo avatar
+					UserID:      u.ID,
 					Email:       u.Email,
 					Nickname:    u.Nickname,
 					JoinTimeSec: ut.CreatedAt.Unix(),

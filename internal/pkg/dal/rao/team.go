@@ -23,6 +23,7 @@ type ListMembersResp struct {
 }
 
 type Member struct {
+	UserID      int64  `json:"user_id"`
 	Avatar      string `json:"avatar"`
 	Email       string `json:"email"`
 	Nickname    string `json:"nickname"`
