@@ -1,13 +1,11 @@
 package mao
 
-import "go.mongodb.org/mongo-driver/bson"
-
 type API struct {
-	TargetID    int64    `bson:"target_id"`
-	URL         string   `bson:"url"`
-	Header      bson.Raw `bson:"header"`
-	Query       bson.Raw `bson:"query"`
-	Body        bson.Raw `bson:"body"`
-	Auth        bson.Raw `bson:"auth"`
-	Description string   `bson:"description"`
+	TargetID    int64  `bson:"target_id"`
+	URL         string `bson:"url"`
+	Header      string `bson:"header"`
+	Query       string `bson:"query"`
+	Body        string `bson:"body"`
+	Auth        string `bson:"auth"`
+	Description string `bson:"description"`
 }

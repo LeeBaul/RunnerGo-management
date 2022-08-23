@@ -10,19 +10,19 @@ import (
 )
 
 func TransFolderReqToFolder(folder *rao.SaveFolderReq) *mao.Folder {
-	reqByte, err := sonic.Marshal(folder.Request)
+	request, err := sonic.MarshalString(folder.Request)
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("folder.request json marshal err %w", err))
 	}
 
-	scriptByte, err := sonic.Marshal(folder.Script)
+	script, err := sonic.MarshalString(folder.Script)
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("folder.script json marshal err %w", err))
 	}
 
 	return &mao.Folder{
 		TargetID: folder.TargetID,
-		Request:  reqByte,
-		Script:   scriptByte,
+		Request:  request,
+		Script:   script,
 	}
 }

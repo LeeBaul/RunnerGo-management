@@ -15,22 +15,22 @@ func TransTargetReqToAPI(target *rao.CreateTargetReq) *mao.API {
 		return nil
 	}
 
-	headerByte, err := sonic.Marshal(target.Request.Header)
+	header, err := sonic.MarshalString(target.Request.Header)
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("target.request.header json marshal err %w", err))
 	}
 
-	queryByte, err := sonic.Marshal(target.Request.Query)
+	query, err := sonic.MarshalString(target.Request.Query)
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("target.request.query json marshal err %w", err))
 	}
 
-	bodyByte, err := sonic.Marshal(target.Request.Body)
+	body, err := sonic.MarshalString(target.Request.Body)
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("target.request.body json marshal err %w", err))
 	}
 
-	authByte, err := sonic.Marshal(target.Request.Auth)
+	auth, err := sonic.MarshalString(target.Request.Auth)
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("target.request.auth json marshal err %w", err))
 	}
@@ -38,10 +38,10 @@ func TransTargetReqToAPI(target *rao.CreateTargetReq) *mao.API {
 	return &mao.API{
 		TargetID:    target.TargetID,
 		URL:         target.URL,
-		Header:      headerByte,
-		Query:       queryByte,
-		Body:        bodyByte,
-		Auth:        authByte,
+		Header:      header,
+		Query:       query,
+		Body:        body,
+		Auth:        auth,
 		Description: target.Description,
 	}
 }

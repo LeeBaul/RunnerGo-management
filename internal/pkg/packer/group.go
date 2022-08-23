@@ -10,19 +10,19 @@ import (
 )
 
 func TransGroupReqToGroup(group *rao.SaveGroupReq) *mao.Group {
-	reqByte, err := sonic.Marshal(group.Request)
+	request, err := sonic.MarshalString(group.Request)
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("group.request json marshal err %w", err))
 	}
 
-	scriptByte, err := sonic.Marshal(group.Script)
+	script, err := sonic.MarshalString(group.Script)
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("group.script json marshal err %w", err))
 	}
 
 	return &mao.Group{
 		TargetID: group.TargetID,
-		Request:  reqByte,
-		Script:   scriptByte,
+		Request:  request,
+		Script:   script,
 	}
 }
