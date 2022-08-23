@@ -3,11 +3,12 @@ package auth
 import (
 	"context"
 	"fmt"
+
+	"golang.org/x/crypto/bcrypt"
+
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/query"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
 func SignUp(ctx context.Context, email, password, nickname string) (*model.User, error) {

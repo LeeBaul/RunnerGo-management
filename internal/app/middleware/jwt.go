@@ -1,11 +1,12 @@
 package middleware
 
 import (
-	"kp-management/internal/pkg/biz/errno"
-	"kp-management/internal/pkg/biz/jwt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
+	"kp-management/internal/pkg/biz/errno"
+	"kp-management/internal/pkg/biz/jwt"
 )
 
 func JWT() gin.HandlerFunc {

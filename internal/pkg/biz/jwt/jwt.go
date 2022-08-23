@@ -2,12 +2,12 @@ package jwt
 
 import (
 	"fmt"
-	"kp-management/internal/pkg/conf"
 	"time"
 
 	"github.com/gin-gonic/gin"
-
 	"github.com/golang-jwt/jwt/v4"
+
+	"kp-management/internal/pkg/conf"
 )
 
 func GenerateToken(userID int64) (string, time.Time, error) {

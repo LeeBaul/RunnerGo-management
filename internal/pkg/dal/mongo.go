@@ -3,11 +3,12 @@ package dal
 import (
 	"context"
 	"fmt"
-	"kp-management/internal/pkg/conf"
 	"log"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+
+	"kp-management/internal/pkg/conf"
 )
 
 var (
