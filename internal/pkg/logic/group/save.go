@@ -12,8 +12,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func Save(ctx context.Context, req *rao.SaveGroupReq) error {
-	target := packer.TransGroupReqToTarget(req)
+func Save(ctx context.Context, req *rao.SaveGroupReq, userID int64) error {
+	target := packer.TransGroupReqToTarget(req, userID)
 	group := packer.TransGroupReqToGroup(req)
 
 	collection := dal.GetMongo().Database(dal.MongoD()).Collection(consts.CollectGroup)

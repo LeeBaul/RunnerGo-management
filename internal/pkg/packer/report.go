@@ -5,15 +5,23 @@ import (
 	"kp-management/internal/pkg/dal/rao"
 )
 
-func TransReportModelToResp(reports []*model.Report) []*rao.Report {
+func TransReportModelToResp(reports []*model.Report, users []*model.User) []*rao.Report {
 	ret := make([]*rao.Report, 0)
 	for _, r := range reports {
-		ret = append(ret, &rao.Report{
-			ReportID: r.ID,
-			Name:     r.Name,
-			Mode:     r.Mode,
-			Status:   r.Status,
-		})
+		for _, u := range users {
+			if u.ID == r.RunUserID {
+				ret = append(ret, &rao.Report{
+					ReportID:    r.ID,
+					Name:        r.Name,
+					Mode:        r.Mode,
+					Status:      r.Status,
+					RunTimeSec:  r.RanAt.Unix(),
+					LastTimeSec: r.UpdatedAt.Unix(),
+					RunUserID:   r.RunUserID,
+					RunUserName: u.Nickname,
+				})
+			}
+		}
 	}
 	return ret
 }

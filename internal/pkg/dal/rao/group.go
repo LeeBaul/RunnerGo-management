@@ -1,6 +1,7 @@
 package rao
 
 type SaveGroupReq struct {
+	TeamID     int64    `json:"team_id"`
 	TargetID   int64    `json:"target_id"`
 	ParentID   int64    `json:"parent_id"`
 	TargetType string   `json:"target_type"`

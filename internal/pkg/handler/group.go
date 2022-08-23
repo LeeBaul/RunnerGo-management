@@ -2,6 +2,7 @@ package handler
 
 import (
 	"kp-management/internal/pkg/biz/errno"
+	"kp-management/internal/pkg/biz/jwt"
 	"kp-management/internal/pkg/biz/response"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/logic/group"
@@ -16,7 +17,7 @@ func SaveGroup(ctx *gin.Context) {
 		return
 	}
 
-	if err := group.Save(ctx, &req); err != nil {
+	if err := group.Save(ctx, &req, jwt.GetUserIDByCtx(ctx)); err != nil {
 		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
 		return
 	}

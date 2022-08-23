@@ -1,9 +1,9 @@
 package rao
 
 type ListOperationReq struct {
-	TeamID int64 `query:"team_id"`
-	Page   int   `query:"page"`
-	Size   int   `query:"size"`
+	TeamID int64 `form:"team_id"`
+	Page   int   `form:"page"`
+	Size   int   `form:"size"`
 }
 
 type ListOperationResp struct {
