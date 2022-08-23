@@ -1,8 +1,9 @@
 package packer
 
 import (
-	"encoding/json"
 	"fmt"
+
+	"github.com/bytedance/sonic"
 
 	"kp-management/internal/pkg/dal/mao"
 	"kp-management/internal/pkg/dal/rao"
@@ -14,22 +15,22 @@ func TransTargetReqToAPI(target *rao.CreateTargetReq) *mao.API {
 		return nil
 	}
 
-	headerByte, err := json.Marshal(target.Request.Header)
+	headerByte, err := sonic.Marshal(target.Request.Header)
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("target.request.header json marshal err %w", err))
 	}
 
-	queryByte, err := json.Marshal(target.Request.Query)
+	queryByte, err := sonic.Marshal(target.Request.Query)
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("target.request.query json marshal err %w", err))
 	}
 
-	bodyByte, err := json.Marshal(target.Request.Body)
+	bodyByte, err := sonic.Marshal(target.Request.Body)
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("target.request.body json marshal err %w", err))
 	}
 
-	authByte, err := json.Marshal(target.Request.Auth)
+	authByte, err := sonic.Marshal(target.Request.Auth)
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("target.request.auth json marshal err %w", err))
 	}
@@ -37,10 +38,10 @@ func TransTargetReqToAPI(target *rao.CreateTargetReq) *mao.API {
 	return &mao.API{
 		TargetID:    target.TargetID,
 		URL:         target.URL,
-		Header:      string(headerByte),
-		Query:       string(queryByte),
-		Body:        string(bodyByte),
-		Auth:        string(authByte),
+		Header:      headerByte,
+		Query:       queryByte,
+		Body:        bodyByte,
+		Auth:        authByte,
 		Description: target.Description,
 	}
 }
