@@ -3,8 +3,8 @@ package packer
 import (
 	"encoding/json"
 	"fmt"
-	"kp-management/internal/pkg/dal/mao"
 
+	"kp-management/internal/pkg/dal/mao"
 	"kp-management/internal/pkg/dal/rao"
 )
 
@@ -19,15 +19,9 @@ func TransFolderReqToFolder(folder *rao.SaveFolderReq) *mao.Folder {
 		fmt.Sprintln(fmt.Errorf("folder.script json marshal err %w", err))
 	}
 
-	//return &model.Folder{
-	//	TargetID: folder.TargetID,
-	//	Request:  string(reqByte),
-	//	Script:   string(scriptByte),
-	//}
-
 	return &mao.Folder{
 		TargetID: folder.TargetID,
-		Request:  string(reqByte),
-		Script:   string(scriptByte),
+		Request:  reqByte,
+		Script:   scriptByte,
 	}
 }

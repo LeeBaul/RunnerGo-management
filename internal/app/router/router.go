@@ -1,12 +1,13 @@
 package router
 
 import (
-	"kp-management/internal/app/middleware"
-	"kp-management/internal/pkg/handler"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+
+	"kp-management/internal/app/middleware"
+	"kp-management/internal/pkg/handler"
 )
 
 func RegisterRouter(r *gin.Engine) {

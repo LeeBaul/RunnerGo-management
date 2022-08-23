@@ -14,7 +14,6 @@ import (
 func Use(db *gorm.DB) *Query {
 	return &Query{
 		db:        db,
-		Group:     newGroup(db),
 		Operation: newOperation(db),
 		Plan:      newPlan(db),
 		Report:    newReport(db),
@@ -28,7 +27,6 @@ func Use(db *gorm.DB) *Query {
 type Query struct {
 	db *gorm.DB
 
-	Group     group
 	Operation operation
 	Plan      plan
 	Report    report
@@ -43,7 +41,6 @@ func (q *Query) Available() bool { return q.db != nil }
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
 		db:        db,
-		Group:     q.Group.clone(db),
 		Operation: q.Operation.clone(db),
 		Plan:      q.Plan.clone(db),
 		Report:    q.Report.clone(db),
@@ -55,7 +52,6 @@ func (q *Query) clone(db *gorm.DB) *Query {
 }
 
 type queryCtx struct {
-	Group     *groupDo
 	Operation *operationDo
 	Plan      *planDo
 	Report    *reportDo
@@ -67,7 +63,6 @@ type queryCtx struct {
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
-		Group:     q.Group.WithContext(ctx),
 		Operation: q.Operation.WithContext(ctx),
 		Plan:      q.Plan.WithContext(ctx),
 		Report:    q.Report.WithContext(ctx),
