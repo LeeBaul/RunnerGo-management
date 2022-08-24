@@ -78,6 +78,41 @@ func AuthRefresh(ctx *gin.Context) {
 	return
 }
 
+func SetUserSettings(ctx *gin.Context) {
+	var req rao.SetUserSettingsReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
+		return
+	}
+
+	if err := auth.SetUserSettings(ctx, req.UserID, &req.UserSettings); err != nil {
+		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
+}
+
+func GetUserSettings(ctx *gin.Context) {
+	var req rao.GetUserSettingsReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
+		return
+	}
+
+	settings, err := auth.GetUserSettings(ctx, req.UserID)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
+		return
+	}
+
+	response.SuccessWithData(ctx, rao.GetUserSettingsResp{
+		UserSettings: settings,
+	})
+	return
+}
+
 func AuthSendMailVerify(ctx *gin.Context) {
 	var req rao.AuthSendMailVerifyReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {

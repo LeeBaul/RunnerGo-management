@@ -10,6 +10,7 @@ import (
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/query"
+	"kp-management/internal/pkg/dal/rao"
 )
 
 func SignUp(ctx context.Context, email, password, nickname string) (*model.User, error) {
@@ -40,6 +41,8 @@ func SignUp(ctx context.Context, email, password, nickname string) (*model.User,
 	if err != nil {
 		return nil, err
 	}
+
+	SetUserSettings(ctx, user.ID, &rao.UserSettings{CurrentTeamID: team.ID})
 
 	return &user, nil
 }

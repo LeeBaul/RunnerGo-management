@@ -22,6 +22,26 @@ type AuthLoginResp struct {
 	ExpireTimeSec int64  `json:"expire_time_sec"`
 }
 
+type SetUserSettingsReq struct {
+	UserID       int64        `json:"user_id"`
+	UserSettings UserSettings `json:"settings"`
+}
+
+type SetUserSettingsResp struct {
+}
+
+type GetUserSettingsReq struct {
+	UserID int64 `form:"user_id"`
+}
+
+type GetUserSettingsResp struct {
+	UserSettings *UserSettings `json:"settings"`
+}
+
+type UserSettings struct {
+	CurrentTeamID int64 `json:"current_team_id"`
+}
+
 type AuthSendMailVerifyReq struct {
 	Email string `json:"email"`
 }

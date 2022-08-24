@@ -30,6 +30,9 @@ func RegisterRouter(r *gin.Engine) {
 	auth.POST("/login", handler.AuthLogin)
 	auth.POST("/refresh_token", handler.AuthRefresh)
 
+	auth.GET("/get_user_settings", handler.GetUserSettings)
+	auth.POST("/set_user_settings", handler.SetUserSettings)
+
 	auth.POST("/send_email_verify", handler.AuthSendMailVerify)
 	auth.POST("/reset_password", handler.AuthResetPassword)
 
@@ -47,7 +50,6 @@ func RegisterRouter(r *gin.Engine) {
 	dashboard := api.Group("/v1/dashboard")
 	dashboard.GET("/default", handler.DashboardDefault)
 	dashboard.GET("/underway_plans", handler.ListUnderwayPlan)
-	//测试报告
 
 	// 文件夹
 	folder := api.Group("/v1/folder")
@@ -59,7 +61,7 @@ func RegisterRouter(r *gin.Engine) {
 	target.GET("/list", handler.ListTarget)
 
 	target.GET("/trash_list")
-	target.POST("/trash")
+	target.POST("/trash", handler.TrashTarget)
 	target.POST("/delete", handler.DeleteTarget)
 
 	// 分组
