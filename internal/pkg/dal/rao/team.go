@@ -33,7 +33,7 @@ type Member struct {
 
 type InviteMemberReq struct {
 	TeamID      int64    `json:"team_id"`
-	MemberEmail []string `json:"member_email" binding:"email"`
+	MemberEmail []string `json:"member_email"`
 }
 
 type InviteMemberResp struct {

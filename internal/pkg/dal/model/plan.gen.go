@@ -17,7 +17,11 @@ type Plan struct {
 	ID        int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
 	TeamID    int64          `gorm:"column:team_id;not null" json:"team_id"`
 	Name      string         `gorm:"column:name;not null" json:"name"`
+	TaskType  int32          `gorm:"column:task_type" json:"task_type"`
+	Mode      int32          `gorm:"column:mode" json:"mode"`
 	Status    int32          `gorm:"column:status;not null" json:"status"`
+	RunUserID int64          `gorm:"column:run_user_id;not null" json:"run_user_id"`
+	Remark    string         `gorm:"column:remark" json:"remark"`
 	CreatedAt time.Time      `gorm:"column:created_at;not null" json:"created_at"`
 	UpdatedAt time.Time      `gorm:"column:updated_at;not null" json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`

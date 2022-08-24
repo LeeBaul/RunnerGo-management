@@ -26,4 +26,5 @@ func ListReports(ctx *gin.Context) {
 		Reports: reports,
 		Total:   total,
 	})
+	return
 }

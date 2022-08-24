@@ -19,6 +19,9 @@ func TransReportModelToResp(reports []*model.Report, users []*model.User) []*rao
 					LastTimeSec: r.UpdatedAt.Unix(),
 					RunUserID:   r.RunUserID,
 					RunUserName: u.Nickname,
+					TeamID:      r.TeamID,
+					TaskType:    r.TaskType,
+					SceneType:   r.SceneType,
 				})
 			}
 		}

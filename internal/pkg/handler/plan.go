@@ -29,3 +29,23 @@ func ListUnderwayPlan(ctx *gin.Context) {
 		Total: total,
 	})
 }
+
+func ListPlans(ctx *gin.Context) {
+	var req rao.ListPlansReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
+		return
+	}
+
+	plans, total, err := plan.ListByTeamID(ctx, req.TeamID, req.Size, (req.Page-1)*req.Size, req.Keyword, req.StartTimeSec, req.EndTimeSec)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
+		return
+	}
+
+	response.SuccessWithData(ctx, rao.ListPlansResp{
+		Plans: plans,
+		Total: total,
+	})
+	return
+}

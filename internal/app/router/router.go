@@ -36,6 +36,7 @@ func RegisterRouter(r *gin.Engine) {
 	// 开启接口鉴权
 	api.Use(middleware.JWT())
 
+	// 用户配置
 	setting := api.Group("/v1/setting")
 	setting.GET("/get", handler.GetUserSettings)
 	setting.POST("/set", handler.GetUserSettings)
@@ -76,7 +77,7 @@ func RegisterRouter(r *gin.Engine) {
 
 	// 测试计划
 	plan := api.Group("/v1/plan")
-	plan.GET("/list")
+	plan.GET("/list", handler.ListPlans)
 
 	// 测试报告
 	report := api.Group("/v1/report")
