@@ -45,15 +45,10 @@ func ListByTeamID(ctx context.Context, teamID int64, limit, offset int, keyword 
 		conditions = append(conditions, tx.CreatedAt.Between(startTime, endTime))
 	}
 
-	reports, err := tx.WithContext(ctx).Where(conditions...).
+	reports, cnt, err := tx.WithContext(ctx).Where(conditions...).
 		Order(tx.UpdatedAt.Desc(), tx.CreatedAt.Desc()).
-		Limit(limit).Offset(offset).Find()
+		FindByPage(offset, limit)
 
-	if err != nil {
-		return nil, 0, err
-	}
-
-	cnt, err := tx.WithContext(ctx).Where(conditions...).Count()
 	if err != nil {
 		return nil, 0, err
 	}
