@@ -33,9 +33,11 @@ func newReport(db *gorm.DB) report {
 	_report.Status = field.NewInt32(tableName, "status")
 	_report.RanAt = field.NewTime(tableName, "ran_at")
 	_report.RunUserID = field.NewInt64(tableName, "run_user_id")
+	_report.TeamID = field.NewInt64(tableName, "team_id")
 	_report.CreatedAt = field.NewTime(tableName, "created_at")
 	_report.UpdatedAt = field.NewTime(tableName, "updated_at")
-	_report.TeamID = field.NewInt64(tableName, "team_id")
+	_report.TaskType = field.NewInt32(tableName, "task_type")
+	_report.SceneType = field.NewInt32(tableName, "scene_type")
 
 	_report.fillFieldMap()
 
@@ -52,9 +54,11 @@ type report struct {
 	Status    field.Int32
 	RanAt     field.Time
 	RunUserID field.Int64
+	TeamID    field.Int64
 	CreatedAt field.Time
 	UpdatedAt field.Time
-	TeamID    field.Int64
+	TaskType  field.Int32
+	SceneType field.Int32
 
 	fieldMap map[string]field.Expr
 }
@@ -77,9 +81,11 @@ func (r *report) updateTableName(table string) *report {
 	r.Status = field.NewInt32(table, "status")
 	r.RanAt = field.NewTime(table, "ran_at")
 	r.RunUserID = field.NewInt64(table, "run_user_id")
+	r.TeamID = field.NewInt64(table, "team_id")
 	r.CreatedAt = field.NewTime(table, "created_at")
 	r.UpdatedAt = field.NewTime(table, "updated_at")
-	r.TeamID = field.NewInt64(table, "team_id")
+	r.TaskType = field.NewInt32(table, "task_type")
+	r.SceneType = field.NewInt32(table, "scene_type")
 
 	r.fillFieldMap()
 
@@ -102,16 +108,18 @@ func (r *report) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (r *report) fillFieldMap() {
-	r.fieldMap = make(map[string]field.Expr, 9)
+	r.fieldMap = make(map[string]field.Expr, 11)
 	r.fieldMap["id"] = r.ID
 	r.fieldMap["name"] = r.Name
 	r.fieldMap["mode"] = r.Mode
 	r.fieldMap["status"] = r.Status
 	r.fieldMap["ran_at"] = r.RanAt
 	r.fieldMap["run_user_id"] = r.RunUserID
+	r.fieldMap["team_id"] = r.TeamID
 	r.fieldMap["created_at"] = r.CreatedAt
 	r.fieldMap["updated_at"] = r.UpdatedAt
-	r.fieldMap["team_id"] = r.TeamID
+	r.fieldMap["task_type"] = r.TaskType
+	r.fieldMap["scene_type"] = r.SceneType
 }
 
 func (r report) clone(db *gorm.DB) report {

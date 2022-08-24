@@ -24,4 +24,7 @@ type Report struct {
 	LastTimeSec int64  `json:"last_time_sec"`
 	RunUserID   int64  `json:"run_user_id"`
 	RunUserName string `json:"run_user_name"`
+	TeamID      int64  `json:"team_id"`
+	TaskType    int32  `json:"task_type"`
+	SceneType   int32  `json:"scene_type"`
 }

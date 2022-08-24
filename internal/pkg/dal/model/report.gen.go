@@ -18,9 +18,11 @@ type Report struct {
 	Status    int32     `gorm:"column:status;not null" json:"status"`
 	RanAt     time.Time `gorm:"column:ran_at;not null" json:"ran_at"`
 	RunUserID int64     `gorm:"column:run_user_id;not null" json:"run_user_id"`
+	TeamID    int64     `gorm:"column:team_id;not null" json:"team_id"`
 	CreatedAt time.Time `gorm:"column:created_at;not null" json:"created_at"`
 	UpdatedAt time.Time `gorm:"column:updated_at;not null" json:"updated_at"`
-	TeamID    int64     `gorm:"column:team_id;not null" json:"team_id"`
+	TaskType  int32     `gorm:"column:task_type;not null" json:"task_type"`
+	SceneType int32     `gorm:"column:scene_type;not null" json:"scene_type"`
 }
 
 // TableName Report's table name
