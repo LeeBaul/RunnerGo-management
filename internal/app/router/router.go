@@ -29,7 +29,6 @@ func RegisterRouter(r *gin.Engine) {
 	auth.POST("/signup", handler.AuthSignup)
 	auth.POST("/login", handler.AuthLogin)
 	auth.POST("/refresh_token", handler.AuthRefresh)
-
 	auth.GET("/get_user_settings", handler.GetUserSettings)
 	auth.POST("/set_user_settings", handler.SetUserSettings)
 
