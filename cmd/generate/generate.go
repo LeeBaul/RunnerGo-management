@@ -28,6 +28,7 @@ func main() {
 		g.GenerateModel("user"),
 		g.GenerateModel("team"),
 		g.GenerateModel("user_team"),
+		g.GenerateModel("setting"),
 
 		g.GenerateModel("plan"),
 		g.GenerateModel("report"),
