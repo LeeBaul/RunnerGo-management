@@ -95,13 +95,7 @@ func SetUserSettings(ctx *gin.Context) {
 }
 
 func GetUserSettings(ctx *gin.Context) {
-	var req rao.GetUserSettingsReq
-	if err := ctx.ShouldBind(&req); err != nil {
-		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
-		return
-	}
-
-	settings, err := auth.GetUserSettings(ctx, req.UserID)
+	settings, err := auth.GetUserSettings(ctx, jwt.GetUserIDByCtx(ctx))
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
 		return

@@ -31,7 +31,6 @@ type SetUserSettingsResp struct {
 }
 
 type GetUserSettingsReq struct {
-	UserID int64 `form:"user_id"`
 }
 
 type GetUserSettingsResp struct {
