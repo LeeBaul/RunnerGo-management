@@ -29,14 +29,16 @@ func RegisterRouter(r *gin.Engine) {
 	auth.POST("/signup", handler.AuthSignup)
 	auth.POST("/login", handler.AuthLogin)
 	auth.POST("/refresh_token", handler.AuthRefresh)
-	auth.GET("/get_user_settings", handler.GetUserSettings)
-	auth.POST("/set_user_settings", handler.SetUserSettings)
 
 	auth.POST("/send_email_verify", handler.AuthSendMailVerify)
 	auth.POST("/reset_password", handler.AuthResetPassword)
 
 	// 开启接口鉴权
 	api.Use(middleware.JWT())
+
+	setting := api.Group("/v1/setting")
+	setting.GET("/get", handler.GetUserSettings)
+	setting.POST("/set", handler.GetUserSettings)
 
 	// 团队
 	team := api.Group("/v1/team")
