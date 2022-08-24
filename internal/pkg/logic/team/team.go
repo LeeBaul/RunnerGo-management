@@ -29,7 +29,16 @@ func ListByUserID(ctx context.Context, userID int64) ([]*rao.Team, error) {
 		return nil, err
 	}
 
-	return packer.TransTeamsModelToResp(teams, userTeams), nil
+	var teamCnt []*packer.TeamMemberCount
+	for _, team := range teams {
+		cnt, _ := ut.WithContext(ctx).Where(ut.TeamID.Eq(team.ID)).Count()
+		teamCnt = append(teamCnt, &packer.TeamMemberCount{
+			TeamID: team.ID,
+			Cnt:    cnt,
+		})
+	}
+
+	return packer.TransTeamsModelToResp(teams, userTeams, teamCnt), nil
 }
 
 func ListMembersByTeamID(ctx context.Context, teamID int64) ([]*rao.Member, error) {

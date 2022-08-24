@@ -12,6 +12,7 @@ type Team struct {
 	Sort   int32  `json:"sort"`
 	TeamID int64  `json:"team_id"`
 	RoleID int64  `json:"role_id"`
+	Cnt    int64  `json:"cnt"`
 }
 
 type ListMembersReq struct {
