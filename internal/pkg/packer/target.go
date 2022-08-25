@@ -16,10 +16,11 @@ func TransFolderReqToTarget(folder *rao.SaveFolderReq, userID int64) *model.Targ
 		Method:        folder.Method,
 		Sort:          folder.Sort,
 		TypeSort:      folder.TypeSort,
-		Status:        1,
+		Status:        consts.TargetStatusNormal,
 		Version:       folder.Version,
 		CreatedUserID: userID,
 		RecentUserID:  userID,
+		Source:        consts.TargetSourceNormal,
 	}
 }
 
@@ -33,51 +34,12 @@ func TransTargetReqToTarget(target *rao.CreateTargetReq, userID int64) *model.Ta
 		Method:        target.Method,
 		Sort:          target.Sort,
 		TypeSort:      target.TypeSort,
-		Status:        1,
+		Status:        consts.TargetStatusNormal,
 		Version:       target.Version,
 		CreatedUserID: userID,
 		RecentUserID:  userID,
+		Source:        consts.TargetSourceNormal,
 	}
-}
-
-func TransTargetToFolderAPI(targets []*model.Target) []*rao.FolderAPI {
-	ret := make([]*rao.FolderAPI, 0)
-	for _, t := range targets {
-		ret = append(ret, &rao.FolderAPI{
-			TargetID:      t.ID,
-			TeamID:        t.TeamID,
-			TargetType:    t.TargetType,
-			Name:          t.Name,
-			ParentID:      t.ParentID,
-			Method:        t.Method,
-			Sort:          t.Sort,
-			TypeSort:      t.TypeSort,
-			Version:       t.Version,
-			CreatedUserID: t.CreatedUserID,
-			RecentUserID:  t.RecentUserID,
-		})
-	}
-	return ret
-}
-
-func TransTargetToGroupScene(targets []*model.Target) []*rao.GroupScene {
-	ret := make([]*rao.GroupScene, 0)
-	for _, t := range targets {
-		ret = append(ret, &rao.GroupScene{
-			TargetID:      t.ID,
-			TeamID:        t.TeamID,
-			TargetType:    t.TargetType,
-			Name:          t.Name,
-			ParentID:      t.ParentID,
-			Method:        t.Method,
-			Sort:          t.Sort,
-			TypeSort:      t.TypeSort,
-			Version:       t.Version,
-			CreatedUserID: t.CreatedUserID,
-			RecentUserID:  t.RecentUserID,
-		})
-	}
-	return ret
 }
 
 func TransGroupReqToTarget(group *rao.SaveGroupReq, userID int64) *model.Target {
@@ -90,10 +52,11 @@ func TransGroupReqToTarget(group *rao.SaveGroupReq, userID int64) *model.Target 
 		Method:        group.Method,
 		Sort:          group.Sort,
 		TypeSort:      group.TypeSort,
-		Status:        1,
+		Status:        consts.TargetStatusNormal,
 		Version:       group.Version,
 		CreatedUserID: userID,
 		RecentUserID:  userID,
+		Source:        consts.TargetSourceNormal,
 	}
 }
 
@@ -107,9 +70,10 @@ func TransSceneReqToTarget(scene *rao.SaveSceneReq, userID int64) *model.Target 
 		Method:        scene.Method,
 		Sort:          scene.Sort,
 		TypeSort:      scene.TypeSort,
-		Status:        1,
+		Status:        consts.TargetStatusNormal,
 		Version:       scene.Version,
 		CreatedUserID: userID,
 		RecentUserID:  userID,
+		Source:        consts.TargetSourceNormal,
 	}
 }
