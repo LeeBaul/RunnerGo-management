@@ -18,7 +18,7 @@ func ListOperation(ctx *gin.Context) {
 
 	operations, total, err := operation.List(ctx, req.TeamID, req.Size, (req.Page-1)*req.Size)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrMysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 

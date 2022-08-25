@@ -19,7 +19,7 @@ func SaveTarget(ctx *gin.Context) {
 	}
 
 	if err := api.Save(ctx, &req, jwt.GetUserIDByCtx(ctx)); err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrMysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
@@ -36,7 +36,7 @@ func TrashTargetList(ctx *gin.Context) {
 
 	targets, total, err := target.ListTrashFolderAPI(ctx, req.TeamID, req.Size, (req.Page-1)*req.Size)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrMysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
@@ -55,7 +55,7 @@ func TrashTarget(ctx *gin.Context) {
 	}
 
 	if err := target.Trash(ctx, req.TargetID); err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrMysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
@@ -71,7 +71,7 @@ func DeleteTarget(ctx *gin.Context) {
 	}
 
 	if err := target.Delete(ctx, req.TargetID); err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrMysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
@@ -88,7 +88,7 @@ func ListTarget(ctx *gin.Context) {
 
 	targets, total, err := target.ListFolderAPI(ctx, req.TeamID, req.Size, (req.Page-1)*req.Size)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrMysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 

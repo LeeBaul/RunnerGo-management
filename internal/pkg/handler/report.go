@@ -18,7 +18,7 @@ func ListReports(ctx *gin.Context) {
 
 	reports, total, err := report.ListByTeamID(ctx, req.TeamID, req.Size, (req.Page-1)*req.Size, req.Keyword, req.StartTimeSec, req.EndTimeSec)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrMysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 

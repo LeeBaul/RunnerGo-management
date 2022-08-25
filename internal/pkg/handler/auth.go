@@ -72,7 +72,7 @@ func AuthRefresh(ctx *gin.Context) {
 
 	token, exp, err := jwt.RefreshToken(tokenString)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrMysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
@@ -91,7 +91,7 @@ func SetUserSettings(ctx *gin.Context) {
 	}
 
 	if err := auth.SetUserSettings(ctx, req.UserID, &req.UserSettings); err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrMysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
@@ -102,7 +102,7 @@ func SetUserSettings(ctx *gin.Context) {
 func GetUserSettings(ctx *gin.Context) {
 	settings, err := auth.GetUserSettings(ctx, jwt.GetUserIDByCtx(ctx))
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrMysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 

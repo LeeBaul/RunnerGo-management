@@ -23,37 +23,37 @@ func DashboardDefault(ctx *gin.Context) {
 
 	u, err := user.FirstByUserID(ctx, jwt.GetUserIDByCtx(ctx))
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrMysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
 	operations, _, err := operation.List(ctx, req.TeamID, 5, 0)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrMysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
 	apiCnt, err := target.APICountByTeamID(ctx, req.TeamID)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrMysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
 	sceneCnt, err := target.SceneCountByTeamID(ctx, req.TeamID)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrMysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
 	planCnt, err := plan.CountByTeamID(ctx, req.TeamID)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrMysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
 	reportCnt, err := report.CountByTeamID(ctx, req.TeamID)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrMysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 

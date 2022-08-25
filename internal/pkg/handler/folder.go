@@ -18,7 +18,7 @@ func SaveFolder(ctx *gin.Context) {
 	}
 
 	if err := folder.Save(ctx, jwt.GetUserIDByCtx(ctx), &req); err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrMysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 

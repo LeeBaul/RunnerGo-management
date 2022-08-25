@@ -14,9 +14,9 @@ const (
 	ErrMustDID         = 10011
 	ErrMustSN          = 10012
 	ErrHttpFailed      = 10013
-	ErrRedisOperFailed = 10100
-	ErrMongoOperFailed = 10101
-	ErrMysqlOperFailed = 10102
+	ErrRedisFailed     = 10100
+	ErrMongoFailed     = 10101
+	ErrMysqlFailed     = 10102
 	ErrRecordNotFound  = 10103
 	ErrSignError       = 20001
 	ErrRepeatRequest   = 20002
@@ -38,9 +38,9 @@ var CodeMsgMap = map[int]string{
 	ErrInvalidToken:    "invalid token",
 	ErrMarshalFailed:   "marshal failed",
 	ErrUnMarshalFailed: "unmarshal failed",
-	ErrRedisOperFailed: "redis operate failed",
-	ErrMongoOperFailed: "mongo operate failed",
-	ErrMysqlOperFailed: "mysql operate failed",
+	ErrRedisFailed:     "redis operate failed",
+	ErrMongoFailed:     "mongo operate failed",
+	ErrMysqlFailed:     "mysql operate failed",
 	ErrMustLogin:       "must login",
 	ErrMustDID:         "must DID",
 	ErrMustSN:          "must SN",
@@ -62,9 +62,9 @@ var CodeAlertMap = map[int]string{
 	ErrInvalidToken:    "无效的token",
 	ErrMarshalFailed:   "序列化失败",
 	ErrUnMarshalFailed: "反序列化失败",
-	ErrRedisOperFailed: "redis操作失败",
-	ErrMongoOperFailed: "mongo操作失败",
-	ErrMysqlOperFailed: "mysql操作失败",
+	ErrRedisFailed:     "redis操作失败",
+	ErrMongoFailed:     "mongo操作失败",
+	ErrMysqlFailed:     "mysql操作失败",
 	ErrMustLogin:       "没有获取到登录态",
 	ErrMustDID:         "缺少设备DID信息",
 	ErrMustSN:          "缺少设备SN信息",

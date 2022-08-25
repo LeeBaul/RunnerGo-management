@@ -18,7 +18,7 @@ func SaveGroup(ctx *gin.Context) {
 	}
 
 	if err := group.Save(ctx, &req, jwt.GetUserIDByCtx(ctx)); err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrMysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
