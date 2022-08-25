@@ -63,6 +63,7 @@ func RegisterRouter(r *gin.Engine) {
 	target.GET("/list", handler.ListTarget)
 	target.GET("/trash_list", handler.TrashTargetList)
 	target.POST("/trash", handler.TrashTarget)
+	target.POST("/recall", handler.RecallTarget)
 	target.POST("/delete", handler.DeleteTarget)
 
 	// 分组

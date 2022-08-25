@@ -63,6 +63,22 @@ func TrashTarget(ctx *gin.Context) {
 	return
 }
 
+func RecallTarget(ctx *gin.Context) {
+	var req rao.RecallTargetReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	if err := target.Recall(ctx, req.TargetID); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
+}
+
 func DeleteTarget(ctx *gin.Context) {
 	var req rao.DeleteTargetReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {

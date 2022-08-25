@@ -28,6 +28,13 @@ type TrashTargetReq struct {
 type TrashTargetResp struct {
 }
 
+type RecallTargetReq struct {
+	TargetID int64 `json:"target_id"`
+}
+
+type RecallTargetResp struct {
+}
+
 type DeleteTargetReq struct {
 	TargetID int64 `json:"target_id"`
 }
@@ -58,6 +65,7 @@ type ListTargetResp struct {
 }
 
 type FolderAPI struct {
+	TargetID      int64  `json:"target_id"`
 	TeamID        int64  `json:"team_id"`
 	TargetType    string `json:"target_type"`
 	Name          string `json:"name"`
