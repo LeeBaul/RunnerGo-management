@@ -19,5 +19,6 @@ func FirstByUserID(ctx context.Context, userID int64) (*rao.Member, error) {
 		Avatar:   "", // todo avatar
 		Email:    u.Email,
 		Nickname: u.Nickname,
+		UserID:   userID,
 	}, nil
 }

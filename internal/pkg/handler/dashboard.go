@@ -65,4 +65,5 @@ func DashboardDefault(ctx *gin.Context) {
 		ReportNum:  reportCnt,
 		APINum:     apiCnt,
 	})
+	return
 }

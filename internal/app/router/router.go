@@ -61,8 +61,7 @@ func RegisterRouter(r *gin.Engine) {
 	target := api.Group("/v1/target")
 	target.POST("/save", handler.SaveTarget)
 	target.GET("/list", handler.ListTarget)
-
-	target.GET("/trash_list")
+	target.GET("/trash_list", handler.TrashTargetList)
 	target.POST("/trash", handler.TrashTarget)
 	target.POST("/delete", handler.DeleteTarget)
 
@@ -82,6 +81,7 @@ func RegisterRouter(r *gin.Engine) {
 	// 测试报告
 	report := api.Group("/v1/report")
 	report.GET("/list", handler.ListReports)
+	report.GET("/detail")
 
 	// 操作日志
 	operation := api.Group("/v1/operation")
