@@ -16,6 +16,7 @@ func ListFolderAPI(ctx context.Context, teamID int64, limit, offset int) ([]*rao
 		tx.TeamID.Eq(teamID),
 		tx.TargetType.In(consts.TargetTypeFolder, consts.TargetTypeAPI),
 		tx.Status.Eq(consts.TargetStatusNormal),
+		tx.Source.Eq(consts.TargetSourceNormal),
 	).Order(tx.Sort.Desc(), tx.CreatedAt.Desc()).FindByPage(offset, limit)
 
 	if err != nil {
@@ -31,6 +32,7 @@ func ListGroupScene(ctx context.Context, teamID int64, limit, offset int) ([]*ra
 		tx.TeamID.Eq(teamID),
 		tx.TargetType.In(consts.TargetTypeGroup, consts.TargetTypeScene),
 		tx.Status.Eq(consts.TargetStatusNormal),
+		tx.Source.Eq(consts.TargetSourceNormal),
 	).Order(tx.Sort.Desc(), tx.CreatedAt.Desc()).FindByPage(offset, limit)
 
 	if err != nil {
