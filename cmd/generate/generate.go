@@ -20,16 +20,12 @@ func main() {
 	g.UseDB(db)
 
 	g.ApplyBasic(
-		//g.GenerateModel("api"),
-		//g.GenerateModel("folder"),
-		//g.GenerateModel("group"),
 		g.GenerateModel("target"),
 		g.GenerateModel("operation"),
 		g.GenerateModel("user"),
 		g.GenerateModel("team"),
 		g.GenerateModel("user_team"),
 		g.GenerateModel("setting"),
-
 		g.GenerateModel("plan"),
 		g.GenerateModel("report"),
 	)
