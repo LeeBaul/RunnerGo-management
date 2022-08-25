@@ -1,10 +1,8 @@
-package folder
+package group
 
 import (
 	"context"
 	"fmt"
-
-	"go.mongodb.org/mongo-driver/bson"
 
 	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/dal"
@@ -12,28 +10,31 @@ import (
 	"kp-management/internal/pkg/dal/query"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/packer"
+
+	"go.mongodb.org/mongo-driver/bson"
 )
 
-func Save(ctx context.Context, userID int64, req *rao.SaveFolderReq) error {
-	target := packer.TransFolderReqToTarget(req, userID)
-	folder := packer.TransFolderReqToFolder(req)
+func Save(ctx context.Context, req *rao.SaveGroupReq, userID int64) error {
+	target := packer.TransGroupReqToTarget(req, userID)
+	group := packer.TransGroupReqToGroup(req)
 
-	collection := dal.GetMongo().Database(dal.MongoD()).Collection(consts.CollectFolder)
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectGroup)
 
 	return query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
+
 		if target.ID == 0 {
 			if err := tx.Target.WithContext(ctx).Create(target); err != nil {
 				return err
 			}
 
-			folder.TargetID = target.ID
-			_, err := collection.InsertOne(ctx, folder)
+			group.TargetID = target.ID
+			_, err := collection.InsertOne(ctx, group)
 
 			tx.Operation.WithContext(ctx).Create(&model.Operation{
 				TeamID:   target.TeamID,
 				UserID:   userID,
 				Category: consts.OperationCategoryCreate,
-				Name:     fmt.Sprintf("创建文件夹 - %s", target.Name),
+				Name:     fmt.Sprintf("创建分组 - %s", target.Name),
 			})
 
 			return err
@@ -43,13 +44,13 @@ func Save(ctx context.Context, userID int64, req *rao.SaveFolderReq) error {
 			return err
 		}
 
-		_, err := collection.UpdateOne(ctx, bson.D{{"target_id", target.ID}}, bson.M{"$set": folder})
+		_, err := collection.UpdateOne(ctx, bson.D{{"target_id", target.ID}}, bson.M{"$set": group})
 
 		tx.Operation.WithContext(ctx).Create(&model.Operation{
 			TeamID:   target.TeamID,
 			UserID:   userID,
-			Category: consts.OperationCategoryUpdate,
-			Name:     fmt.Sprintf("修改文件夹 - %s", target.Name),
+			Category: consts.OperationCategoryCreate,
+			Name:     fmt.Sprintf("修改分组 - %s", target.Name),
 		})
 
 		return err

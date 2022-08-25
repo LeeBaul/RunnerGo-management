@@ -8,4 +8,6 @@ const (
 
 	TargetStatusNormal = 1
 	TargetStatusTrash  = 2
+
+	TargetSourceNormal = 1
 )
