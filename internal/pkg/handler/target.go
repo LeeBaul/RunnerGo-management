@@ -27,12 +27,40 @@ func SaveTarget(ctx *gin.Context) {
 	return
 }
 
+func TrashTargetList(ctx *gin.Context) {
+	var req rao.ListTrashTargetReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
+		return
+	}
+
+	targets, total, err := target.ListTrashFolderAPI(ctx, req.TeamID, req.Size, (req.Page-1)*req.Size)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
+		return
+	}
+
+	response.SuccessWithData(ctx, rao.ListTrashTargetResp{
+		Targets: targets,
+		Total:   total,
+	})
+	return
+}
+
 func TrashTarget(ctx *gin.Context) {
 	var req rao.DeleteTargetReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
 		return
 	}
+
+	if err := target.Trash(ctx, req.TargetID); err != nil {
+		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
 }
 
 func DeleteTarget(ctx *gin.Context) {
@@ -58,7 +86,7 @@ func ListTarget(ctx *gin.Context) {
 		return
 	}
 
-	targets, cnt, err := target.ListFolderAPI(ctx, req.TeamID, req.Size, (req.Page-1)*req.Size)
+	targets, total, err := target.ListFolderAPI(ctx, req.TeamID, req.Size, (req.Page-1)*req.Size)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
 		return
@@ -66,7 +94,7 @@ func ListTarget(ctx *gin.Context) {
 
 	response.SuccessWithData(ctx, rao.ListTargetResp{
 		Targets: targets,
-		Total:   cnt,
+		Total:   total,
 	})
 	return
 }

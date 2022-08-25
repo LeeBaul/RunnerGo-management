@@ -35,6 +35,17 @@ type DeleteTargetReq struct {
 type DeleteTargetResp struct {
 }
 
+type ListTrashTargetReq struct {
+	TeamID int64 `form:"team_id"`
+	Page   int   `form:"page"`
+	Size   int   `form:"size"`
+}
+
+type ListTrashTargetResp struct {
+	Targets []*FolderAPI `json:"targets"`
+	Total   int64        `json:"total"`
+}
+
 type ListTargetReq struct {
 	TeamID int64 `form:"team_id"`
 	Page   int   `form:"page"`

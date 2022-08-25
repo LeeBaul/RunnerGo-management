@@ -10,6 +10,13 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+func Trash(ctx context.Context, targetID int64) error {
+	t := query.Use(dal.DB()).Target
+	_, err := t.WithContext(ctx).Where(t.ID.Eq(targetID)).UpdateColumn(t.Status, consts.TargetStatusTrash)
+
+	return err
+}
+
 func Delete(ctx context.Context, targetID int64) error {
 	return query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
 		if _, err := tx.Target.WithContext(ctx).Where(tx.Target.ID.Eq(targetID)).Delete(); err != nil {
