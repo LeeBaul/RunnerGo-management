@@ -60,7 +60,7 @@ func RegisterRouter(r *gin.Engine) {
 	// 接口
 	target := api.Group("/v1/target")
 	target.POST("/save", handler.SaveTarget)
-	target.GET("/list", handler.ListTarget)
+	target.GET("/list", handler.ListFolderAPI)
 	target.GET("/trash_list", handler.TrashTargetList)
 	target.POST("/trash", handler.TrashTarget)
 	target.POST("/recall", handler.RecallTarget)
@@ -72,12 +72,16 @@ func RegisterRouter(r *gin.Engine) {
 
 	// 场景
 	scene := api.Group("/v1/scene")
-	scene.POST("/save")
-	scene.GET("/list")
+	scene.POST("/save", handler.SaveScene)
+	scene.GET("/config/get")
+	scene.POST("/config/set")
+	scene.GET("/list", handler.ListGroupScene)
+	scene.POST("/plan/list")
 
 	// 测试计划
 	plan := api.Group("/v1/plan")
 	plan.GET("/list", handler.ListPlans)
+	plan.GET("/save")
 
 	// 测试报告
 	report := api.Group("/v1/report")

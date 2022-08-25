@@ -60,6 +60,26 @@ func TransTargetToFolderAPI(targets []*model.Target) []*rao.FolderAPI {
 	return ret
 }
 
+func TransTargetToGroupScene(targets []*model.Target) []*rao.GroupScene {
+	ret := make([]*rao.GroupScene, 0)
+	for _, t := range targets {
+		ret = append(ret, &rao.GroupScene{
+			TargetID:      t.ID,
+			TeamID:        t.TeamID,
+			TargetType:    t.TargetType,
+			Name:          t.Name,
+			ParentID:      t.ParentID,
+			Method:        t.Method,
+			Sort:          t.Sort,
+			TypeSort:      t.TypeSort,
+			Version:       t.Version,
+			CreatedUserID: t.CreatedUserID,
+			RecentUserID:  t.RecentUserID,
+		})
+	}
+	return ret
+}
+
 func TransGroupReqToTarget(group *rao.SaveGroupReq, userID int64) *model.Target {
 	return &model.Target{
 		ID:            group.TargetID,
@@ -72,6 +92,23 @@ func TransGroupReqToTarget(group *rao.SaveGroupReq, userID int64) *model.Target 
 		TypeSort:      group.TypeSort,
 		Status:        1,
 		Version:       group.Version,
+		CreatedUserID: userID,
+		RecentUserID:  userID,
+	}
+}
+
+func TransSceneReqToTarget(scene *rao.SaveSceneReq, userID int64) *model.Target {
+	return &model.Target{
+		ID:            scene.TargetID,
+		TeamID:        scene.TeamID,
+		TargetType:    consts.TargetTypeScene,
+		Name:          scene.Name,
+		ParentID:      scene.ParentID,
+		Method:        scene.Method,
+		Sort:          scene.Sort,
+		TypeSort:      scene.TypeSort,
+		Status:        1,
+		Version:       scene.Version,
 		CreatedUserID: userID,
 		RecentUserID:  userID,
 	}

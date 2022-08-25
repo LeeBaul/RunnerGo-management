@@ -95,8 +95,8 @@ func DeleteTarget(ctx *gin.Context) {
 	return
 }
 
-func ListTarget(ctx *gin.Context) {
-	var req rao.ListTargetReq
+func ListFolderAPI(ctx *gin.Context) {
+	var req rao.ListFolderAPIReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
@@ -108,7 +108,27 @@ func ListTarget(ctx *gin.Context) {
 		return
 	}
 
-	response.SuccessWithData(ctx, rao.ListTargetResp{
+	response.SuccessWithData(ctx, rao.ListFolderAPIResp{
+		Targets: targets,
+		Total:   total,
+	})
+	return
+}
+
+func ListGroupScene(ctx *gin.Context) {
+	var req rao.ListGroupSceneReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	targets, total, err := target.ListGroupScene(ctx, req.TeamID, req.Size, (req.Page-1)*req.Size)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.SuccessWithData(ctx, rao.ListGroupSceneResp{
 		Targets: targets,
 		Total:   total,
 	})
