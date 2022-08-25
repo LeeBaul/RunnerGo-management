@@ -17,6 +17,11 @@ func AuthSignup(ctx *gin.Context) {
 		return
 	}
 
+	if req.Password != req.RepeatPassword {
+		response.ErrorWithMsg(ctx, errno.ParamError, "")
+		return
+	}
+
 	u, err := auth.SignUp(ctx, req.Email, req.Password, req.Nickname)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.InvalidToken, err.Error())
