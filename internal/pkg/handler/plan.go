@@ -14,13 +14,13 @@ import (
 func ListUnderwayPlan(ctx *gin.Context) {
 	var req rao.ListUnderwayPlanReq
 	if err := ctx.ShouldBind(&req); err != nil {
-		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
 	}
 
 	plans, total, err := plan.ListByStatus(ctx, req.TeamID, consts.PlanStatusUnderway, req.Size, (req.Page-1)*req.Size)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlOperFailed, err.Error())
 		return
 	}
 
@@ -33,13 +33,13 @@ func ListUnderwayPlan(ctx *gin.Context) {
 func ListPlans(ctx *gin.Context) {
 	var req rao.ListPlansReq
 	if err := ctx.ShouldBind(&req); err != nil {
-		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
 	}
 
 	plans, total, err := plan.ListByTeamID(ctx, req.TeamID, req.Size, (req.Page-1)*req.Size, req.Keyword, req.StartTimeSec, req.EndTimeSec)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlOperFailed, err.Error())
 		return
 	}
 

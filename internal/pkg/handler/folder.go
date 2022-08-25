@@ -13,12 +13,12 @@ import (
 func SaveFolder(ctx *gin.Context) {
 	var req rao.SaveFolderReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
 	}
 
 	if err := folder.Save(ctx, jwt.GetUserIDByCtx(ctx), &req); err != nil {
-		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlOperFailed, err.Error())
 		return
 	}
 

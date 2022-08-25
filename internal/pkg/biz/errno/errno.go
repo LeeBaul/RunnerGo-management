@@ -2,75 +2,72 @@
 package errno
 
 const (
-	Ok                         = 0
-	ParamError                 = 10001
-	ServerError                = 10002
-	NonceError                 = 10003
-	TimeStampError             = 10004
-	RPCFailed                  = 10005
-	InvalidToken               = 10006
-	MarshalFailed              = 10007
-	UnMarshalFailed            = 10008
-	AvailableIntegralNotEnough = 10009
-	IntegralOperTypeError      = 10010
-	MustDID                    = 10011
-	MustSN                     = 10012
-	HttpFailed                 = 10013
-	RedisOperFailed            = 10100
-	MongoOperFailed            = 10101
-	MysqlOperFailed            = 10102
-	RecordNotFound             = 10103
-	SignError                  = 20001
-	RepeatRequest              = 20002
-	MustLogin                  = 20003
+	Ok                 = 0
+	ErrParam           = 10001
+	ErrServer          = 10002
+	ErrNonce           = 10003
+	ErrTimeStamp       = 10004
+	ErrRPCFailed       = 10005
+	ErrInvalidToken    = 10006
+	ErrMarshalFailed   = 10007
+	ErrUnMarshalFailed = 10008
+	ErrMustDID         = 10011
+	ErrMustSN          = 10012
+	ErrHttpFailed      = 10013
+	ErrRedisOperFailed = 10100
+	ErrMongoOperFailed = 10101
+	ErrMysqlOperFailed = 10102
+	ErrRecordNotFound  = 10103
+	ErrSignError       = 20001
+	ErrRepeatRequest   = 20002
+	ErrMustLogin       = 20003
+	ErrAuthFailed      = 20004
 )
 
 // CodeMsgMap 错误码映射错误信息，不展示给用户
 var CodeMsgMap = map[int]string{
-	Ok:                         "success",
-	ServerError:                "internal server error",
-	ParamError:                 "param error",
-	SignError:                  "signature error",
-	RepeatRequest:              "repeat request",
-	NonceError:                 "nonce error",
-	TimeStampError:             "timestamp error",
-	RecordNotFound:             "record not found",
-	RPCFailed:                  "rpc failed",
-	InvalidToken:               "invalid token",
-	MarshalFailed:              "marshal failed",
-	UnMarshalFailed:            "unmarshal failed",
-	RedisOperFailed:            "redis operate failed",
-	MongoOperFailed:            "mongo operate failed",
-	MysqlOperFailed:            "mysql operate failed",
-	AvailableIntegralNotEnough: "available integral not enough",
-	IntegralOperTypeError:      "integral operate type error",
-	MustLogin:                  "must login",
-	MustDID:                    "must DID",
-	MustSN:                     "must SN",
-	HttpFailed:                 "http failed",
+	Ok:                 "success",
+	ErrServer:          "internal server error",
+	ErrParam:           "param error",
+	ErrSignError:       "signature error",
+	ErrRepeatRequest:   "repeat request",
+	ErrNonce:           "nonce error",
+	ErrTimeStamp:       "timestamp error",
+	ErrRecordNotFound:  "record not found",
+	ErrRPCFailed:       "rpc failed",
+	ErrInvalidToken:    "invalid token",
+	ErrMarshalFailed:   "marshal failed",
+	ErrUnMarshalFailed: "unmarshal failed",
+	ErrRedisOperFailed: "redis operate failed",
+	ErrMongoOperFailed: "mongo operate failed",
+	ErrMysqlOperFailed: "mysql operate failed",
+	ErrMustLogin:       "must login",
+	ErrMustDID:         "must DID",
+	ErrMustSN:          "must SN",
+	ErrHttpFailed:      "http failed",
+	ErrAuthFailed:      "username/password failed",
 }
 
 // CodeAlertMap 错图码映射错误提示，展示给用户
 var CodeAlertMap = map[int]string{
-	Ok:                         "成功",
-	ServerError:                "服务器错误",
-	ParamError:                 "参数校验错误",
-	SignError:                  "签名错误",
-	RepeatRequest:              "重放请求",
-	NonceError:                 "_nonce参数错误",
-	TimeStampError:             "_timestamp参数错误",
-	RecordNotFound:             "数据库记录不存在",
-	RPCFailed:                  "请求下游服务失败",
-	InvalidToken:               "无效的token",
-	MarshalFailed:              "序列化失败",
-	UnMarshalFailed:            "反序列化失败",
-	RedisOperFailed:            "redis操作失败",
-	MongoOperFailed:            "mongo操作失败",
-	MysqlOperFailed:            "mysql操作失败",
-	AvailableIntegralNotEnough: "积分余额不足",
-	IntegralOperTypeError:      "积分操作类型错误",
-	MustLogin:                  "没有获取到登录态",
-	MustDID:                    "缺少设备DID信息",
-	MustSN:                     "缺少设备SN信息",
-	HttpFailed:                 "请求下游Http服务失败",
+	Ok:                 "成功",
+	ErrServer:          "服务器错误",
+	ErrParam:           "参数校验错误",
+	ErrSignError:       "签名错误",
+	ErrRepeatRequest:   "重放请求",
+	ErrNonce:           "_nonce参数错误",
+	ErrTimeStamp:       "_timestamp参数错误",
+	ErrRecordNotFound:  "数据库记录不存在",
+	ErrRPCFailed:       "请求下游服务失败",
+	ErrInvalidToken:    "无效的token",
+	ErrMarshalFailed:   "序列化失败",
+	ErrUnMarshalFailed: "反序列化失败",
+	ErrRedisOperFailed: "redis操作失败",
+	ErrMongoOperFailed: "mongo操作失败",
+	ErrMysqlOperFailed: "mysql操作失败",
+	ErrMustLogin:       "没有获取到登录态",
+	ErrMustDID:         "缺少设备DID信息",
+	ErrMustSN:          "缺少设备SN信息",
+	ErrHttpFailed:      "请求下游Http服务失败",
+	ErrAuthFailed:      "用户名或密码错误",
 }

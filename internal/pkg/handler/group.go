@@ -13,12 +13,12 @@ import (
 func SaveGroup(ctx *gin.Context) {
 	var req rao.SaveGroupReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
 	}
 
 	if err := group.Save(ctx, &req, jwt.GetUserIDByCtx(ctx)); err != nil {
-		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlOperFailed, err.Error())
 		return
 	}
 

@@ -12,13 +12,13 @@ import (
 func ListOperation(ctx *gin.Context) {
 	var req rao.ListOperationReq
 	if err := ctx.ShouldBind(&req); err != nil {
-		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
 	}
 
 	operations, total, err := operation.List(ctx, req.TeamID, req.Size, (req.Page-1)*req.Size)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlOperFailed, err.Error())
 		return
 	}
 
