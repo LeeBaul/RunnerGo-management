@@ -13,7 +13,7 @@ var (
 	db *gorm.DB
 )
 
-const dsnTemplate = "%s:%s@tcp(%s:%db)/%s?charset=%s&parseTime=True&loc=Local"
+const dsnTemplate = "%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local"
 
 func MustInitMySQL() {
 	var err error
