@@ -3,6 +3,8 @@ package target
 import (
 	"context"
 
+	"go.mongodb.org/mongo-driver/bson"
+
 	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/query"
@@ -55,4 +57,56 @@ func ListTrashFolderAPI(ctx context.Context, teamID int64, limit, offset int) ([
 	}
 
 	return packer.TransTargetToFolderAPI(targets), cnt, nil
+}
+
+func Trash(ctx context.Context, targetID int64) error {
+	t := query.Use(dal.DB()).Target
+	_, err := t.WithContext(ctx).Where(t.ID.Eq(targetID)).UpdateColumn(t.Status, consts.TargetStatusTrash)
+
+	return err
+}
+
+func Recall(ctx context.Context, targetID int64) error {
+	t := query.Use(dal.DB()).Target
+	_, err := t.WithContext(ctx).Where(t.ID.Eq(targetID)).UpdateColumn(t.Status, consts.TargetStatusNormal)
+
+	return err
+}
+
+func Delete(ctx context.Context, targetID int64) error {
+	return query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
+		if _, err := tx.Target.WithContext(ctx).Where(tx.Target.ID.Eq(targetID)).Delete(); err != nil {
+			return err
+		}
+
+		filter := bson.D{{"target_id", targetID}}
+
+		if _, err := dal.GetMongo().Database(dal.MongoD()).Collection(consts.CollectFolder).DeleteOne(ctx, filter); err != nil {
+			return err
+		}
+
+		if _, err := dal.GetMongo().Database(dal.MongoD()).Collection(consts.CollectAPI).DeleteOne(ctx, filter); err != nil {
+			return err
+		}
+
+		return nil
+	})
+}
+
+func APICountByTeamID(ctx context.Context, teamID int64) (int64, error) {
+	tx := query.Use(dal.DB()).Target
+
+	return tx.WithContext(ctx).Where(
+		tx.TargetType.Eq(consts.TargetTypeAPI),
+		tx.TeamID.Eq(teamID),
+	).Count()
+}
+
+func SceneCountByTeamID(ctx context.Context, teamID int64) (int64, error) {
+	tx := query.Use(dal.DB()).Target
+
+	return tx.WithContext(ctx).Where(
+		tx.TargetType.Eq(consts.TargetTypeScene),
+		tx.TeamID.Eq(teamID),
+	).Count()
 }
