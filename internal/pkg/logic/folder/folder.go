@@ -18,7 +18,7 @@ func Save(ctx context.Context, userID int64, req *rao.SaveFolderReq) error {
 	target := packer.TransFolderReqToTarget(req, userID)
 	folder := packer.TransFolderReqToFolder(req)
 
-	collection := dal.GetMongo().Database(dal.MongoD()).Collection(consts.CollectFolder)
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectFolder)
 
 	return query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
 		if target.ID == 0 {

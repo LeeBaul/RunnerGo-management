@@ -18,7 +18,7 @@ func Save(ctx context.Context, req *rao.CreateTargetReq, userID int64) error {
 	target := packer.TransTargetReqToTarget(req, userID)
 	api := packer.TransTargetReqToAPI(req)
 
-	collection := dal.GetMongo().Database(dal.MongoD()).Collection(consts.CollectAPI)
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectAPI)
 
 	return query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
 		if target.ID == 0 {

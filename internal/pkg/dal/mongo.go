@@ -36,6 +36,6 @@ func GetMongo() *mongo.Client {
 	return m
 }
 
-func MongoD() string {
+func MongoDB() string {
 	return conf.Conf.MongoDB.Database
 }

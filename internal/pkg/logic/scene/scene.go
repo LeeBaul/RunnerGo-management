@@ -18,7 +18,7 @@ func Save(ctx context.Context, req *rao.SaveSceneReq, userID int64) error {
 	target := packer.TransSceneReqToTarget(req, userID)
 	scene := packer.TransSceneReqToScene(req)
 
-	collection := dal.GetMongo().Database(dal.MongoD()).Collection(consts.CollectScene)
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectScene)
 
 	return query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
 		if target.ID == 0 {
