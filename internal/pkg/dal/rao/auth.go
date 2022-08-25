@@ -1,10 +1,10 @@
 package rao
 
 type AuthSignupReq struct {
-	Email          string `json:"email"`
-	Password       string `json:"password"`
-	RepeatPassword string `json:"repeat_password"`
-	Nickname       string `json:"nickname"`
+	Email          string `json:"email" binding:"require"`
+	Password       string `json:"password" binding:"require"`
+	RepeatPassword string `json:"repeat_password" binding:"require"`
+	Nickname       string `json:"nickname" binding:"require"`
 }
 
 type AuthSignupResp struct {

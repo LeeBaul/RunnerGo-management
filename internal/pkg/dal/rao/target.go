@@ -28,6 +28,13 @@ type TrashTargetReq struct {
 type TrashTargetResp struct {
 }
 
+type RecallTargetReq struct {
+	TargetID int64 `json:"target_id"`
+}
+
+type RecallTargetResp struct {
+}
+
 type DeleteTargetReq struct {
 	TargetID int64 `json:"target_id"`
 }
@@ -46,18 +53,44 @@ type ListTrashTargetResp struct {
 	Total   int64        `json:"total"`
 }
 
-type ListTargetReq struct {
+type ListFolderAPIReq struct {
 	TeamID int64 `form:"team_id"`
 	Page   int   `form:"page"`
 	Size   int   `form:"size"`
 }
 
-type ListTargetResp struct {
+type ListFolderAPIResp struct {
 	Targets []*FolderAPI `json:"targets"`
 	Total   int64        `json:"total"`
 }
 
 type FolderAPI struct {
+	TargetID      int64  `json:"target_id"`
+	TeamID        int64  `json:"team_id"`
+	TargetType    string `json:"target_type"`
+	Name          string `json:"name"`
+	ParentID      int64  `json:"parent_id"`
+	Method        string `json:"method"`
+	Sort          int32  `json:"sort"`
+	TypeSort      int32  `json:"type_sort"`
+	Version       int32  `json:"version"`
+	CreatedUserID int64  `json:"created_user_id"`
+	RecentUserID  int64  `json:"recent_user_id"`
+}
+
+type ListGroupSceneReq struct {
+	TeamID int64 `form:"team_id"`
+	Page   int   `form:"page"`
+	Size   int   `form:"size"`
+}
+
+type ListGroupSceneResp struct {
+	Targets []*GroupScene `json:"targets"`
+	Total   int64         `json:"total"`
+}
+
+type GroupScene struct {
+	TargetID      int64  `json:"target_id"`
 	TeamID        int64  `json:"team_id"`
 	TargetType    string `json:"target_type"`
 	Name          string `json:"name"`

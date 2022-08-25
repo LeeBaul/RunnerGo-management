@@ -13,19 +13,24 @@ import (
 func AuthSignup(ctx *gin.Context) {
 	var req rao.AuthSignupReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	if req.Password != req.RepeatPassword {
+		response.ErrorWithMsg(ctx, errno.ErrParam, "")
 		return
 	}
 
 	u, err := auth.SignUp(ctx, req.Email, req.Password, req.Nickname)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.InvalidToken, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrInvalidToken, err.Error())
 		return
 	}
 
 	token, exp, err := jwt.GenerateToken(u.ID)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.InvalidToken, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrInvalidToken, err.Error())
 		return
 	}
 
@@ -39,19 +44,19 @@ func AuthSignup(ctx *gin.Context) {
 func AuthLogin(ctx *gin.Context) {
 	var req rao.AuthLoginReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
 	}
 
 	u, err := auth.Login(ctx, req.Email, req.Password)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.InvalidToken, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrAuthFailed, err.Error())
 		return
 	}
 
 	token, exp, err := jwt.GenerateToken(u.ID)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.InvalidToken, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrInvalidToken, err.Error())
 		return
 	}
 
@@ -67,7 +72,7 @@ func AuthRefresh(ctx *gin.Context) {
 
 	token, exp, err := jwt.RefreshToken(tokenString)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
@@ -81,12 +86,12 @@ func AuthRefresh(ctx *gin.Context) {
 func SetUserSettings(ctx *gin.Context) {
 	var req rao.SetUserSettingsReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
 	}
 
 	if err := auth.SetUserSettings(ctx, req.UserID, &req.UserSettings); err != nil {
-		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
@@ -97,7 +102,7 @@ func SetUserSettings(ctx *gin.Context) {
 func GetUserSettings(ctx *gin.Context) {
 	settings, err := auth.GetUserSettings(ctx, jwt.GetUserIDByCtx(ctx))
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.MysqlOperFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
@@ -110,7 +115,7 @@ func GetUserSettings(ctx *gin.Context) {
 func AuthSendMailVerify(ctx *gin.Context) {
 	var req rao.AuthSendMailVerifyReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		response.ErrorWithMsg(ctx, errno.ParamError, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
 	}
 }
