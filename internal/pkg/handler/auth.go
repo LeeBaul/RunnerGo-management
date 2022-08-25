@@ -50,7 +50,7 @@ func AuthLogin(ctx *gin.Context) {
 
 	u, err := auth.Login(ctx, req.Email, req.Password)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrInvalidToken, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrAuthFailed, err.Error())
 		return
 	}
 
