@@ -93,9 +93,9 @@ func ListByTeamID(ctx context.Context, teamID int64, limit, offset int, keyword 
 
 func Save(ctx context.Context, req *rao.SavePlanReq, userID int64) error {
 	plan := packer.TransSavePlanReqToModel(req, userID)
-	modeConf := packer.TransSavePlanReqToModeConf(req)
+	task := packer.TransSavePlanReqToTask(req)
 
-	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectPlanModeConf)
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectTask)
 
 	return query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
 		if plan.ID == 0 {
@@ -103,8 +103,8 @@ func Save(ctx context.Context, req *rao.SavePlanReq, userID int64) error {
 				return err
 			}
 
-			modeConf.PlanID = plan.ID
-			_, err := collection.InsertOne(ctx, modeConf)
+			task.PlanID = plan.ID
+			_, err := collection.InsertOne(ctx, task)
 
 			record.InsertCreate(ctx, plan.TeamID, userID, fmt.Sprintf("创建计划 - %s", plan.Name))
 
@@ -115,7 +115,7 @@ func Save(ctx context.Context, req *rao.SavePlanReq, userID int64) error {
 			return err
 		}
 
-		_, err := collection.UpdateOne(ctx, bson.D{{"plan_id", plan.ID}}, bson.M{"$set": modeConf})
+		_, err := collection.UpdateOne(ctx, bson.D{{"plan_id", plan.ID}}, bson.M{"$set": task})
 
 		record.InsertUpdate(ctx, plan.TeamID, userID, fmt.Sprintf("修改计划 - %s", plan.Name))
 

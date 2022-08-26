@@ -45,10 +45,10 @@ func TransSavePlanReqToModel(req *rao.SavePlanReq, userID int64) *model.Plan {
 	}
 }
 
-func TransSavePlanReqToModeConf(req *rao.SavePlanReq) *mao.PlanModeConf {
+func TransSavePlanReqToTask(req *rao.SavePlanReq) *mao.Task {
 	mc := req.ModeConf
 
-	return &mao.PlanModeConf{
+	return &mao.Task{
 		PlanID: req.PlanID,
 		ModeConf: &mao.ModeConf{
 			ReheatTime:       mc.ReheatTime,
