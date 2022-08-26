@@ -67,7 +67,7 @@ func AuthLogin(ctx *gin.Context) {
 	return
 }
 
-func AuthRefresh(ctx *gin.Context) {
+func RefreshToken(ctx *gin.Context) {
 	tokenString := ctx.GetHeader("Authorization")
 
 	token, exp, err := jwt.RefreshToken(tokenString)

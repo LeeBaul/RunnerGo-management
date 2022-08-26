@@ -5,8 +5,11 @@ import (
 	"fmt"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"gorm.io/gen"
 
+	"kp-management/internal/pkg/biz/consts"
+	"kp-management/internal/pkg/biz/record"
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/query"
 	"kp-management/internal/pkg/dal/rao"
@@ -86,4 +89,36 @@ func ListByTeamID(ctx context.Context, teamID int64, limit, offset int, keyword 
 	}
 
 	return packer.TransPlansToResp(ret, users), cnt, nil
+}
+
+func Save(ctx context.Context, req *rao.SavePlanReq, userID int64) error {
+	plan := packer.TransSavePlanReqToModel(req, userID)
+	modeConf := packer.TransSavePlanReqToModeConf(req)
+
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectPlanModeConf)
+
+	return query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
+		if plan.ID == 0 {
+			if err := tx.Plan.WithContext(ctx).Create(plan); err != nil {
+				return err
+			}
+
+			modeConf.PlanID = plan.ID
+			_, err := collection.InsertOne(ctx, modeConf)
+
+			record.InsertCreate(ctx, plan.TeamID, userID, fmt.Sprintf("创建计划 - %s", plan.Name))
+
+			return err
+		}
+
+		if _, err := tx.Plan.WithContext(ctx).Omit(tx.Plan.CreateUserID).Updates(plan); err != nil {
+			return err
+		}
+
+		_, err := collection.UpdateOne(ctx, bson.D{{"plan_id", plan.ID}}, bson.M{"$set": modeConf})
+
+		record.InsertUpdate(ctx, plan.TeamID, userID, fmt.Sprintf("修改计划 - %s", plan.Name))
+
+		return err
+	})
 }

@@ -28,7 +28,7 @@ func RegisterRouter(r *gin.Engine) {
 	auth := api.Group("/v1/auth")
 	auth.POST("/signup", handler.AuthSignup)
 	auth.POST("/login", handler.AuthLogin)
-	auth.POST("/refresh_token", handler.AuthRefresh)
+	auth.POST("/refresh_token", handler.RefreshToken)
 
 	auth.POST("/send_email_verify", handler.AuthSendMailVerify)
 	auth.POST("/reset_password", handler.AuthResetPassword)
@@ -73,15 +73,16 @@ func RegisterRouter(r *gin.Engine) {
 	// 场景
 	scene := api.Group("/v1/scene")
 	scene.POST("/save", handler.SaveScene)
+	scene.GET("/list", handler.ListGroupScene)
+
 	scene.GET("/flow/get")
 	scene.POST("/flow/save", handler.SaveFlow)
-	scene.GET("/list", handler.ListGroupScene)
 	scene.POST("/plan/list")
 
 	// 测试计划
 	plan := api.Group("/v1/plan")
 	plan.GET("/list", handler.ListPlans)
-	plan.GET("/save")
+	plan.POST("/save", handler.SavePlan)
 
 	// 测试报告
 	report := api.Group("/v1/report")
@@ -90,7 +91,7 @@ func RegisterRouter(r *gin.Engine) {
 
 	// 操作日志
 	operation := api.Group("/v1/operation")
-	operation.GET("/list", handler.ListOperation)
+	operation.GET("/list", handler.ListOperations)
 
 	// 机器管理
 

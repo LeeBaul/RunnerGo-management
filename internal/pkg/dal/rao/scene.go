@@ -17,8 +17,9 @@ type SaveSceneResp struct {
 }
 
 type SaveFlowReq struct {
-	TeamID   int64 `json:"team_id"`
-	TargetID int64 `json:"target_id"`
+	SceneID int64  `json:"scene_id"`
+	TeamID  int64  `json:"team_id"`
+	Version string `json:"version"`
 }
 
 type SaveFlowResp struct {

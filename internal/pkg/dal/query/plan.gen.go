@@ -33,6 +33,7 @@ func newPlan(db *gorm.DB) plan {
 	_plan.TaskType = field.NewInt32(tableName, "task_type")
 	_plan.Mode = field.NewInt32(tableName, "mode")
 	_plan.Status = field.NewInt32(tableName, "status")
+	_plan.CreateUserID = field.NewInt64(tableName, "create_user_id")
 	_plan.RunUserID = field.NewInt64(tableName, "run_user_id")
 	_plan.Remark = field.NewString(tableName, "remark")
 	_plan.CreatedAt = field.NewTime(tableName, "created_at")
@@ -47,18 +48,19 @@ func newPlan(db *gorm.DB) plan {
 type plan struct {
 	planDo planDo
 
-	ALL       field.Field
-	ID        field.Int64
-	TeamID    field.Int64
-	Name      field.String
-	TaskType  field.Int32
-	Mode      field.Int32
-	Status    field.Int32
-	RunUserID field.Int64
-	Remark    field.String
-	CreatedAt field.Time
-	UpdatedAt field.Time
-	DeletedAt field.Field
+	ALL          field.Field
+	ID           field.Int64
+	TeamID       field.Int64
+	Name         field.String
+	TaskType     field.Int32
+	Mode         field.Int32
+	Status       field.Int32
+	CreateUserID field.Int64
+	RunUserID    field.Int64
+	Remark       field.String
+	CreatedAt    field.Time
+	UpdatedAt    field.Time
+	DeletedAt    field.Field
 
 	fieldMap map[string]field.Expr
 }
@@ -81,6 +83,7 @@ func (p *plan) updateTableName(table string) *plan {
 	p.TaskType = field.NewInt32(table, "task_type")
 	p.Mode = field.NewInt32(table, "mode")
 	p.Status = field.NewInt32(table, "status")
+	p.CreateUserID = field.NewInt64(table, "create_user_id")
 	p.RunUserID = field.NewInt64(table, "run_user_id")
 	p.Remark = field.NewString(table, "remark")
 	p.CreatedAt = field.NewTime(table, "created_at")
@@ -108,13 +111,14 @@ func (p *plan) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (p *plan) fillFieldMap() {
-	p.fieldMap = make(map[string]field.Expr, 11)
+	p.fieldMap = make(map[string]field.Expr, 12)
 	p.fieldMap["id"] = p.ID
 	p.fieldMap["team_id"] = p.TeamID
 	p.fieldMap["name"] = p.Name
 	p.fieldMap["task_type"] = p.TaskType
 	p.fieldMap["mode"] = p.Mode
 	p.fieldMap["status"] = p.Status
+	p.fieldMap["create_user_id"] = p.CreateUserID
 	p.fieldMap["run_user_id"] = p.RunUserID
 	p.fieldMap["remark"] = p.Remark
 	p.fieldMap["created_at"] = p.CreatedAt
