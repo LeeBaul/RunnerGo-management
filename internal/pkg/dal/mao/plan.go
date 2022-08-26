@@ -1,6 +1,6 @@
 package mao
 
-type PlanModeConf struct {
+type Task struct {
 	PlanID   int64     `bson:"plan_id"`
 	ModeConf *ModeConf `bson:"mode_conf"`
 }

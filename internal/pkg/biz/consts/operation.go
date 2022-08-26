@@ -1,8 +1,8 @@
 package consts
 
 const (
-	OperationCategoryCreate = 1
-	OperationCategoryUpdate = 2
-	OperationCategoryDelete = 3
-	OperationCategoryRun    = 4
+	OperationCategoryCreate = 1 // 创建
+	OperationCategoryUpdate = 2 // 修改
+	OperationCategoryDelete = 3 // 删除
+	OperationCategoryRun    = 4 // 运行
 )
