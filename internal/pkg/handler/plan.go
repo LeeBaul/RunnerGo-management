@@ -28,6 +28,7 @@ func ListUnderwayPlan(ctx *gin.Context) {
 		Plans: plans,
 		Total: total,
 	})
+	return
 }
 
 func ListPlans(ctx *gin.Context) {

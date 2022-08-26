@@ -18,6 +18,7 @@ func ListTeam(ctx *gin.Context) {
 	}
 
 	response.SuccessWithData(ctx, rao.ListTeamResp{Teams: teams})
+	return
 }
 
 func TeamMembers(ctx *gin.Context) {
