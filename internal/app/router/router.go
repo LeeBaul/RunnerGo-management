@@ -73,15 +73,16 @@ func RegisterRouter(r *gin.Engine) {
 	// 场景
 	scene := api.Group("/v1/scene")
 	scene.POST("/save", handler.SaveScene)
+	scene.GET("/list", handler.ListGroupScene)
+
 	scene.GET("/flow/get")
 	scene.POST("/flow/save", handler.SaveFlow)
-	scene.GET("/list", handler.ListGroupScene)
 	scene.POST("/plan/list")
 
 	// 测试计划
 	plan := api.Group("/v1/plan")
 	plan.GET("/list", handler.ListPlans)
-	plan.GET("/save")
+	plan.POST("/save", handler.SavePlan)
 
 	// 测试报告
 	report := api.Group("/v1/report")
