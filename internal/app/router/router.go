@@ -39,7 +39,7 @@ func RegisterRouter(r *gin.Engine) {
 	// 用户配置
 	setting := api.Group("/v1/setting")
 	setting.GET("/get", handler.GetUserSettings)
-	setting.POST("/set", handler.GetUserSettings)
+	setting.POST("/set", handler.SetUserSettings)
 
 	// 团队
 	team := api.Group("/v1/team")
