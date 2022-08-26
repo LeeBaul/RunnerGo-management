@@ -28,7 +28,7 @@ func RegisterRouter(r *gin.Engine) {
 	auth := api.Group("/v1/auth")
 	auth.POST("/signup", handler.AuthSignup)
 	auth.POST("/login", handler.AuthLogin)
-	auth.POST("/refresh_token", handler.AuthRefresh)
+	auth.POST("/refresh_token", handler.RefreshToken)
 
 	auth.POST("/send_email_verify", handler.AuthSendMailVerify)
 	auth.POST("/reset_password", handler.AuthResetPassword)
@@ -91,7 +91,7 @@ func RegisterRouter(r *gin.Engine) {
 
 	// 操作日志
 	operation := api.Group("/v1/operation")
-	operation.GET("/list", handler.ListOperation)
+	operation.GET("/list", handler.ListOperations)
 
 	// 机器管理
 

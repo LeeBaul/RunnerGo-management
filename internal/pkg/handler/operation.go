@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ListOperation(ctx *gin.Context) {
+func ListOperations(ctx *gin.Context) {
 	var req rao.ListOperationReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
