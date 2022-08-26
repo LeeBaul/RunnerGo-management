@@ -6,7 +6,6 @@ type CreateTargetReq struct {
 	TeamID      int64     `json:"team_id"`
 	ProjectID   string    `json:"project_id"`
 	Mark        string    `json:"mark"`
-	TargetType  string    `json:"target_type"`
 	Name        string    `json:"name"`
 	Method      string    `json:"method"`
 	URL         string    `json:"url"`

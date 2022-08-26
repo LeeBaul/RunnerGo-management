@@ -25,3 +25,15 @@ func SaveScene(ctx *gin.Context) {
 	response.Success(ctx)
 	return
 }
+
+func SaveFlow(ctx *gin.Context) {
+	var req rao.SaveFlowReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+}
+
+func GetFlow(ctx *gin.Context) {
+
+}
