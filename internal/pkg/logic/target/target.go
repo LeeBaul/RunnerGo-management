@@ -117,7 +117,7 @@ func DetailByTargetIDs(ctx context.Context, teamID int64, targetIDs []int64) ([]
 	targets, err := tx.WithContext(ctx).Where(
 		tx.ID.In(targetIDs...),
 		tx.TeamID.Eq(teamID),
-		tx.TargetType.In(consts.TargetTypeAPI),
+		tx.TargetType.Eq(consts.TargetTypeAPI),
 		tx.Status.Eq(consts.TargetStatusNormal),
 		tx.Source.Eq(consts.TargetSourceNormal),
 	).Order(tx.Sort.Desc(), tx.CreatedAt.Desc()).Find()
