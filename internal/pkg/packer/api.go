@@ -1,11 +1,13 @@
 package packer
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
 
 	"kp-management/internal/pkg/dal/mao"
+	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/rao"
 )
 
@@ -44,4 +46,54 @@ func TransTargetReqToAPI(target *rao.CreateTargetReq) *mao.API {
 		Auth:        auth,
 		Description: target.Description,
 	}
+}
+
+func TransTargetToAPIDetail(targets []*model.Target, apis []*mao.API) []*rao.APIDetail {
+	ret := make([]*rao.APIDetail, 0, len(targets))
+
+	for _, target := range targets {
+		for _, api := range apis {
+			if api.TargetID == target.ID {
+
+				var auth rao.Auth
+				json.Unmarshal(api.Auth, &auth)
+
+				var body rao.Body
+				json.Unmarshal(api.Body, &body)
+
+				var header rao.Header
+				json.Unmarshal(api.Header, &header)
+
+				var query rao.Query
+				json.Unmarshal(api.Query, &query)
+
+				ret = append(ret, &rao.APIDetail{
+					TargetID: target.ID,
+					ParentID: target.ParentID,
+					TeamID:   target.TeamID,
+					Name:     target.Name,
+					Method:   target.Method,
+					URL:      "",
+					Sort:     target.Sort,
+					TypeSort: target.TypeSort,
+					Request: &rao.Request{
+						URL:         api.URL,
+						Description: api.Description,
+						Auth:        &auth,
+						Body:        &body,
+						Header:      &header,
+						Query:       &query,
+						Event:       nil,
+						Cookie:      nil,
+						Resful:      nil,
+					},
+					Response:    nil,
+					Version:     target.Version,
+					Description: api.Description,
+				})
+			}
+		}
+	}
+
+	return ret
 }
