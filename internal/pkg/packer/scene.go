@@ -3,19 +3,19 @@ package packer
 import (
 	"fmt"
 
-	"github.com/bytedance/sonic"
+	"go.mongodb.org/mongo-driver/bson"
 
 	"kp-management/internal/pkg/dal/mao"
 	"kp-management/internal/pkg/dal/rao"
 )
 
 func TransSceneReqToScene(scene *rao.SaveSceneReq) *mao.Scene {
-	request, err := sonic.MarshalString(scene.Request)
+	request, err := bson.Marshal(scene.Request)
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("scene.request json marshal err %w", err))
 	}
 
-	script, err := sonic.MarshalString(scene.Script)
+	script, err := bson.Marshal(scene.Script)
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("scene.script json marshal err %w", err))
 	}

@@ -3,19 +3,19 @@ package packer
 import (
 	"fmt"
 
-	"github.com/bytedance/sonic"
+	"go.mongodb.org/mongo-driver/bson"
 
 	"kp-management/internal/pkg/dal/mao"
 	"kp-management/internal/pkg/dal/rao"
 )
 
 func TransGroupReqToGroup(group *rao.SaveGroupReq) *mao.Group {
-	request, err := sonic.MarshalString(group.Request)
+	request, err := bson.Marshal(group.Request)
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("group.request json marshal err %w", err))
 	}
 
-	script, err := sonic.MarshalString(group.Script)
+	script, err := bson.Marshal(group.Script)
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("group.script json marshal err %w", err))
 	}

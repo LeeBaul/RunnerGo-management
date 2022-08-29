@@ -3,14 +3,14 @@ package packer
 import (
 	"fmt"
 
-	"github.com/bytedance/sonic"
+	"go.mongodb.org/mongo-driver/bson"
 
 	"kp-management/internal/pkg/dal/mao"
 	"kp-management/internal/pkg/dal/rao"
 )
 
 func TransSaveFlowReqToFlow(req *rao.SaveFlowReq) *mao.Flow {
-	flowStr, err := sonic.MarshalString(req.Flows)
+	flowStr, err := bson.Marshal(req.Flows)
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("flow.flows json marshal err %w", err))
 	}
@@ -25,7 +25,7 @@ func TransSaveFlowReqToFlow(req *rao.SaveFlowReq) *mao.Flow {
 
 func TransMongoFlowToResp(f *mao.Flow) *rao.GetFlowResp {
 	var flows []*rao.Flow
-	if err := sonic.UnmarshalString(f.Flows, &flows); err != nil {
+	if err := bson.Unmarshal(f.Flows, &flows); err != nil {
 		fmt.Sprintln(fmt.Errorf("flow.flows json unmarshal err %w", err))
 	}
 

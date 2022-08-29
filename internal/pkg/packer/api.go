@@ -3,7 +3,7 @@ package packer
 import (
 	"fmt"
 
-	"github.com/bytedance/sonic"
+	"go.mongodb.org/mongo-driver/bson"
 
 	"kp-management/internal/pkg/dal/mao"
 	"kp-management/internal/pkg/dal/rao"
@@ -15,22 +15,22 @@ func TransTargetReqToAPI(target *rao.CreateTargetReq) *mao.API {
 		return nil
 	}
 
-	header, err := sonic.MarshalString(target.Request.Header)
+	header, err := bson.Marshal(target.Request.Header)
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("target.request.header json marshal err %w", err))
 	}
 
-	query, err := sonic.MarshalString(target.Request.Query)
+	query, err := bson.Marshal(target.Request.Query)
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("target.request.query json marshal err %w", err))
 	}
 
-	body, err := sonic.MarshalString(target.Request.Body)
+	body, err := bson.Marshal(target.Request.Body)
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("target.request.body json marshal err %w", err))
 	}
 
-	auth, err := sonic.MarshalString(target.Request.Auth)
+	auth, err := bson.Marshal(target.Request.Auth)
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("target.request.auth json marshal err %w", err))
 	}
