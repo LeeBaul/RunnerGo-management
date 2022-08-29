@@ -112,16 +112,19 @@ type BatchGetDetailResp struct {
 }
 
 type APIDetail struct {
-	TargetID    int64     `json:"target_id"`
-	ParentID    int64     `json:"parent_id"`
-	TeamID      int64     `json:"team_id"`
-	Name        string    `json:"name"`
-	Method      string    `json:"method"`
-	URL         string    `json:"url"`
-	Sort        int32     `json:"sort"`
-	TypeSort    int32     `json:"type_sort"`
-	Request     *Request  `json:"request"`
-	Response    *Response `json:"response"`
-	Version     int32     `json:"version"`
-	Description string    `json:"description"`
+	TargetID       int64     `json:"target_id"`
+	ParentID       int64     `json:"parent_id"`
+	TargetType     string    `json:"target_type"`
+	TeamID         int64     `json:"team_id"`
+	Name           string    `json:"name"`
+	Method         string    `json:"method"`
+	URL            string    `json:"url"`
+	Sort           int32     `json:"sort"`
+	TypeSort       int32     `json:"type_sort"`
+	Request        *Request  `json:"request"`
+	Response       *Response `json:"response"`
+	Version        int32     `json:"version"`
+	Description    string    `json:"description"`
+	CreatedTimeSec int64     `json:"created_time_sec"`
+	UpdatedTimeSec int64     `json:"updated_time_sec"`
 }
