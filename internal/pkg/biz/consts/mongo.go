@@ -6,4 +6,5 @@ const (
 	CollectGroup  = "group"
 	CollectScene  = "scene"
 	CollectTask   = "task"
+	CollectFlow   = "flow"
 )

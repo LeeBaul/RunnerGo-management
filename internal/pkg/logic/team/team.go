@@ -30,12 +30,8 @@ func ListByUserID(ctx context.Context, userID int64) ([]*rao.Team, error) {
 	}
 
 	var teamCnt []*packer.TeamMemberCount
-	for _, team := range teams {
-		cnt, _ := ut.WithContext(ctx).Where(ut.TeamID.Eq(team.ID)).Count()
-		teamCnt = append(teamCnt, &packer.TeamMemberCount{
-			TeamID: team.ID,
-			Cnt:    cnt,
-		})
+	if err := ut.WithContext(ctx).Select(ut.TeamID, ut.UserID.Count().As("cnt")).Where(ut.TeamID.In(teamIDs...)).Group(ut.TeamID).Scan(&teamCnt); err != nil {
+		return nil, err
 	}
 
 	return packer.TransTeamsModelToResp(teams, userTeams, teamCnt), nil
