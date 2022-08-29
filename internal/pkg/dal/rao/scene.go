@@ -51,7 +51,7 @@ type Flow struct {
 	Val     string `json:"val,omitempty"`
 }
 
-// 接口详情
+// API 接口详情
 type API struct {
 	TargetID    int64     `json:"target_id"`
 	ParentID    int64     `json:"parent_id"`
@@ -61,10 +61,20 @@ type API struct {
 	Name        string    `json:"name"`
 	Method      string    `json:"method"`
 	URL         string    `json:"url"`
-	Sort        int32     `json:"sort"`
-	TypeSort    int32     `json:"type_sort"`
 	Request     *Request  `json:"request"`
-	Response    *Response `json:"response"`
+	Response    *Response `json:"response,omitempty"`
 	Version     int32     `json:"version"`
 	Description string    `json:"description"`
+}
+
+type GetFlowReq struct {
+	SceneID int64 `form:"scene_id"`
+	TeamID  int64 `form:"team_id"`
+}
+
+type GetFlowResp struct {
+	SceneID int64   `json:"scene_id"`
+	TeamID  int64   `json:"team_id"`
+	Version int32   `json:"version"`
+	Flows   []*Flow `json:"flows"`
 }

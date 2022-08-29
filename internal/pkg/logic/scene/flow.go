@@ -8,6 +8,7 @@ import (
 
 	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/dal"
+	"kp-management/internal/pkg/dal/mao"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/packer"
 )
@@ -27,4 +28,16 @@ func SaveFlow(ctx context.Context, req *rao.SaveFlowReq) error {
 	}, bson.M{"$set": flow})
 
 	return err
+}
+
+func GetFlow(ctx context.Context, sceneID int64) (*rao.GetFlowResp, error) {
+	var ret mao.Flow
+
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectFlow)
+	err := collection.FindOne(ctx, bson.D{{"scene_id", sceneID}}).Decode(&ret)
+	if err != nil {
+		return nil, err
+	}
+
+	return packer.TransMongoFlowToResp(&ret), nil
 }
