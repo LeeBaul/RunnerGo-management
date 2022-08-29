@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// ListReports 测试报告列表
 func ListReports(ctx *gin.Context) {
 	var req rao.ListReportsReq
 	if err := ctx.ShouldBind(&req); err != nil {

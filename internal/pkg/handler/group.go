@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// SaveGroup 创建/保存分组
 func SaveGroup(ctx *gin.Context) {
 	var req rao.SaveGroupReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {

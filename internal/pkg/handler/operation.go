@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// ListOperations 操作日志列表
 func ListOperations(ctx *gin.Context) {
 	var req rao.ListOperationReq
 	if err := ctx.ShouldBind(&req); err != nil {

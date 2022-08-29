@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// ListTeam 团队列表
 func ListTeam(ctx *gin.Context) {
 	teams, err := team.ListByUserID(ctx, jwt.GetUserIDByCtx(ctx))
 	if err != nil {
@@ -21,6 +22,7 @@ func ListTeam(ctx *gin.Context) {
 	return
 }
 
+// TeamMembers 团队成员列表
 func TeamMembers(ctx *gin.Context) {
 	var req rao.ListMembersReq
 	if err := ctx.ShouldBind(&req); err != nil {
@@ -40,6 +42,7 @@ func TeamMembers(ctx *gin.Context) {
 	return
 }
 
+// InviteMember 邀请成员
 func InviteMember(ctx *gin.Context) {
 	var req rao.InviteMemberReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -56,6 +59,7 @@ func InviteMember(ctx *gin.Context) {
 	return
 }
 
+// RemoveMember 移除成员
 func RemoveMember(ctx *gin.Context) {
 	var req rao.RemoveMemberReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
