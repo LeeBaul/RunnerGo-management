@@ -101,3 +101,27 @@ type GroupScene struct {
 	CreatedUserID int64  `json:"created_user_id"`
 	RecentUserID  int64  `json:"recent_user_id"`
 }
+
+type BatchGetDetailReq struct {
+	TeamID    int64   `form:"team_id"`
+	TargetIDs []int64 `form:"target_ids"`
+}
+
+type BatchGetDetailResp struct {
+	Targets []*APIDetail `json:"targets"`
+}
+
+type APIDetail struct {
+	TargetID    int64     `json:"target_id"`
+	ParentID    int64     `json:"parent_id"`
+	TeamID      int64     `json:"team_id"`
+	Name        string    `json:"name"`
+	Method      string    `json:"method"`
+	URL         string    `json:"url"`
+	Sort        int32     `json:"sort"`
+	TypeSort    int32     `json:"type_sort"`
+	Request     *Request  `json:"request"`
+	Response    *Response `json:"response"`
+	Version     int32     `json:"version"`
+	Description string    `json:"description"`
+}

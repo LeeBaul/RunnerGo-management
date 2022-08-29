@@ -61,6 +61,7 @@ func RegisterRouter(r *gin.Engine) {
 	target := api.Group("/v1/target")
 	target.POST("/save", handler.SaveTarget)
 	target.GET("/list", handler.ListFolderAPI)
+	target.GET("/detail", handler.DetailByTargetIDs)
 	target.GET("/trash_list", handler.TrashTargetList)
 	target.POST("/trash", handler.TrashTarget)
 	target.POST("/recall", handler.RecallTarget)

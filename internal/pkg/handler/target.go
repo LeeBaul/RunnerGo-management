@@ -134,3 +134,22 @@ func ListGroupScene(ctx *gin.Context) {
 	})
 	return
 }
+
+func DetailByTargetIDs(ctx *gin.Context) {
+	var req rao.BatchGetDetailReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	targets, err := target.DetailByTargetIDs(ctx, req.TeamID, req.TargetIDs)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.SuccessWithData(ctx, rao.BatchGetDetailResp{
+		Targets: targets,
+	})
+	return
+}
