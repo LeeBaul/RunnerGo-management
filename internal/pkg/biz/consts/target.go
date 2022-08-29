@@ -6,8 +6,8 @@ const (
 	TargetTypeGroup  = "group"
 	TargetTypeScene  = "scene"
 
-	TargetStatusNormal = 1
-	TargetStatusTrash  = 2
+	TargetStatusNormal = 1 // 正常状态
+	TargetStatusTrash  = 2 // 回收站
 
-	TargetSourceNormal = 1
+	TargetSourceNormal = 1 // 添加来源
 )
