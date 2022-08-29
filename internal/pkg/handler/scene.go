@@ -33,6 +33,13 @@ func SaveFlow(ctx *gin.Context) {
 		return
 	}
 
+	if err := scene.SaveFlow(ctx, &req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
 }
 
 func GetFlow(ctx *gin.Context) {
