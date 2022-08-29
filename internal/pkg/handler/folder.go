@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// SaveFolder 创建/修改文件夹
 func SaveFolder(ctx *gin.Context) {
 	var req rao.SaveFolderReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {

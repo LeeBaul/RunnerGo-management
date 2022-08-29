@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// AuthSignup 注册
 func AuthSignup(ctx *gin.Context) {
 	var req rao.AuthSignupReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -41,6 +42,7 @@ func AuthSignup(ctx *gin.Context) {
 	return
 }
 
+// AuthLogin 登录
 func AuthLogin(ctx *gin.Context) {
 	var req rao.AuthLoginReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -67,6 +69,7 @@ func AuthLogin(ctx *gin.Context) {
 	return
 }
 
+// RefreshToken 续期
 func RefreshToken(ctx *gin.Context) {
 	tokenString := ctx.GetHeader("Authorization")
 
@@ -83,6 +86,7 @@ func RefreshToken(ctx *gin.Context) {
 	return
 }
 
+// SetUserSettings 设置用户配置
 func SetUserSettings(ctx *gin.Context) {
 	var req rao.SetUserSettingsReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -99,6 +103,7 @@ func SetUserSettings(ctx *gin.Context) {
 	return
 }
 
+// GetUserSettings 获取用户配置
 func GetUserSettings(ctx *gin.Context) {
 	settings, err := auth.GetUserSettings(ctx, jwt.GetUserIDByCtx(ctx))
 	if err != nil {

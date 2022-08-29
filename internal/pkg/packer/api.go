@@ -68,14 +68,15 @@ func TransTargetToAPIDetail(targets []*model.Target, apis []*mao.API) []*rao.API
 				json.Unmarshal(api.Query, &query)
 
 				ret = append(ret, &rao.APIDetail{
-					TargetID: target.ID,
-					ParentID: target.ParentID,
-					TeamID:   target.TeamID,
-					Name:     target.Name,
-					Method:   target.Method,
-					URL:      "",
-					Sort:     target.Sort,
-					TypeSort: target.TypeSort,
+					TargetID:   target.ID,
+					ParentID:   target.ParentID,
+					TeamID:     target.TeamID,
+					TargetType: target.TargetType,
+					Name:       target.Name,
+					Method:     target.Method,
+					URL:        api.URL,
+					Sort:       target.Sort,
+					TypeSort:   target.TypeSort,
 					Request: &rao.Request{
 						URL:         api.URL,
 						Description: api.Description,
@@ -87,9 +88,11 @@ func TransTargetToAPIDetail(targets []*model.Target, apis []*mao.API) []*rao.API
 						Cookie:      nil,
 						Resful:      nil,
 					},
-					Response:    nil,
-					Version:     target.Version,
-					Description: api.Description,
+					Response:       nil,
+					Version:        target.Version,
+					Description:    api.Description,
+					CreatedTimeSec: target.CreatedAt.Unix(),
+					UpdatedTimeSec: target.UpdatedAt.Unix(),
 				})
 			}
 		}

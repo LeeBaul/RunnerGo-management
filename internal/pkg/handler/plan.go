@@ -32,6 +32,7 @@ func ListUnderwayPlan(ctx *gin.Context) {
 	return
 }
 
+// ListPlans 测试计划列表
 func ListPlans(ctx *gin.Context) {
 	var req rao.ListPlansReq
 	if err := ctx.ShouldBind(&req); err != nil {
@@ -52,6 +53,7 @@ func ListPlans(ctx *gin.Context) {
 	return
 }
 
+// SavePlan 创建/修改计划
 func SavePlan(ctx *gin.Context) {
 	var req rao.SavePlanReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {

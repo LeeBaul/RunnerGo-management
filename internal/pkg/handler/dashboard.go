@@ -14,6 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// DashboardDefault 首页控制台
 func DashboardDefault(ctx *gin.Context) {
 	var req rao.DashboardDefaultReq
 	if err := ctx.ShouldBind(&req); err != nil {

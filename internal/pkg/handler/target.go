@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// SaveTarget 创建/修改接口
 func SaveTarget(ctx *gin.Context) {
 	var req rao.CreateTargetReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -27,6 +28,7 @@ func SaveTarget(ctx *gin.Context) {
 	return
 }
 
+// TrashTargetList 文件夹/接口回收站列表
 func TrashTargetList(ctx *gin.Context) {
 	var req rao.ListTrashTargetReq
 	if err := ctx.ShouldBind(&req); err != nil {
@@ -47,6 +49,7 @@ func TrashTargetList(ctx *gin.Context) {
 	return
 }
 
+// TrashTarget 移入回收站
 func TrashTarget(ctx *gin.Context) {
 	var req rao.DeleteTargetReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -63,6 +66,7 @@ func TrashTarget(ctx *gin.Context) {
 	return
 }
 
+// RecallTarget 从回收站恢复
 func RecallTarget(ctx *gin.Context) {
 	var req rao.RecallTargetReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -79,6 +83,7 @@ func RecallTarget(ctx *gin.Context) {
 	return
 }
 
+// DeleteTarget 回收站彻底删除
 func DeleteTarget(ctx *gin.Context) {
 	var req rao.DeleteTargetReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -95,6 +100,7 @@ func DeleteTarget(ctx *gin.Context) {
 	return
 }
 
+// ListFolderAPI 文件夹/接口列表
 func ListFolderAPI(ctx *gin.Context) {
 	var req rao.ListFolderAPIReq
 	if err := ctx.ShouldBind(&req); err != nil {
@@ -115,6 +121,7 @@ func ListFolderAPI(ctx *gin.Context) {
 	return
 }
 
+// ListGroupScene 分组/场景列表
 func ListGroupScene(ctx *gin.Context) {
 	var req rao.ListGroupSceneReq
 	if err := ctx.ShouldBind(&req); err != nil {
@@ -135,6 +142,7 @@ func ListGroupScene(ctx *gin.Context) {
 	return
 }
 
+// DetailByTargetIDs 获取接口详情
 func DetailByTargetIDs(ctx *gin.Context) {
 	var req rao.BatchGetDetailReq
 	if err := ctx.ShouldBind(&req); err != nil {

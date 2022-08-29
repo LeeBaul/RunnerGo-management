@@ -10,6 +10,7 @@ import (
 	"kp-management/internal/pkg/logic/scene"
 )
 
+// SaveScene 创建/修改场景
 func SaveScene(ctx *gin.Context) {
 	var req rao.SaveSceneReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -26,6 +27,7 @@ func SaveScene(ctx *gin.Context) {
 	return
 }
 
+// SaveFlow 保存场景流程
 func SaveFlow(ctx *gin.Context) {
 	var req rao.SaveFlowReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -42,6 +44,7 @@ func SaveFlow(ctx *gin.Context) {
 	return
 }
 
+// GetFlow 获取场景流程
 func GetFlow(ctx *gin.Context) {
 	var req rao.GetFlowReq
 	if err := ctx.ShouldBind(&req); err != nil {
