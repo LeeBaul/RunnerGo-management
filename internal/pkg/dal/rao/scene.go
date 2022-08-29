@@ -20,7 +20,7 @@ type SaveFlowReq struct {
 	SceneID int64   `json:"scene_id"`
 	TeamID  int64   `json:"team_id"`
 	Version int32   `json:"version"`
-	Flows   []*Flow `json:"flows"`
+	Flows   []*Flow `json:"flows" bson:"flows"`
 }
 
 type SaveFlowResp struct {
