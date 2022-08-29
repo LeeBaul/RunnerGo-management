@@ -1,7 +1,6 @@
 package packer
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -56,16 +55,16 @@ func TransTargetToAPIDetail(targets []*model.Target, apis []*mao.API) []*rao.API
 			if api.TargetID == target.ID {
 
 				var auth rao.Auth
-				json.Unmarshal(api.Auth, &auth)
+				bson.Unmarshal(api.Auth, &auth)
 
 				var body rao.Body
-				json.Unmarshal(api.Body, &body)
+				bson.Unmarshal(api.Body, &body)
 
 				var header rao.Header
-				json.Unmarshal(api.Header, &header)
+				bson.Unmarshal(api.Header, &header)
 
 				var query rao.Query
-				json.Unmarshal(api.Query, &query)
+				bson.Unmarshal(api.Query, &query)
 
 				ret = append(ret, &rao.APIDetail{
 					TargetID:   target.ID,
