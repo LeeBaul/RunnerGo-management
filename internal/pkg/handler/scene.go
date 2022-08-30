@@ -27,6 +27,23 @@ func SaveScene(ctx *gin.Context) {
 	return
 }
 
+func GetScene(ctx *gin.Context) {
+	var req rao.GetSceneReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	s, err := scene.GetByTargetID(ctx, req.TeamID, req.TargetID)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.SuccessWithData(ctx, rao.GetSceneResp{Scene: s})
+	return
+}
+
 // SaveFlow 保存场景流程
 func SaveFlow(ctx *gin.Context) {
 	var req rao.SaveFlowReq

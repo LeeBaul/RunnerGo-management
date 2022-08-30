@@ -31,12 +31,12 @@ func TransGroupReqToGroup(group *rao.SaveGroupReq) *mao.Group {
 func TransTargetToGroup(t *model.Target, g *mao.Group) *rao.Group {
 	var r rao.Request
 	if err := bson.Unmarshal(g.Request, &r); err != nil {
-		fmt.Sprintln(fmt.Errorf("folder.request json UnMarshal err %w", err))
+		fmt.Sprintln(fmt.Errorf("group.request json UnMarshal err %w", err))
 	}
 
 	var s rao.Script
 	if err := bson.Unmarshal(g.Script, &s); err != nil {
-		fmt.Sprintln(fmt.Errorf("folder.script json UnMarshal err %w", err))
+		fmt.Sprintln(fmt.Errorf("group.script json UnMarshal err %w", err))
 	}
 
 	return &rao.Group{
