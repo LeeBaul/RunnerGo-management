@@ -34,4 +34,11 @@ func GetGroup(ctx *gin.Context) {
 		return
 	}
 
+	g, err := group.GetByTargetID(ctx, req.TeamID, req.TargetID)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.SuccessWithData(ctx, rao.GetGroupResp{Group: g})
 }
