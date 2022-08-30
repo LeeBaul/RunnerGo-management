@@ -46,3 +46,7 @@ func Save(ctx context.Context, req *rao.SaveGroupReq, userID int64) error {
 		return err
 	})
 }
+
+func GetByTargetID(ctx context.Context) {
+
+}

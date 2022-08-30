@@ -26,3 +26,12 @@ func SaveGroup(ctx *gin.Context) {
 	response.Success(ctx)
 	return
 }
+
+func GetGroup(ctx *gin.Context) {
+	var req rao.GetGroupReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+}
