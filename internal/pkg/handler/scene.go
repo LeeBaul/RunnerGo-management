@@ -27,6 +27,7 @@ func SaveScene(ctx *gin.Context) {
 	return
 }
 
+// GetScene 获取场景
 func GetScene(ctx *gin.Context) {
 	var req rao.GetSceneReq
 	if err := ctx.ShouldBind(&req); err != nil {
