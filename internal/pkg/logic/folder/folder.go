@@ -62,7 +62,7 @@ func GetByTargetID(ctx context.Context, teamID, targetID int64) (*rao.Folder, er
 	}
 
 	var f *mao.Folder
-	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectAPI)
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectFolder)
 	err = collection.FindOne(ctx, bson.D{{"target_id", targetID}}).Decode(&f)
 	if err != nil {
 		return nil, err

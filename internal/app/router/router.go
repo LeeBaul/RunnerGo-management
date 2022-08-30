@@ -56,7 +56,7 @@ func RegisterRouter(r *gin.Engine) {
 	// 文件夹
 	folder := api.Group("/v1/folder")
 	folder.POST("/save", handler.SaveFolder)
-	folder.POST("/detail", handler.GetFolder)
+	folder.GET("/detail", handler.GetFolder)
 
 	// 接口
 	target := api.Group("/v1/target")
@@ -71,12 +71,13 @@ func RegisterRouter(r *gin.Engine) {
 	// 分组
 	group := api.Group("/v1/group")
 	group.POST("/save", handler.SaveGroup)
+	group.GET("/detail", handler.GetGroup)
 
 	// 场景
 	scene := api.Group("/v1/scene")
 	scene.POST("/save", handler.SaveScene)
 	scene.GET("/list", handler.ListGroupScene)
-
+	scene.GET("/detail")
 	scene.GET("/flow/get", handler.GetFlow)
 	scene.POST("/flow/save", handler.SaveFlow)
 
