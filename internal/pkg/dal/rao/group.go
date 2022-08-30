@@ -22,6 +22,7 @@ type GetGroupReq struct {
 }
 
 type GetGroupResp struct {
+	Group *Group `json:"group"`
 }
 
 type Group struct {
