@@ -142,15 +142,15 @@ func ListGroupScene(ctx *gin.Context) {
 	return
 }
 
-// DetailByTargetIDs 获取接口详情
-func DetailByTargetIDs(ctx *gin.Context) {
+// BatchGetTarget 获取接口详情
+func BatchGetTarget(ctx *gin.Context) {
 	var req rao.BatchGetDetailReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
 	}
 
-	targets, err := target.DetailByTargetIDs(ctx, req.TeamID, req.TargetIDs)
+	targets, err := api.DetailByTargetIDs(ctx, req.TeamID, req.TargetIDs)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
