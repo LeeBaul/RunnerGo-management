@@ -26,3 +26,20 @@ func SaveFolder(ctx *gin.Context) {
 	response.Success(ctx)
 	return
 }
+
+func GetFolder(ctx *gin.Context) {
+	var req rao.GetFolderReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	f, err := folder.GetByTargetID(ctx, req.TeamID, req.TargetID)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.SuccessWithData(ctx, rao.GetFolderResp{Folder: f})
+	return
+}

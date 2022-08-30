@@ -55,16 +55,21 @@ func TransTargetToAPIDetail(targets []*model.Target, apis []*mao.API) []*rao.API
 			if api.TargetID == target.ID {
 
 				var auth rao.Auth
-				bson.Unmarshal(api.Auth, &auth)
-
+				if err := bson.Unmarshal(api.Auth, &auth); err != nil {
+					fmt.Sprintln(fmt.Errorf("api.auth bson Unmarshal err %w", err))
+				}
 				var body rao.Body
-				bson.Unmarshal(api.Body, &body)
-
+				if err := bson.Unmarshal(api.Body, &body); err != nil {
+					fmt.Sprintln(fmt.Errorf("api.body bson Unmarshal err %w", err))
+				}
 				var header rao.Header
-				bson.Unmarshal(api.Header, &header)
-
+				if err := bson.Unmarshal(api.Header, &header); err != nil {
+					fmt.Sprintln(fmt.Errorf("api.header bson Unmarshal err %w", err))
+				}
 				var query rao.Query
-				bson.Unmarshal(api.Query, &query)
+				if err := bson.Unmarshal(api.Query, &query); err != nil {
+					fmt.Sprintln(fmt.Errorf("api.query bson Unmarshal err %w", err))
+				}
 
 				ret = append(ret, &rao.APIDetail{
 					TargetID:   target.ID,

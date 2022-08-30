@@ -56,12 +56,13 @@ func RegisterRouter(r *gin.Engine) {
 	// 文件夹
 	folder := api.Group("/v1/folder")
 	folder.POST("/save", handler.SaveFolder)
+	folder.POST("/detail", handler.GetFolder)
 
 	// 接口
 	target := api.Group("/v1/target")
 	target.POST("/save", handler.SaveTarget)
 	target.GET("/list", handler.ListFolderAPI)
-	target.GET("/detail", handler.DetailByTargetIDs)
+	target.GET("/detail", handler.BatchGetTarget)
 	target.GET("/trash_list", handler.TrashTargetList)
 	target.POST("/trash", handler.TrashTarget)
 	target.POST("/recall", handler.RecallTarget)
