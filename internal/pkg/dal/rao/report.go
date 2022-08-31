@@ -1,9 +1,9 @@
 package rao
 
 type ListReportsReq struct {
-	TeamID int64 `form:"team_id"`
-	Page   int   `form:"page"`
-	Size   int   `form:"size"`
+	TeamID int64 `form:"team_id" binding:"required,gt=0"`
+	Page   int   `form:"page,default=1"`
+	Size   int   `form:"size,default=10"`
 
 	Keyword      string `form:"keyword"`
 	StartTimeSec int64  `form:"start_time_sec"`
