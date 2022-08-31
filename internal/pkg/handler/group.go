@@ -42,4 +42,5 @@ func GetGroup(ctx *gin.Context) {
 	}
 
 	response.SuccessWithData(ctx, rao.GetGroupResp{Group: g})
+	return
 }

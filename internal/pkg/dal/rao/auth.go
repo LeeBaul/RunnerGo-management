@@ -1,10 +1,10 @@
 package rao
 
 type AuthSignupReq struct {
-	Email          string `json:"email"`
-	Password       string `json:"password"`
-	RepeatPassword string `json:"repeat_password"`
-	Nickname       string `json:"nickname"`
+	Email          string `json:"email" binding:"required,email"`
+	Password       string `json:"password" binding:"required,min=6,max=32,eqfield=RepeatPassword"`
+	RepeatPassword string `json:"repeat_password" binding:"required,min=6,max=32"`
+	Nickname       string `json:"nickname" binding:"required,min=6,max=32"`
 }
 
 type AuthSignupResp struct {
@@ -13,8 +13,8 @@ type AuthSignupResp struct {
 }
 
 type AuthLoginReq struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=6,max=32"`
 }
 
 type AuthLoginResp struct {
@@ -37,7 +37,7 @@ type GetUserSettingsResp struct {
 }
 
 type UserSettings struct {
-	CurrentTeamID int64 `json:"current_team_id"`
+	CurrentTeamID int64 `json:"current_team_id" binding:"required,gt=0"`
 }
 
 type AuthSendMailVerifyReq struct {
