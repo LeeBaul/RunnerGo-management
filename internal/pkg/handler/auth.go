@@ -94,7 +94,7 @@ func SetUserSettings(ctx *gin.Context) {
 		return
 	}
 
-	if err := auth.SetUserSettings(ctx, req.UserID, &req.UserSettings); err != nil {
+	if err := auth.SetUserSettings(ctx, jwt.GetUserIDByCtx(ctx), &req.UserSettings); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
