@@ -28,5 +28,5 @@ func List(ctx context.Context, teamID int64, limit, offset int) ([]*rao.Operatio
 		return nil, 0, err
 	}
 
-	return packer.TransOperationModelToResp(operations, users), cnt, nil
+	return packer.TransOperationsToRaoOperationList(operations, users), cnt, nil
 }

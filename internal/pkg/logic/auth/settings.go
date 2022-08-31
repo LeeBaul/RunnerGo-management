@@ -25,5 +25,5 @@ func GetUserSettings(ctx context.Context, userID int64) (*rao.UserSettings, erro
 		return nil, err
 	}
 
-	return packer.TransUserSettingsToResp(s), nil
+	return packer.TransUserSettingsToRaoUserSettings(s), nil
 }

@@ -16,8 +16,8 @@ import (
 )
 
 func Save(ctx context.Context, userID int64, req *rao.SaveFolderReq) error {
-	target := packer.TransFolderReqToTarget(req, userID)
-	folder := packer.TransFolderReqToFolder(req)
+	target := packer.TransSaveFolderReqToTargetModel(req, userID)
+	folder := packer.TransSaveFolderReqToMaoFolder(req)
 
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectFolder)
 
@@ -68,5 +68,5 @@ func GetByTargetID(ctx context.Context, teamID, targetID int64) (*rao.Folder, er
 		return nil, err
 	}
 
-	return packer.TransTargetToFolderDetail(t, f), nil
+	return packer.TransTargetToRaoFolder(t, f), nil
 }

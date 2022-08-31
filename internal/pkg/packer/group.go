@@ -10,7 +10,7 @@ import (
 	"kp-management/internal/pkg/dal/rao"
 )
 
-func TransGroupReqToGroup(group *rao.SaveGroupReq) *mao.Group {
+func TransSaveGroupReqToMaoGroup(group *rao.SaveGroupReq) *mao.Group {
 	request, err := bson.Marshal(group.Request)
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("group.request json marshal err %w", err))
@@ -28,7 +28,7 @@ func TransGroupReqToGroup(group *rao.SaveGroupReq) *mao.Group {
 	}
 }
 
-func TransTargetToGroup(t *model.Target, g *mao.Group) *rao.Group {
+func TransTargetToRaoGroup(t *model.Target, g *mao.Group) *rao.Group {
 	var r rao.Request
 	if err := bson.Unmarshal(g.Request, &r); err != nil {
 		fmt.Sprintln(fmt.Errorf("group.request json UnMarshal err %w", err))

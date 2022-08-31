@@ -10,7 +10,7 @@ type TeamMemberCount struct {
 	Cnt    int64
 }
 
-func TransTeamsModelToResp(teams []*model.Team, userTeams []*model.UserTeam, teamCnt []*TeamMemberCount) []*rao.Team {
+func TransTeamsModelToRaoTeam(teams []*model.Team, userTeams []*model.UserTeam, teamCnt []*TeamMemberCount) []*rao.Team {
 	ret := make([]*rao.Team, 0)
 	for _, t := range teams {
 		for _, ut := range userTeams {

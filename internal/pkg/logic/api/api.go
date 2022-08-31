@@ -16,8 +16,8 @@ import (
 )
 
 func Save(ctx context.Context, req *rao.SaveTargetReq, userID int64) error {
-	target := packer.TransTargetReqToTarget(req, userID)
-	api := packer.TransTargetReqToAPI(req)
+	target := packer.TransSaveTargetReqToTargetModel(req, userID)
+	api := packer.TransSaveTargetReqToMaoAPI(req)
 
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectAPI)
 
@@ -71,5 +71,5 @@ func DetailByTargetIDs(ctx context.Context, teamID int64, targetIDs []int64) ([]
 		return nil, err
 	}
 
-	return packer.TransTargetToAPIDetail(targets, apis), nil
+	return packer.TransTargetToRaoAPIDetail(targets, apis), nil
 }

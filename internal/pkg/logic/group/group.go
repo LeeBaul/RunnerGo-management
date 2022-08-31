@@ -16,8 +16,8 @@ import (
 )
 
 func Save(ctx context.Context, req *rao.SaveGroupReq, userID int64) error {
-	target := packer.TransGroupReqToTarget(req, userID)
-	group := packer.TransGroupReqToGroup(req)
+	target := packer.TransSaveGroupReqToTargetModel(req, userID)
+	group := packer.TransSaveGroupReqToMaoGroup(req)
 
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectGroup)
 
@@ -69,5 +69,5 @@ func GetByTargetID(ctx context.Context, teamID, targetID int64) (*rao.Group, err
 		return nil, err
 	}
 
-	return packer.TransTargetToGroup(t, g), nil
+	return packer.TransTargetToRaoGroup(t, g), nil
 }

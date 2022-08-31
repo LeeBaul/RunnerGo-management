@@ -34,7 +34,7 @@ func ListByUserID(ctx context.Context, userID int64) ([]*rao.Team, error) {
 		return nil, err
 	}
 
-	return packer.TransTeamsModelToResp(teams, userTeams, teamCnt), nil
+	return packer.TransTeamsModelToRaoTeam(teams, userTeams, teamCnt), nil
 }
 
 func ListMembersByTeamID(ctx context.Context, teamID int64) ([]*rao.Member, error) {
@@ -55,7 +55,7 @@ func ListMembersByTeamID(ctx context.Context, teamID int64) ([]*rao.Member, erro
 		return nil, err
 	}
 
-	return packer.TransUsersModelToMembers(users, userTeams), nil
+	return packer.TransUsersToRaoMembers(users, userTeams), nil
 }
 
 func InviteMember(ctx context.Context, teamID int64, email []string) error {

@@ -5,7 +5,7 @@ import (
 	"kp-management/internal/pkg/dal/rao"
 )
 
-func TransTargetToGroupScene(targets []*model.Target) []*rao.GroupScene {
+func TransTargetsToRaoGroupSceneList(targets []*model.Target) []*rao.GroupScene {
 	ret := make([]*rao.GroupScene, 0)
 	for _, t := range targets {
 		ret = append(ret, &rao.GroupScene{
