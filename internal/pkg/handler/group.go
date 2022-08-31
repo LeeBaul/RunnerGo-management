@@ -27,6 +27,7 @@ func SaveGroup(ctx *gin.Context) {
 	return
 }
 
+// GetGroup 获取分组
 func GetGroup(ctx *gin.Context) {
 	var req rao.GetGroupReq
 	if err := ctx.ShouldBind(&req); err != nil {

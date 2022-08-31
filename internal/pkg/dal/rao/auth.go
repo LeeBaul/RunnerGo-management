@@ -23,7 +23,6 @@ type AuthLoginResp struct {
 }
 
 type SetUserSettingsReq struct {
-	UserID       int64        `json:"user_id"`
 	UserSettings UserSettings `json:"settings"`
 }
 

@@ -27,6 +27,7 @@ func SaveFolder(ctx *gin.Context) {
 	return
 }
 
+// GetFolder 获取文件夹
 func GetFolder(ctx *gin.Context) {
 	var req rao.GetFolderReq
 	if err := ctx.ShouldBind(&req); err != nil {

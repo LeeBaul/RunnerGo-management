@@ -64,3 +64,31 @@ func TransSavePlanReqToTask(req *rao.SavePlanReq) *mao.Task {
 	}
 
 }
+
+func TransTaskToPlanResp(p *model.Plan, t *mao.Task) *rao.Plan {
+
+	return &rao.Plan{
+		PlanID:         p.ID,
+		TeamID:         p.TeamID,
+		Name:           p.Name,
+		TaskType:       p.TaskType,
+		Mode:           p.Mode,
+		Status:         p.Status,
+		RunUserID:      p.RunUserID,
+		RunUserName:    "",
+		Remark:         p.Remark,
+		CreatedTimeSec: p.CreatedAt.Unix(),
+		UpdatedTimeSec: p.UpdatedAt.Unix(),
+		ModeConf: &rao.ModeConf{
+			ReheatTime:       t.ModeConf.ReheatTime,
+			RoundNum:         t.ModeConf.RoundNum,
+			Concurrency:      t.ModeConf.Concurrency,
+			ThresholdValue:   t.ModeConf.ThresholdValue,
+			StartConcurrency: t.ModeConf.StartConcurrency,
+			Step:             t.ModeConf.Step,
+			StepRunTime:      t.ModeConf.StepRunTime,
+			MaxConcurrency:   t.ModeConf.MaxConcurrency,
+			Duration:         t.ModeConf.Duration,
+		},
+	}
+}
