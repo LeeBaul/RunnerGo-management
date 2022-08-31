@@ -28,9 +28,9 @@ type ModeConf struct {
 }
 
 type ListUnderwayPlanReq struct {
-	TeamID int64 `form:"team_id"`
-	Page   int   `form:"page"`
-	Size   int   `form:"size"`
+	TeamID int64 `form:"team_id" binding:"required,gt=0"`
+	Page   int   `form:"page,default=1"`
+	Size   int   `form:"size,default=10"`
 }
 
 type ListUnderwayPlanResp struct {
@@ -39,9 +39,9 @@ type ListUnderwayPlanResp struct {
 }
 
 type ListPlansReq struct {
-	TeamID int64 `form:"team_id"`
-	Page   int   `form:"page"`
-	Size   int   `form:"size"`
+	TeamID int64 `form:"team_id" binding:"required,gt=0"`
+	Page   int   `form:"page,default=1"`
+	Size   int   `form:"size,default=10"`
 
 	Keyword      string `form:"keyword"`
 	StartTimeSec int64  `form:"start_time_sec"`
@@ -55,10 +55,10 @@ type ListPlansResp struct {
 
 type SavePlanReq struct {
 	PlanID   int64     `json:"plan_id"`
-	TeamID   int64     `json:"team_id"`
-	Name     string    `json:"name"`
-	TaskType int32     `json:"task_type"`
-	Mode     int32     `json:"mode"`
+	TeamID   int64     `json:"team_id" binding:"required,gt=0"`
+	Name     string    `json:"name" binding:"required,min=4,max=32"`
+	TaskType int32     `json:"task_type" binding:"required,gt=0"`
+	Mode     int32     `json:"mode" binding:"required,gt=0"`
 	Remark   string    `json:"remark"`
 	ModeConf *ModeConf `json:"mode_conf"`
 }
@@ -67,8 +67,8 @@ type SavePlanResp struct {
 }
 
 type GetPlanReq struct {
-	TeamID int64 `form:"team_id"`
-	PlanID int64 `form:"plan_id"`
+	TeamID int64 `form:"team_id" binding:"required,gt=0"`
+	PlanID int64 `form:"plan_id" binding:"required,gt=0"`
 }
 
 type GetPlanResp struct {
