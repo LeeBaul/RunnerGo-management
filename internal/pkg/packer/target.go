@@ -24,7 +24,7 @@ func TransFolderReqToTarget(folder *rao.SaveFolderReq, userID int64) *model.Targ
 	}
 }
 
-func TransTargetReqToTarget(target *rao.CreateTargetReq, userID int64) *model.Target {
+func TransTargetReqToTarget(target *rao.SaveTargetReq, userID int64) *model.Target {
 	return &model.Target{
 		ID:            target.TargetID,
 		TeamID:        target.TeamID,

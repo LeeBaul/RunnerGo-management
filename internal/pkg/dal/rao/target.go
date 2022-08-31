@@ -1,14 +1,13 @@
 package rao
 
-type CreateTargetReq struct {
+type SaveTargetReq struct {
 	TargetID    int64     `json:"target_id"`
 	ParentID    int64     `json:"parent_id"`
-	TeamID      int64     `json:"team_id"`
-	ProjectID   string    `json:"project_id"`
+	TeamID      int64     `json:"team_id" binding:"required,gt=0"`
 	Mark        string    `json:"mark"`
-	Name        string    `json:"name"`
-	Method      string    `json:"method"`
-	URL         string    `json:"url"`
+	Name        string    `json:"name" binding:"required,gt=0"`
+	Method      string    `json:"method" binding:"required"`
+	URL         string    `json:"url" binding:"required"`
 	Sort        int32     `json:"sort"`
 	TypeSort    int32     `json:"type_sort"`
 	Request     *Request  `json:"request"`
@@ -17,34 +16,34 @@ type CreateTargetReq struct {
 	Description string    `json:"description"`
 }
 
-type CreateTargetResp struct {
+type SaveTargetResp struct {
 }
 
 type TrashTargetReq struct {
-	TargetID int64 `json:"target_id"`
+	TargetID int64 `json:"target_id" binding:"required,gt=0"`
 }
 
 type TrashTargetResp struct {
 }
 
 type RecallTargetReq struct {
-	TargetID int64 `json:"target_id"`
+	TargetID int64 `json:"target_id" binding:"required,gt=0"`
 }
 
 type RecallTargetResp struct {
 }
 
 type DeleteTargetReq struct {
-	TargetID int64 `json:"target_id"`
+	TargetID int64 `json:"target_id" binding:"required,gt=0"`
 }
 
 type DeleteTargetResp struct {
 }
 
 type ListTrashTargetReq struct {
-	TeamID int64 `form:"team_id"`
-	Page   int   `form:"page"`
-	Size   int   `form:"size"`
+	TeamID int64 `form:"team_id" binding:"required,gt=0"`
+	Page   int   `form:"page,default=1"`
+	Size   int   `form:"size,default=10"`
 }
 
 type ListTrashTargetResp struct {
@@ -53,9 +52,9 @@ type ListTrashTargetResp struct {
 }
 
 type ListFolderAPIReq struct {
-	TeamID int64 `form:"team_id"`
-	Page   int   `form:"page"`
-	Size   int   `form:"size"`
+	TeamID int64 `form:"team_id" binding:"required,gt=0"`
+	Page   int   `form:"page,default=1"`
+	Size   int   `form:"size,default=10"`
 }
 
 type ListFolderAPIResp struct {
@@ -78,9 +77,9 @@ type FolderAPI struct {
 }
 
 type ListGroupSceneReq struct {
-	TeamID int64 `form:"team_id"`
-	Page   int   `form:"page"`
-	Size   int   `form:"size"`
+	TeamID int64 `form:"team_id" binding:"required,gt=0"`
+	Page   int   `form:"page,default=1"`
+	Size   int   `form:"size,default=10"`
 }
 
 type ListGroupSceneResp struct {
@@ -103,8 +102,8 @@ type GroupScene struct {
 }
 
 type BatchGetDetailReq struct {
-	TeamID    int64   `form:"team_id"`
-	TargetIDs []int64 `form:"target_ids"`
+	TeamID    int64   `form:"team_id" binding:"required,gt=0"`
+	TargetIDs []int64 `form:"target_ids" binding:"required,gt=0"`
 }
 
 type BatchGetDetailResp struct {

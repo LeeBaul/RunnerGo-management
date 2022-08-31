@@ -15,7 +15,7 @@ import (
 	"kp-management/internal/pkg/packer"
 )
 
-func Save(ctx context.Context, req *rao.CreateTargetReq, userID int64) error {
+func Save(ctx context.Context, req *rao.SaveTargetReq, userID int64) error {
 	target := packer.TransTargetReqToTarget(req, userID)
 	api := packer.TransTargetReqToAPI(req)
 

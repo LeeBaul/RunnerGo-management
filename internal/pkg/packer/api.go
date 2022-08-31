@@ -10,7 +10,7 @@ import (
 	"kp-management/internal/pkg/dal/rao"
 )
 
-func TransTargetReqToAPI(target *rao.CreateTargetReq) *mao.API {
+func TransTargetReqToAPI(target *rao.SaveTargetReq) *mao.API {
 	if target.Request == nil {
 		fmt.Sprintln(fmt.Errorf("target.request not found request"))
 		return nil
