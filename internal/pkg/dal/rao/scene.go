@@ -1,10 +1,10 @@
 package rao
 
 type SaveSceneReq struct {
-	TeamID   int64    `json:"team_id"`
+	TeamID   int64    `json:"team_id" binding:"required,gt=0"`
 	TargetID int64    `json:"target_id"`
 	ParentID int64    `json:"parent_id"`
-	Name     string   `json:"name"`
+	Name     string   `json:"name" binding:"required,min=4,max=32"`
 	Method   string   `json:"method"`
 	Sort     int32    `json:"sort"`
 	TypeSort int32    `json:"type_sort"`
@@ -17,8 +17,8 @@ type SaveSceneResp struct {
 }
 
 type GetSceneReq struct {
-	TeamID   int64 `form:"team_id"`
-	TargetID int64 `form:"target_id"`
+	TeamID   int64 `form:"team_id" binding:"required,gt=0"`
+	TargetID int64 `form:"target_id" binding:"required,gt=0"`
 }
 
 type GetSceneResp struct {
@@ -39,8 +39,8 @@ type Scene struct {
 }
 
 type SaveFlowReq struct {
-	SceneID int64   `json:"scene_id"`
-	TeamID  int64   `json:"team_id"`
+	SceneID int64   `json:"scene_id" binding:"required,gt=0"`
+	TeamID  int64   `json:"team_id" binding:"required,gt=0"`
 	Version int32   `json:"version"`
 	Flows   []*Flow `json:"flows" bson:"flows"`
 }
@@ -90,8 +90,8 @@ type API struct {
 }
 
 type GetFlowReq struct {
-	SceneID int64 `form:"scene_id"`
-	TeamID  int64 `form:"team_id"`
+	SceneID int64 `form:"scene_id" binding:"required,gt=0"`
+	TeamID  int64 `form:"team_id" binding:"required,gt=0"`
 }
 
 type GetFlowResp struct {
