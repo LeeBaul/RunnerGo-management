@@ -1,7 +1,7 @@
 package rao
 
 type DashboardDefaultReq struct {
-	TeamID int64 `form:"team_id"`
+	TeamID int64 `form:"team_id" binding:"required,gt=0"`
 }
 
 type DashboardDefaultResp struct {
