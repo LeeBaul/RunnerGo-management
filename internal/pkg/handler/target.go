@@ -13,7 +13,7 @@ import (
 
 // SaveTarget 创建/修改接口
 func SaveTarget(ctx *gin.Context) {
-	var req rao.CreateTargetReq
+	var req rao.SaveTargetReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return

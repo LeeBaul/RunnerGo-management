@@ -16,8 +16,8 @@ import (
 )
 
 func Save(ctx context.Context, req *rao.SaveSceneReq, userID int64) error {
-	target := packer.TransSceneReqToTarget(req, userID)
-	scene := packer.TransSceneReqToScene(req)
+	target := packer.TransSaveSceneReqToTargetModel(req, userID)
+	scene := packer.TransSaveSceneReqToMaoScene(req)
 
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectScene)
 
@@ -68,5 +68,5 @@ func GetByTargetID(ctx context.Context, teamID, targetID int64) (*rao.Scene, err
 		return nil, err
 	}
 
-	return packer.TransTargetToScene(t, s), nil
+	return packer.TransTargetToRaoScene(t, s), nil
 }

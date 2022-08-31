@@ -10,7 +10,7 @@ import (
 	"kp-management/internal/pkg/dal/rao"
 )
 
-func TransFolderReqToFolder(folder *rao.SaveFolderReq) *mao.Folder {
+func TransSaveFolderReqToMaoFolder(folder *rao.SaveFolderReq) *mao.Folder {
 	request, err := bson.Marshal(folder.Request)
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("folder.request json marshal err %w", err))
@@ -28,7 +28,7 @@ func TransFolderReqToFolder(folder *rao.SaveFolderReq) *mao.Folder {
 	}
 }
 
-func TransTargetToFolderDetail(t *model.Target, f *mao.Folder) *rao.Folder {
+func TransTargetToRaoFolder(t *model.Target, f *mao.Folder) *rao.Folder {
 	var r rao.Request
 	if err := bson.Unmarshal(f.Request, &r); err != nil {
 		fmt.Sprintln(fmt.Errorf("folder.request json UnMarshal err %w", err))

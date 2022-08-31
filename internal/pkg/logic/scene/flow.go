@@ -14,7 +14,7 @@ import (
 )
 
 func SaveFlow(ctx context.Context, req *rao.SaveFlowReq) error {
-	flow := packer.TransSaveFlowReqToFlow(req)
+	flow := packer.TransSaveFlowReqToMaoFlow(req)
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectFlow)
 
 	err := collection.FindOne(ctx, bson.D{{"scene_id", req.SceneID}}).Err()
@@ -39,5 +39,5 @@ func GetFlow(ctx context.Context, sceneID int64) (*rao.GetFlowResp, error) {
 		return nil, err
 	}
 
-	return packer.TransMongoFlowToResp(&ret), nil
+	return packer.TransMaoFlowToRaoGetFowResp(&ret), nil
 }

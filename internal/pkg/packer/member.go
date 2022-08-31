@@ -5,7 +5,7 @@ import (
 	"kp-management/internal/pkg/dal/rao"
 )
 
-func TransUsersModelToMembers(users []*model.User, userTeams []*model.UserTeam) []*rao.Member {
+func TransUsersToRaoMembers(users []*model.User, userTeams []*model.UserTeam) []*rao.Member {
 	ret := make([]*rao.Member, 0)
 	for _, u := range users {
 		for _, ut := range userTeams {

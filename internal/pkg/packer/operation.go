@@ -5,7 +5,7 @@ import (
 	"kp-management/internal/pkg/dal/rao"
 )
 
-func TransOperationModelToResp(operations []*model.Operation, users []*model.User) []*rao.Operation {
+func TransOperationsToRaoOperationList(operations []*model.Operation, users []*model.User) []*rao.Operation {
 	ret := make([]*rao.Operation, 0)
 	for _, o := range operations {
 

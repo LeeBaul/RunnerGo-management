@@ -5,7 +5,7 @@ import (
 	"kp-management/internal/pkg/dal/rao"
 )
 
-func TransUserSettingsToResp(s *model.Setting) *rao.UserSettings {
+func TransUserSettingsToRaoUserSettings(s *model.Setting) *rao.UserSettings {
 	return &rao.UserSettings{
 		CurrentTeamID: s.TeamID,
 	}

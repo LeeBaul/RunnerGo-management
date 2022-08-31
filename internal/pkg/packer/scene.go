@@ -10,7 +10,7 @@ import (
 	"kp-management/internal/pkg/dal/rao"
 )
 
-func TransSceneReqToScene(scene *rao.SaveSceneReq) *mao.Scene {
+func TransSaveSceneReqToMaoScene(scene *rao.SaveSceneReq) *mao.Scene {
 	request, err := bson.Marshal(scene.Request)
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("scene.request json marshal err %w", err))
@@ -28,7 +28,7 @@ func TransSceneReqToScene(scene *rao.SaveSceneReq) *mao.Scene {
 	}
 }
 
-func TransTargetToScene(t *model.Target, scene *mao.Scene) *rao.Scene {
+func TransTargetToRaoScene(t *model.Target, scene *mao.Scene) *rao.Scene {
 	var r rao.Request
 	if err := bson.Unmarshal(scene.Request, &r); err != nil {
 		fmt.Sprintln(fmt.Errorf("scene.request json UnMarshal err %w", err))

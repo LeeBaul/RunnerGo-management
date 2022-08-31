@@ -37,7 +37,7 @@ func ListByStatus(ctx context.Context, teamID int64, status int32, limit, offset
 		return nil, 0, err
 	}
 
-	return packer.TransPlansToResp(ret, users), cnt, nil
+	return packer.TransPlansToRaoPlanList(ret, users), cnt, nil
 }
 
 func CountByTeamID(ctx context.Context, teamID int64) (int64, error) {
@@ -89,12 +89,12 @@ func ListByTeamID(ctx context.Context, teamID int64, limit, offset int, keyword 
 		return nil, 0, err
 	}
 
-	return packer.TransPlansToResp(ret, users), cnt, nil
+	return packer.TransPlansToRaoPlanList(ret, users), cnt, nil
 }
 
 func Save(ctx context.Context, req *rao.SavePlanReq, userID int64) error {
-	plan := packer.TransSavePlanReqToModel(req, userID)
-	task := packer.TransSavePlanReqToTask(req)
+	plan := packer.TransSavePlanReqToPlanModel(req, userID)
+	task := packer.TransSavePlanReqToMaoTask(req)
 
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectTask)
 
@@ -139,5 +139,5 @@ func GetByPlanID(ctx context.Context, teamID, planID int64) (*rao.Plan, error) {
 		return nil, err
 	}
 
-	return packer.TransTaskToPlanResp(p, t), nil
+	return packer.TransTaskToRaoPlan(p, t), nil
 }

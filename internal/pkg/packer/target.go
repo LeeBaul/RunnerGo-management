@@ -6,7 +6,7 @@ import (
 	"kp-management/internal/pkg/dal/rao"
 )
 
-func TransFolderReqToTarget(folder *rao.SaveFolderReq, userID int64) *model.Target {
+func TransSaveFolderReqToTargetModel(folder *rao.SaveFolderReq, userID int64) *model.Target {
 	return &model.Target{
 		ID:            folder.TargetID,
 		TeamID:        folder.TeamID,
@@ -24,7 +24,7 @@ func TransFolderReqToTarget(folder *rao.SaveFolderReq, userID int64) *model.Targ
 	}
 }
 
-func TransTargetReqToTarget(target *rao.CreateTargetReq, userID int64) *model.Target {
+func TransSaveTargetReqToTargetModel(target *rao.SaveTargetReq, userID int64) *model.Target {
 	return &model.Target{
 		ID:            target.TargetID,
 		TeamID:        target.TeamID,
@@ -42,7 +42,7 @@ func TransTargetReqToTarget(target *rao.CreateTargetReq, userID int64) *model.Ta
 	}
 }
 
-func TransGroupReqToTarget(group *rao.SaveGroupReq, userID int64) *model.Target {
+func TransSaveGroupReqToTargetModel(group *rao.SaveGroupReq, userID int64) *model.Target {
 	return &model.Target{
 		ID:            group.TargetID,
 		TeamID:        group.TeamID,
@@ -60,7 +60,7 @@ func TransGroupReqToTarget(group *rao.SaveGroupReq, userID int64) *model.Target 
 	}
 }
 
-func TransSceneReqToTarget(scene *rao.SaveSceneReq, userID int64) *model.Target {
+func TransSaveSceneReqToTargetModel(scene *rao.SaveSceneReq, userID int64) *model.Target {
 	return &model.Target{
 		ID:            scene.TargetID,
 		TeamID:        scene.TeamID,

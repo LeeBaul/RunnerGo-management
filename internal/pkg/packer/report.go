@@ -5,7 +5,7 @@ import (
 	"kp-management/internal/pkg/dal/rao"
 )
 
-func TransReportModelToResp(reports []*model.Report, users []*model.User) []*rao.Report {
+func TransReportModelToRaoReportList(reports []*model.Report, users []*model.User) []*rao.Report {
 	ret := make([]*rao.Report, 0)
 	for _, r := range reports {
 		for _, u := range users {

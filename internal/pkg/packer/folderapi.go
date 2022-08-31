@@ -5,7 +5,7 @@ import (
 	"kp-management/internal/pkg/dal/rao"
 )
 
-func TransTargetToFolderAPI(targets []*model.Target) []*rao.FolderAPI {
+func TransTargetToRaoFolderAPIList(targets []*model.Target) []*rao.FolderAPI {
 	ret := make([]*rao.FolderAPI, 0)
 	for _, t := range targets {
 		ret = append(ret, &rao.FolderAPI{

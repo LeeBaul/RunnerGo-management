@@ -7,7 +7,7 @@ import (
 	"kp-management/internal/pkg/dal/rao"
 )
 
-func TransPlansToResp(plans []*model.Plan, users []*model.User) []*rao.Plan {
+func TransPlansToRaoPlanList(plans []*model.Plan, users []*model.User) []*rao.Plan {
 	ret := make([]*rao.Plan, 0)
 	for _, p := range plans {
 		for _, u := range users {
@@ -32,7 +32,7 @@ func TransPlansToResp(plans []*model.Plan, users []*model.User) []*rao.Plan {
 	return ret
 }
 
-func TransSavePlanReqToModel(req *rao.SavePlanReq, userID int64) *model.Plan {
+func TransSavePlanReqToPlanModel(req *rao.SavePlanReq, userID int64) *model.Plan {
 	return &model.Plan{
 		ID:           req.PlanID,
 		TeamID:       req.TeamID,
@@ -45,7 +45,7 @@ func TransSavePlanReqToModel(req *rao.SavePlanReq, userID int64) *model.Plan {
 	}
 }
 
-func TransSavePlanReqToTask(req *rao.SavePlanReq) *mao.Task {
+func TransSavePlanReqToMaoTask(req *rao.SavePlanReq) *mao.Task {
 	mc := req.ModeConf
 
 	return &mao.Task{
@@ -65,7 +65,7 @@ func TransSavePlanReqToTask(req *rao.SavePlanReq) *mao.Task {
 
 }
 
-func TransTaskToPlanResp(p *model.Plan, t *mao.Task) *rao.Plan {
+func TransTaskToRaoPlan(p *model.Plan, t *mao.Task) *rao.Plan {
 
 	return &rao.Plan{
 		PlanID:         p.ID,

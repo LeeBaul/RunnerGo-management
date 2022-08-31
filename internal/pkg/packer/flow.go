@@ -8,7 +8,7 @@ import (
 	"kp-management/internal/pkg/dal/rao"
 )
 
-func TransSaveFlowReqToFlow(req *rao.SaveFlowReq) *mao.Flow {
+func TransSaveFlowReqToMaoFlow(req *rao.SaveFlowReq) *mao.Flow {
 	flowByte, err := json.Marshal(req.Flows)
 	if err != nil {
 		fmt.Errorf("flow.flows json marshal err %w", err)
@@ -22,7 +22,7 @@ func TransSaveFlowReqToFlow(req *rao.SaveFlowReq) *mao.Flow {
 	}
 }
 
-func TransMongoFlowToResp(f *mao.Flow) *rao.GetFlowResp {
+func TransMaoFlowToRaoGetFowResp(f *mao.Flow) *rao.GetFlowResp {
 	var flows []*rao.Flow
 	if err := json.Unmarshal([]byte(f.Flows), &flows); err != nil {
 		fmt.Sprintln(fmt.Errorf("flow.flows json unmarshal err %w", err))

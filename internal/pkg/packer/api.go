@@ -10,7 +10,7 @@ import (
 	"kp-management/internal/pkg/dal/rao"
 )
 
-func TransTargetReqToAPI(target *rao.CreateTargetReq) *mao.API {
+func TransSaveTargetReqToMaoAPI(target *rao.SaveTargetReq) *mao.API {
 	if target.Request == nil {
 		fmt.Sprintln(fmt.Errorf("target.request not found request"))
 		return nil
@@ -47,7 +47,7 @@ func TransTargetReqToAPI(target *rao.CreateTargetReq) *mao.API {
 	}
 }
 
-func TransTargetToAPIDetail(targets []*model.Target, apis []*mao.API) []*rao.APIDetail {
+func TransTargetToRaoAPIDetail(targets []*model.Target, apis []*mao.API) []*rao.APIDetail {
 	ret := make([]*rao.APIDetail, 0, len(targets))
 
 	for _, target := range targets {

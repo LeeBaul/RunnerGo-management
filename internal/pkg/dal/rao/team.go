@@ -16,7 +16,7 @@ type Team struct {
 }
 
 type ListMembersReq struct {
-	TeamID int64 `form:"team_id"`
+	TeamID int64 `form:"team_id" binding:"required,gt=0"`
 }
 
 type ListMembersResp struct {
@@ -33,7 +33,7 @@ type Member struct {
 }
 
 type InviteMemberReq struct {
-	TeamID      int64    `json:"team_id"`
+	TeamID      int64    `json:"team_id" binding:"required,gt=0"`
 	MemberEmail []string `json:"member_email"`
 }
 
@@ -41,8 +41,8 @@ type InviteMemberResp struct {
 }
 
 type RemoveMemberReq struct {
-	TeamID   int64 `json:"team_id"`
-	MemberID int64 `json:"member_id"`
+	TeamID   int64 `json:"team_id" binding:"required,gt=0"`
+	MemberID int64 `json:"member_id" binding:"required,gt=0"`
 }
 
 type RemoveMemberResp struct {

@@ -64,5 +64,5 @@ func ListByTeamID(ctx context.Context, teamID int64, limit, offset int, keyword 
 		return nil, 0, err
 	}
 
-	return packer.TransReportModelToResp(reports, users), cnt, nil
+	return packer.TransReportModelToRaoReportList(reports, users), cnt, nil
 }
