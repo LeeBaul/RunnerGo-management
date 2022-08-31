@@ -69,3 +69,20 @@ func SavePlan(ctx *gin.Context) {
 	response.Success(ctx)
 	return
 }
+
+func GetPlan(ctx *gin.Context) {
+	var req rao.GetPlanReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	p, err := plan.GetByPlanID(ctx, req.TeamID, req.PlanID)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.SuccessWithData(ctx, rao.GetPlanResp{Plan: p})
+	return
+}

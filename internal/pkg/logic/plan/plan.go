@@ -11,6 +11,7 @@ import (
 	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/biz/record"
 	"kp-management/internal/pkg/dal"
+	"kp-management/internal/pkg/dal/mao"
 	"kp-management/internal/pkg/dal/query"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/packer"
@@ -121,4 +122,22 @@ func Save(ctx context.Context, req *rao.SavePlanReq, userID int64) error {
 
 		return err
 	})
+}
+
+func GetByPlanID(ctx context.Context, teamID, planID int64) (*rao.Plan, error) {
+
+	tx := query.Use(dal.DB()).Plan
+	p, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID), tx.ID.Eq(planID)).First()
+	if err != nil {
+		return nil, err
+	}
+
+	var t *mao.Task
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectTask)
+	err = collection.FindOne(ctx, bson.D{{"plan_id", planID}}).Decode(&t)
+	if err != nil {
+		return nil, err
+	}
+
+	return packer.TransTaskToPlanResp(p, t), nil
 }
