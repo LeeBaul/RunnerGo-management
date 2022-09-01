@@ -13,68 +13,73 @@ import (
 
 func Use(db *gorm.DB) *Query {
 	return &Query{
-		db:        db,
-		Operation: newOperation(db),
-		Plan:      newPlan(db),
-		Report:    newReport(db),
-		Setting:   newSetting(db),
-		Target:    newTarget(db),
-		Team:      newTeam(db),
-		User:      newUser(db),
-		UserTeam:  newUserTeam(db),
+		db:            db,
+		Operation:     newOperation(db),
+		Plan:          newPlan(db),
+		Report:        newReport(db),
+		ReportMachine: newReportMachine(db),
+		Setting:       newSetting(db),
+		Target:        newTarget(db),
+		Team:          newTeam(db),
+		User:          newUser(db),
+		UserTeam:      newUserTeam(db),
 	}
 }
 
 type Query struct {
 	db *gorm.DB
 
-	Operation operation
-	Plan      plan
-	Report    report
-	Setting   setting
-	Target    target
-	Team      team
-	User      user
-	UserTeam  userTeam
+	Operation     operation
+	Plan          plan
+	Report        report
+	ReportMachine reportMachine
+	Setting       setting
+	Target        target
+	Team          team
+	User          user
+	UserTeam      userTeam
 }
 
 func (q *Query) Available() bool { return q.db != nil }
 
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
-		db:        db,
-		Operation: q.Operation.clone(db),
-		Plan:      q.Plan.clone(db),
-		Report:    q.Report.clone(db),
-		Setting:   q.Setting.clone(db),
-		Target:    q.Target.clone(db),
-		Team:      q.Team.clone(db),
-		User:      q.User.clone(db),
-		UserTeam:  q.UserTeam.clone(db),
+		db:            db,
+		Operation:     q.Operation.clone(db),
+		Plan:          q.Plan.clone(db),
+		Report:        q.Report.clone(db),
+		ReportMachine: q.ReportMachine.clone(db),
+		Setting:       q.Setting.clone(db),
+		Target:        q.Target.clone(db),
+		Team:          q.Team.clone(db),
+		User:          q.User.clone(db),
+		UserTeam:      q.UserTeam.clone(db),
 	}
 }
 
 type queryCtx struct {
-	Operation *operationDo
-	Plan      *planDo
-	Report    *reportDo
-	Setting   *settingDo
-	Target    *targetDo
-	Team      *teamDo
-	User      *userDo
-	UserTeam  *userTeamDo
+	Operation     *operationDo
+	Plan          *planDo
+	Report        *reportDo
+	ReportMachine *reportMachineDo
+	Setting       *settingDo
+	Target        *targetDo
+	Team          *teamDo
+	User          *userDo
+	UserTeam      *userTeamDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
-		Operation: q.Operation.WithContext(ctx),
-		Plan:      q.Plan.WithContext(ctx),
-		Report:    q.Report.WithContext(ctx),
-		Setting:   q.Setting.WithContext(ctx),
-		Target:    q.Target.WithContext(ctx),
-		Team:      q.Team.WithContext(ctx),
-		User:      q.User.WithContext(ctx),
-		UserTeam:  q.UserTeam.WithContext(ctx),
+		Operation:     q.Operation.WithContext(ctx),
+		Plan:          q.Plan.WithContext(ctx),
+		Report:        q.Report.WithContext(ctx),
+		ReportMachine: q.ReportMachine.WithContext(ctx),
+		Setting:       q.Setting.WithContext(ctx),
+		Target:        q.Target.WithContext(ctx),
+		Team:          q.Team.WithContext(ctx),
+		User:          q.User.WithContext(ctx),
+		UserTeam:      q.UserTeam.WithContext(ctx),
 	}
 }
 

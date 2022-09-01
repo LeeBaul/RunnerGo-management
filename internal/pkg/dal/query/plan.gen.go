@@ -26,7 +26,7 @@ func newPlan(db *gorm.DB) plan {
 	_plan.planDo.UseModel(&model.Plan{})
 
 	tableName := _plan.planDo.TableName()
-	_plan.ALL = field.NewField(tableName, "*")
+	_plan.ALL = field.NewAsterisk(tableName)
 	_plan.ID = field.NewInt64(tableName, "id")
 	_plan.TeamID = field.NewInt64(tableName, "team_id")
 	_plan.Name = field.NewString(tableName, "name")
@@ -48,7 +48,7 @@ func newPlan(db *gorm.DB) plan {
 type plan struct {
 	planDo planDo
 
-	ALL          field.Field
+	ALL          field.Asterisk
 	ID           field.Int64
 	TeamID       field.Int64
 	Name         field.String
@@ -76,7 +76,7 @@ func (p plan) As(alias string) *plan {
 }
 
 func (p *plan) updateTableName(table string) *plan {
-	p.ALL = field.NewField(table, "*")
+	p.ALL = field.NewAsterisk(table)
 	p.ID = field.NewInt64(table, "id")
 	p.TeamID = field.NewInt64(table, "team_id")
 	p.Name = field.NewString(table, "name")

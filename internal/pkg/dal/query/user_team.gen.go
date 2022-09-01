@@ -26,7 +26,7 @@ func newUserTeam(db *gorm.DB) userTeam {
 	_userTeam.userTeamDo.UseModel(&model.UserTeam{})
 
 	tableName := _userTeam.userTeamDo.TableName()
-	_userTeam.ALL = field.NewField(tableName, "*")
+	_userTeam.ALL = field.NewAsterisk(tableName)
 	_userTeam.ID = field.NewInt64(tableName, "id")
 	_userTeam.UserID = field.NewInt64(tableName, "user_id")
 	_userTeam.TeamID = field.NewInt64(tableName, "team_id")
@@ -44,7 +44,7 @@ func newUserTeam(db *gorm.DB) userTeam {
 type userTeam struct {
 	userTeamDo userTeamDo
 
-	ALL       field.Field
+	ALL       field.Asterisk
 	ID        field.Int64
 	UserID    field.Int64
 	TeamID    field.Int64
@@ -68,7 +68,7 @@ func (u userTeam) As(alias string) *userTeam {
 }
 
 func (u *userTeam) updateTableName(table string) *userTeam {
-	u.ALL = field.NewField(table, "*")
+	u.ALL = field.NewAsterisk(table)
 	u.ID = field.NewInt64(table, "id")
 	u.UserID = field.NewInt64(table, "user_id")
 	u.TeamID = field.NewInt64(table, "team_id")

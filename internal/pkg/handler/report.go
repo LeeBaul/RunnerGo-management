@@ -29,3 +29,20 @@ func ListReports(ctx *gin.Context) {
 	})
 	return
 }
+
+func ListMachines(ctx *gin.Context) {
+	var req rao.ListMachineReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	resp, err := report.ListMachines(ctx, req.ReportID)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.SuccessWithData(ctx, resp)
+	return
+}

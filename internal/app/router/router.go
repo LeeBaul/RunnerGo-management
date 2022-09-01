@@ -91,6 +91,7 @@ func RegisterRouter(r *gin.Engine) {
 	report := api.Group("/v1/report")
 	report.GET("/list", handler.ListReports)
 	report.GET("/detail")
+	report.GET("/machine", handler.ListMachines)
 
 	// 操作日志
 	operation := api.Group("/v1/operation")

@@ -26,7 +26,7 @@ func newTarget(db *gorm.DB) target {
 	_target.targetDo.UseModel(&model.Target{})
 
 	tableName := _target.targetDo.TableName()
-	_target.ALL = field.NewField(tableName, "*")
+	_target.ALL = field.NewAsterisk(tableName)
 	_target.ID = field.NewInt64(tableName, "id")
 	_target.TeamID = field.NewInt64(tableName, "team_id")
 	_target.TargetType = field.NewString(tableName, "target_type")
@@ -52,7 +52,7 @@ func newTarget(db *gorm.DB) target {
 type target struct {
 	targetDo targetDo
 
-	ALL           field.Field
+	ALL           field.Asterisk
 	ID            field.Int64
 	TeamID        field.Int64
 	TargetType    field.String
@@ -84,7 +84,7 @@ func (t target) As(alias string) *target {
 }
 
 func (t *target) updateTableName(table string) *target {
-	t.ALL = field.NewField(table, "*")
+	t.ALL = field.NewAsterisk(table)
 	t.ID = field.NewInt64(table, "id")
 	t.TeamID = field.NewInt64(table, "team_id")
 	t.TargetType = field.NewString(table, "target_type")

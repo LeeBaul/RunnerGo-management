@@ -26,7 +26,7 @@ func newSetting(db *gorm.DB) setting {
 	_setting.settingDo.UseModel(&model.Setting{})
 
 	tableName := _setting.settingDo.TableName()
-	_setting.ALL = field.NewField(tableName, "*")
+	_setting.ALL = field.NewAsterisk(tableName)
 	_setting.ID = field.NewInt64(tableName, "id")
 	_setting.UserID = field.NewInt64(tableName, "user_id")
 	_setting.TeamID = field.NewInt64(tableName, "team_id")
@@ -42,7 +42,7 @@ func newSetting(db *gorm.DB) setting {
 type setting struct {
 	settingDo settingDo
 
-	ALL       field.Field
+	ALL       field.Asterisk
 	ID        field.Int64
 	UserID    field.Int64
 	TeamID    field.Int64
@@ -64,7 +64,7 @@ func (s setting) As(alias string) *setting {
 }
 
 func (s *setting) updateTableName(table string) *setting {
-	s.ALL = field.NewField(table, "*")
+	s.ALL = field.NewAsterisk(table)
 	s.ID = field.NewInt64(table, "id")
 	s.UserID = field.NewInt64(table, "user_id")
 	s.TeamID = field.NewInt64(table, "team_id")

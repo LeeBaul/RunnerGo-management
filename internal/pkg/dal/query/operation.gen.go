@@ -26,7 +26,7 @@ func newOperation(db *gorm.DB) operation {
 	_operation.operationDo.UseModel(&model.Operation{})
 
 	tableName := _operation.operationDo.TableName()
-	_operation.ALL = field.NewField(tableName, "*")
+	_operation.ALL = field.NewAsterisk(tableName)
 	_operation.ID = field.NewInt64(tableName, "id")
 	_operation.TeamID = field.NewInt64(tableName, "team_id")
 	_operation.UserID = field.NewInt64(tableName, "user_id")
@@ -44,7 +44,7 @@ func newOperation(db *gorm.DB) operation {
 type operation struct {
 	operationDo operationDo
 
-	ALL       field.Field
+	ALL       field.Asterisk
 	ID        field.Int64
 	TeamID    field.Int64
 	UserID    field.Int64
@@ -68,7 +68,7 @@ func (o operation) As(alias string) *operation {
 }
 
 func (o *operation) updateTableName(table string) *operation {
-	o.ALL = field.NewField(table, "*")
+	o.ALL = field.NewAsterisk(table)
 	o.ID = field.NewInt64(table, "id")
 	o.TeamID = field.NewInt64(table, "team_id")
 	o.UserID = field.NewInt64(table, "user_id")

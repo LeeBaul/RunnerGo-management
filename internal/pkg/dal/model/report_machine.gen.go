@@ -10,19 +10,19 @@ import (
 	"gorm.io/gorm"
 )
 
-const TableNameSetting = "setting"
+const TableNameReportMachine = "report_machine"
 
-// Setting mapped from table <setting>
-type Setting struct {
+// ReportMachine mapped from table <report_machine>
+type ReportMachine struct {
 	ID        int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	UserID    int64          `gorm:"column:user_id;not null" json:"user_id"`
-	TeamID    int64          `gorm:"column:team_id;not null" json:"team_id"`
+	ReportID  int64          `gorm:"column:report_id;not null" json:"report_id"`
+	IP        string         `gorm:"column:ip;not null" json:"ip"`
 	CreatedAt time.Time      `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt time.Time      `gorm:"column:updated_at;not null;default:CURRENT_TIMESTAMP" json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`
 }
 
-// TableName Setting's table name
-func (*Setting) TableName() string {
-	return TableNameSetting
+// TableName ReportMachine's table name
+func (*ReportMachine) TableName() string {
+	return TableNameReportMachine
 }
