@@ -47,24 +47,27 @@ func Save(ctx context.Context, req *rao.SaveSceneReq, userID int64) error {
 	})
 }
 
-func GetByTargetID(ctx context.Context, teamID, targetID int64) (*rao.Scene, error) {
+func BatchGetByTargetID(ctx context.Context, teamID int64, targetIDs []int64) ([]*rao.Scene, error) {
 	tx := query.Use(dal.DB()).Target
 	t, err := tx.WithContext(ctx).Where(
-		tx.ID.Eq(targetID),
+		tx.ID.In(targetIDs...),
 		tx.TeamID.Eq(teamID),
 		tx.TargetType.Eq(consts.TargetTypeScene),
 		tx.Status.Eq(consts.TargetStatusNormal),
 		tx.Source.Eq(consts.TargetSourceNormal),
-	).First()
+	).Find()
 
 	if err != nil {
 		return nil, err
 	}
 
-	var s *mao.Scene
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectScene)
-	err = collection.FindOne(ctx, bson.D{{"target_id", targetID}}).Decode(&s)
+	cursor, err := collection.Find(ctx, bson.D{{"target_id", bson.D{{"$in", targetIDs}}}})
 	if err != nil {
+		return nil, err
+	}
+	var s []*mao.Scene
+	if err := cursor.All(ctx, &s); err != nil {
 		return nil, err
 	}
 

@@ -77,7 +77,7 @@ func RegisterRouter(r *gin.Engine) {
 	scene := api.Group("/v1/scene")
 	scene.POST("/save", handler.SaveScene)
 	scene.GET("/list", handler.ListGroupScene)
-	scene.GET("/detail", handler.GetScene)
+	scene.GET("/detail", handler.BatchGetScene)
 	scene.GET("/flow/get", handler.GetFlow)
 	scene.POST("/flow/save", handler.SaveFlow)
 
