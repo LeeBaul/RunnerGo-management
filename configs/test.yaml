@@ -16,3 +16,7 @@ mongodb:
 jwt:
   issuer: "kp"
   secret: "kp#test"
+
+prometheus:
+  host: "172.17.101.189"
+  port: 9090

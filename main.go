@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 
+	"github.com/gin-gonic/gin"
+
 	"kp-management/internal"
 	"kp-management/internal/app/router"
 	"kp-management/internal/pkg/conf"
-
-	"github.com/gin-gonic/gin"
 )
 
 func main() {

@@ -28,6 +28,7 @@ func main() {
 		g.GenerateModel("setting"),
 		g.GenerateModel("plan"),
 		g.GenerateModel("report"),
+		g.GenerateModel("report_machine"),
 	)
 
 	g.Execute()

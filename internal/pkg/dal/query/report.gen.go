@@ -26,7 +26,7 @@ func newReport(db *gorm.DB) report {
 	_report.reportDo.UseModel(&model.Report{})
 
 	tableName := _report.reportDo.TableName()
-	_report.ALL = field.NewField(tableName, "*")
+	_report.ALL = field.NewAsterisk(tableName)
 	_report.ID = field.NewInt64(tableName, "id")
 	_report.Name = field.NewString(tableName, "name")
 	_report.Mode = field.NewInt32(tableName, "mode")
@@ -47,7 +47,7 @@ func newReport(db *gorm.DB) report {
 type report struct {
 	reportDo reportDo
 
-	ALL       field.Field
+	ALL       field.Asterisk
 	ID        field.Int64
 	Name      field.String
 	Mode      field.Int32
@@ -74,7 +74,7 @@ func (r report) As(alias string) *report {
 }
 
 func (r *report) updateTableName(table string) *report {
-	r.ALL = field.NewField(table, "*")
+	r.ALL = field.NewAsterisk(table)
 	r.ID = field.NewInt64(table, "id")
 	r.Name = field.NewString(table, "name")
 	r.Mode = field.NewInt32(table, "mode")

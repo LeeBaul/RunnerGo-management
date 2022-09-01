@@ -7,15 +7,17 @@ require (
 	github.com/gin-gonic/gin v1.8.1
 	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/spf13/viper v1.12.0
+	github.com/valyala/fasthttp v1.39.0
 	go.mongodb.org/mongo-driver v1.10.1
 	golang.org/x/crypto v0.0.0-20220829220503-c86fa9a7ed90
 	gorm.io/driver/mysql v1.3.6
-	gorm.io/gen v0.3.15
+	gorm.io/gen v0.3.16
 	gorm.io/gorm v1.23.9-0.20220713102635-3262daf8d468
 	gorm.io/plugin/dbresolver v1.2.3
 )
 
 require (
+	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
@@ -46,6 +48,7 @@ require (
 	github.com/subosito/gotenv v1.4.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
+	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.1 // indirect
 	github.com/xdg-go/stringprep v1.0.3 // indirect

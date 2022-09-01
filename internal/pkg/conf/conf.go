@@ -10,11 +10,12 @@ import (
 var Conf Config
 
 type Config struct {
-	Http    Http    `yaml:"http"`
-	GRPC    GRPC    `yaml:"grpc"`
-	MySQL   MySQL   `yaml:"mysql"`
-	JWT     JWT     `yaml:"jwt"`
-	MongoDB MongoDB `yaml:"mongodb"`
+	Http       Http       `yaml:"http"`
+	GRPC       GRPC       `yaml:"grpc"`
+	MySQL      MySQL      `yaml:"mysql"`
+	JWT        JWT        `yaml:"jwt"`
+	MongoDB    MongoDB    `yaml:"mongodb"`
+	Prometheus Prometheus `yaml:"prometheus"`
 }
 
 type Http struct {
@@ -42,6 +43,11 @@ type JWT struct {
 type MongoDB struct {
 	DSN      string `yaml:"dsn"`
 	Database string `yaml:"database"`
+}
+
+type Prometheus struct {
+	Host string `yaml:"host"`
+	Port int    `yaml:"port"`
 }
 
 func MustInitConf() {

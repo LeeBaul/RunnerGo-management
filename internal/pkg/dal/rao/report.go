@@ -28,3 +28,21 @@ type Report struct {
 	TaskType    int32  `json:"task_type"`
 	SceneType   int32  `json:"scene_type"`
 }
+
+type ListMachineReq struct {
+	ReportID int64 `form:"report_id" binding:"required,gt=0"`
+}
+
+type ListMachineResp struct {
+	StartTimeSec int64     `json:"start_time_sec"`
+	EndTimeSec   int64     `json:"end_time_sec"`
+	ReportStatus int32     `json:"report_status"`
+	Metrics      []*Metric `json:"metrics"`
+}
+
+type Metric struct {
+	CPU    [][]interface{} `json:"cpu"`
+	Mem    [][]interface{} `json:"mem"`
+	NetIO  [][]interface{} `json:"net_io"`
+	DiskIO [][]interface{} `json:"disk_io"`
+}

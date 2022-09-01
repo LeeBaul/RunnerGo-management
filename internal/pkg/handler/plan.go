@@ -70,6 +70,7 @@ func SavePlan(ctx *gin.Context) {
 	return
 }
 
+// GetPlan 获取计划
 func GetPlan(ctx *gin.Context) {
 	var req rao.GetPlanReq
 	if err := ctx.ShouldBind(&req); err != nil {

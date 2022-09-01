@@ -19,8 +19,8 @@ type Operation struct {
 	UserID    int64          `gorm:"column:user_id;not null" json:"user_id"`
 	Category  int32          `gorm:"column:category;not null" json:"category"`
 	Name      string         `gorm:"column:name;not null" json:"name"`
-	CreatedAt time.Time      `gorm:"column:created_at;not null" json:"created_at"`
-	UpdatedAt time.Time      `gorm:"column:updated_at;not null" json:"updated_at"`
+	CreatedAt time.Time      `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"`
+	UpdatedAt time.Time      `gorm:"column:updated_at;not null;default:CURRENT_TIMESTAMP" json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`
 }
 

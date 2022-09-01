@@ -26,7 +26,7 @@ func newTeam(db *gorm.DB) team {
 	_team.teamDo.UseModel(&model.Team{})
 
 	tableName := _team.teamDo.TableName()
-	_team.ALL = field.NewField(tableName, "*")
+	_team.ALL = field.NewAsterisk(tableName)
 	_team.ID = field.NewInt64(tableName, "id")
 	_team.Name = field.NewString(tableName, "name")
 	_team.CreatedAt = field.NewTime(tableName, "created_at")
@@ -41,7 +41,7 @@ func newTeam(db *gorm.DB) team {
 type team struct {
 	teamDo teamDo
 
-	ALL       field.Field
+	ALL       field.Asterisk
 	ID        field.Int64
 	Name      field.String
 	CreatedAt field.Time
@@ -62,7 +62,7 @@ func (t team) As(alias string) *team {
 }
 
 func (t *team) updateTableName(table string) *team {
-	t.ALL = field.NewField(table, "*")
+	t.ALL = field.NewAsterisk(table)
 	t.ID = field.NewInt64(table, "id")
 	t.Name = field.NewString(table, "name")
 	t.CreatedAt = field.NewTime(table, "created_at")
