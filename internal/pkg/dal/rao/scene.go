@@ -17,12 +17,12 @@ type SaveSceneResp struct {
 }
 
 type GetSceneReq struct {
-	TeamID   int64 `form:"team_id" binding:"required,gt=0"`
-	TargetID int64 `form:"target_id" binding:"required,gt=0"`
+	TeamID   int64   `form:"team_id" binding:"required,gt=0"`
+	TargetID []int64 `form:"target_id" binding:"required,gt=0"`
 }
 
 type GetSceneResp struct {
-	Scene *Scene `json:"scene"`
+	Scenes []*Scene `json:"scenes"`
 }
 
 type Scene struct {

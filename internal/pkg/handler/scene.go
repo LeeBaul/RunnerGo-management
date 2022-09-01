@@ -27,21 +27,21 @@ func SaveScene(ctx *gin.Context) {
 	return
 }
 
-// GetScene 获取场景
-func GetScene(ctx *gin.Context) {
+// BatchGetScene 获取场景
+func BatchGetScene(ctx *gin.Context) {
 	var req rao.GetSceneReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
 	}
 
-	s, err := scene.GetByTargetID(ctx, req.TeamID, req.TargetID)
+	s, err := scene.BatchGetByTargetID(ctx, req.TeamID, req.TargetID)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
-	response.SuccessWithData(ctx, rao.GetSceneResp{Scene: s})
+	response.SuccessWithData(ctx, rao.GetSceneResp{Scenes: s})
 	return
 }
 
