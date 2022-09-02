@@ -16,3 +16,11 @@ type ModeConf struct {
 	MaxConcurrency   int64 `bson:"max_concurrency"`   // 最大并发数
 	Duration         int64 `bson:"duration"`          // 稳定持续时长，持续时长
 }
+
+type Preinstall struct {
+	TeamID   int64     `bson:"team_id"`
+	TaskType int32     `bson:"task_type"`
+	CronExpr string    `bson:"cron_expr"`
+	Mode     int32     `bson:"mode"`
+	ModeConf *ModeConf `bson:"mode_conf"`
+}
