@@ -42,6 +42,7 @@ func TransSavePlanReqToPlanModel(req *rao.SavePlanReq, userID int64) *model.Plan
 		Status:       consts.PlanStatusNormal,
 		CreateUserID: userID,
 		Remark:       req.Remark,
+		CronExpr:     req.CronExpr,
 	}
 }
 
@@ -79,6 +80,7 @@ func TransTaskToRaoPlan(p *model.Plan, t *mao.Task) *rao.Plan {
 		Remark:         p.Remark,
 		CreatedTimeSec: p.CreatedAt.Unix(),
 		UpdatedTimeSec: p.UpdatedAt.Unix(),
+		CronExpr:       p.CronExpr,
 		ModeConf: &rao.ModeConf{
 			ReheatTime:       t.ModeConf.ReheatTime,
 			RoundNum:         t.ModeConf.RoundNum,
