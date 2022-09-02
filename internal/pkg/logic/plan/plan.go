@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gen"
 
 	"kp-management/internal/pkg/biz/consts"
@@ -142,4 +143,34 @@ func GetByPlanID(ctx context.Context, teamID, planID int64) (*rao.Plan, error) {
 	}
 
 	return packer.TransTaskToRaoPlan(p, t), nil
+}
+
+func SetPreinstall(ctx context.Context, req *rao.SetPreinstallReq) error {
+	p := packer.TransSetPreinstallReqToMaoPreinstall(req)
+
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectPreinstall)
+	err := collection.FindOne(ctx, bson.D{{"team_id", req.TeamID}}).Err()
+	if err == mongo.ErrNoDocuments { // 新建
+		_, err := collection.InsertOne(ctx, p)
+
+		return err
+	}
+
+	_, err = collection.UpdateOne(ctx, bson.D{
+		{"team_id", req.TeamID},
+	}, bson.M{"$set": p})
+
+	return err
+}
+
+func GetPreinstall(ctx context.Context, teamID int64) (*rao.Preinstall, error) {
+
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectPreinstall)
+	var p mao.Preinstall
+	if err := collection.FindOne(ctx, bson.D{{"team_id", teamID}}).Decode(&p); err != nil {
+		return nil, err
+	}
+
+	return packer.TransMaoPreinstallToRaoPreinstall(&p), nil
+
 }

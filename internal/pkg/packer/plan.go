@@ -94,3 +94,43 @@ func TransTaskToRaoPlan(p *model.Plan, t *mao.Task) *rao.Plan {
 		},
 	}
 }
+
+func TransSetPreinstallReqToMaoPreinstall(req *rao.SetPreinstallReq) *mao.Preinstall {
+	return &mao.Preinstall{
+		TeamID:   req.TeamID,
+		TaskType: req.TaskType,
+		CronExpr: req.CronExpr,
+		Mode:     req.Mode,
+		ModeConf: &mao.ModeConf{
+			ReheatTime:       req.ModeConf.ReheatTime,
+			RoundNum:         req.ModeConf.RoundNum,
+			Concurrency:      req.ModeConf.Concurrency,
+			ThresholdValue:   req.ModeConf.ThresholdValue,
+			StartConcurrency: req.ModeConf.StartConcurrency,
+			Step:             req.ModeConf.Step,
+			StepRunTime:      req.ModeConf.StepRunTime,
+			MaxConcurrency:   req.ModeConf.MaxConcurrency,
+			Duration:         req.ModeConf.Duration,
+		},
+	}
+}
+
+func TransMaoPreinstallToRaoPreinstall(p *mao.Preinstall) *rao.Preinstall {
+	return &rao.Preinstall{
+		TeamID:   p.TeamID,
+		TaskType: p.TaskType,
+		CronExpr: p.CronExpr,
+		Mode:     p.Mode,
+		ModeConf: &rao.ModeConf{
+			ReheatTime:       p.ModeConf.ReheatTime,
+			RoundNum:         p.ModeConf.RoundNum,
+			Concurrency:      p.ModeConf.Concurrency,
+			ThresholdValue:   p.ModeConf.ThresholdValue,
+			StartConcurrency: p.ModeConf.StartConcurrency,
+			Step:             p.ModeConf.Step,
+			StepRunTime:      p.ModeConf.StepRunTime,
+			MaxConcurrency:   p.ModeConf.MaxConcurrency,
+			Duration:         p.ModeConf.Duration,
+		},
+	}
+}

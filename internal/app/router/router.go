@@ -86,6 +86,9 @@ func RegisterRouter(r *gin.Engine) {
 	plan.GET("/list", handler.ListPlans)
 	plan.POST("/save", handler.SavePlan)
 	plan.GET("/detail", handler.GetPlan)
+	// 计划预设配置
+	plan.POST("/preinstall/save", handler.SetPreinstall)
+	plan.GET("/preinstall/detail", handler.GetPreinstall)
 
 	// 测试报告
 	report := api.Group("/v1/report")

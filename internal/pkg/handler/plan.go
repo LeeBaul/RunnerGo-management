@@ -87,3 +87,35 @@ func GetPlan(ctx *gin.Context) {
 	response.SuccessWithData(ctx, rao.GetPlanResp{Plan: p})
 	return
 }
+
+func SetPreinstall(ctx *gin.Context) {
+	var req rao.SetPreinstallReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	if err := plan.SetPreinstall(ctx, &req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
+}
+
+func GetPreinstall(ctx *gin.Context) {
+	var req rao.GetPreinstallReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	p, err := plan.GetPreinstall(ctx, req.TeamID)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.SuccessWithData(ctx, rao.GetPreinstallResp{Preinstall: p})
+}
