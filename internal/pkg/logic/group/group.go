@@ -30,10 +30,11 @@ func Save(ctx context.Context, req *rao.SaveGroupReq, userID int64) error {
 
 			group.TargetID = target.ID
 			_, err := collection.InsertOne(ctx, group)
+			if err != nil {
+				return err
+			}
 
-			record.InsertCreate(ctx, target.TeamID, userID, fmt.Sprintf("创建分组 - %s", target.Name))
-
-			return err
+			return record.InsertCreate(ctx, target.TeamID, userID, fmt.Sprintf("创建分组 - %s", target.Name))
 		}
 
 		if _, err := tx.Target.WithContext(ctx).Omit(tx.Target.CreatedUserID).Updates(target); err != nil {
@@ -41,10 +42,11 @@ func Save(ctx context.Context, req *rao.SaveGroupReq, userID int64) error {
 		}
 
 		_, err := collection.UpdateOne(ctx, bson.D{{"target_id", target.ID}}, bson.M{"$set": group})
+		if err != nil {
+			return err
+		}
 
-		record.InsertUpdate(ctx, target.TeamID, userID, fmt.Sprintf("修改分组 - %s", target.Name))
-
-		return err
+		return record.InsertUpdate(ctx, target.TeamID, userID, fmt.Sprintf("修改分组 - %s", target.Name))
 	})
 }
 

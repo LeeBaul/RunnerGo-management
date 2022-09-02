@@ -106,10 +106,11 @@ func Save(ctx context.Context, req *rao.SavePlanReq, userID int64) error {
 
 			task.PlanID = plan.ID
 			_, err := collection.InsertOne(ctx, task)
+			if err != nil {
+				return err
+			}
 
-			record.InsertCreate(ctx, plan.TeamID, userID, fmt.Sprintf("创建计划 - %s", plan.Name))
-
-			return err
+			return record.InsertCreate(ctx, plan.TeamID, userID, fmt.Sprintf("创建计划 - %s", plan.Name))
 		}
 
 		if _, err := tx.Plan.WithContext(ctx).Omit(tx.Plan.CreateUserID).Updates(plan); err != nil {
@@ -117,10 +118,11 @@ func Save(ctx context.Context, req *rao.SavePlanReq, userID int64) error {
 		}
 
 		_, err := collection.UpdateOne(ctx, bson.D{{"plan_id", plan.ID}}, bson.M{"$set": task})
+		if err != nil {
+			return err
+		}
 
-		record.InsertUpdate(ctx, plan.TeamID, userID, fmt.Sprintf("修改计划 - %s", plan.Name))
-
-		return err
+		return record.InsertUpdate(ctx, plan.TeamID, userID, fmt.Sprintf("修改计划 - %s", plan.Name))
 	})
 }
 

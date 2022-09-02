@@ -29,10 +29,11 @@ func Save(ctx context.Context, req *rao.SaveTargetReq, userID int64) error {
 
 			api.TargetID = target.ID
 			_, err := collection.InsertOne(ctx, api)
+			if err != nil {
+				return err
+			}
 
-			record.InsertCreate(ctx, target.TeamID, userID, fmt.Sprintf("创建接口 - %s", target.Name))
-
-			return err
+			return record.InsertCreate(ctx, target.TeamID, userID, fmt.Sprintf("创建接口 - %s", target.Name))
 		}
 
 		if _, err := tx.Target.WithContext(ctx).Omit(tx.Target.CreatedUserID).Updates(target); err != nil {
@@ -40,10 +41,11 @@ func Save(ctx context.Context, req *rao.SaveTargetReq, userID int64) error {
 		}
 
 		_, err := collection.UpdateOne(ctx, bson.D{{"target_id", target.ID}}, bson.M{"$set": api})
+		if err != nil {
+			return err
+		}
 
-		record.InsertUpdate(ctx, target.TeamID, userID, fmt.Sprintf("修改接口 - %s", target.Name))
-
-		return err
+		return record.InsertUpdate(ctx, target.TeamID, userID, fmt.Sprintf("修改接口 - %s", target.Name))
 	})
 }
 
