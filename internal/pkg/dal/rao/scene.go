@@ -48,12 +48,6 @@ type SaveFlowReq struct {
 	MultiLevelNodes []byte  `json:"multi_level_nodes"`
 }
 
-type Edge struct {
-	Id     string `json:"id"`
-	Source string `json:"source"`
-	Target string `json:"target"`
-}
-
 type SaveFlowResp struct {
 }
 
@@ -81,6 +75,12 @@ type Node struct {
 	Var     string `json:"var,omitempty"`
 	Compare string `json:"compare,omitempty"`
 	Val     string `json:"val,omitempty"`
+}
+
+type Edge struct {
+	Id     string `json:"id"`
+	Source string `json:"source"`
+	Target string `json:"target"`
 }
 
 // API 接口详情

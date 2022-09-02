@@ -36,6 +36,7 @@ func newPlan(db *gorm.DB) plan {
 	_plan.CreateUserID = field.NewInt64(tableName, "create_user_id")
 	_plan.RunUserID = field.NewInt64(tableName, "run_user_id")
 	_plan.Remark = field.NewString(tableName, "remark")
+	_plan.CronExpr = field.NewString(tableName, "cron_expr")
 	_plan.CreatedAt = field.NewTime(tableName, "created_at")
 	_plan.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_plan.DeletedAt = field.NewField(tableName, "deleted_at")
@@ -58,6 +59,7 @@ type plan struct {
 	CreateUserID field.Int64
 	RunUserID    field.Int64
 	Remark       field.String
+	CronExpr     field.String
 	CreatedAt    field.Time
 	UpdatedAt    field.Time
 	DeletedAt    field.Field
@@ -86,6 +88,7 @@ func (p *plan) updateTableName(table string) *plan {
 	p.CreateUserID = field.NewInt64(table, "create_user_id")
 	p.RunUserID = field.NewInt64(table, "run_user_id")
 	p.Remark = field.NewString(table, "remark")
+	p.CronExpr = field.NewString(table, "cron_expr")
 	p.CreatedAt = field.NewTime(table, "created_at")
 	p.UpdatedAt = field.NewTime(table, "updated_at")
 	p.DeletedAt = field.NewField(table, "deleted_at")
@@ -111,7 +114,7 @@ func (p *plan) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (p *plan) fillFieldMap() {
-	p.fieldMap = make(map[string]field.Expr, 12)
+	p.fieldMap = make(map[string]field.Expr, 13)
 	p.fieldMap["id"] = p.ID
 	p.fieldMap["team_id"] = p.TeamID
 	p.fieldMap["name"] = p.Name
@@ -121,6 +124,7 @@ func (p *plan) fillFieldMap() {
 	p.fieldMap["create_user_id"] = p.CreateUserID
 	p.fieldMap["run_user_id"] = p.RunUserID
 	p.fieldMap["remark"] = p.Remark
+	p.fieldMap["cron_expr"] = p.CronExpr
 	p.fieldMap["created_at"] = p.CreatedAt
 	p.fieldMap["updated_at"] = p.UpdatedAt
 	p.fieldMap["deleted_at"] = p.DeletedAt

@@ -53,14 +53,14 @@ type target struct {
 	targetDo targetDo
 
 	ALL           field.Asterisk
-	ID            field.Int64
+	ID            field.Int64 // id
 	TeamID        field.Int64
 	TargetType    field.String
 	Name          field.String
 	ParentID      field.Int64
-	Method        field.String
-	Sort          field.Int32
-	TypeSort      field.Int32
+	Method        field.String // 方法
+	Sort          field.Int32  // 排序
+	TypeSort      field.Int32  // 类型排序
 	Status        field.Int32
 	Version       field.Int32
 	CreatedUserID field.Int64
