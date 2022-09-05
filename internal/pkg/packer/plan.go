@@ -17,17 +17,18 @@ func TransPlansToRaoPlanList(plans []*model.Plan, users []*model.User) []*rao.Pl
 		for _, u := range users {
 			if p.CreateUserID == u.ID {
 				ret = append(ret, &rao.Plan{
-					PlanID:         p.ID,
-					TeamID:         p.TeamID,
-					Name:           p.Name,
-					TaskType:       p.TaskType,
-					Mode:           p.Mode,
-					Status:         p.Status,
-					RunUserID:      p.RunUserID,
-					RunUserName:    u.Nickname,
-					Remark:         p.Remark,
-					CreatedTimeSec: p.CreatedAt.Unix(),
-					UpdatedTimeSec: p.UpdatedAt.Unix(),
+					PlanID:            p.ID,
+					TeamID:            p.TeamID,
+					Name:              p.Name,
+					TaskType:          p.TaskType,
+					Mode:              p.Mode,
+					Status:            p.Status,
+					CreatedUserName:   u.Nickname,
+					CreatedUserAvatar: "", // todo 头像
+					CreatedUserID:     p.CreateUserID,
+					Remark:            p.Remark,
+					CreatedTimeSec:    p.CreatedAt.Unix(),
+					UpdatedTimeSec:    p.UpdatedAt.Unix(),
 				})
 			}
 		}
