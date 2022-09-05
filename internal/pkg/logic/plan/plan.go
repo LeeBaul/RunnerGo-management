@@ -170,6 +170,13 @@ func GetByPlanID(ctx context.Context, teamID, planID int64) (*rao.Plan, error) {
 	return packer.TransTaskToRaoPlan(p, t), nil
 }
 
+func DeleteByPlanID(ctx context.Context, teamID, planID int64) error {
+	tx := query.Use(dal.DB()).Plan
+	_, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID), tx.ID.Eq(planID)).Delete()
+
+	return err
+}
+
 func SetPreinstall(ctx context.Context, req *rao.SetPreinstallReq) error {
 	p := packer.TransSetPreinstallReqToMaoPreinstall(req)
 

@@ -34,10 +34,11 @@ func newReport(db *gorm.DB) report {
 	_report.RanAt = field.NewTime(tableName, "ran_at")
 	_report.RunUserID = field.NewInt64(tableName, "run_user_id")
 	_report.TeamID = field.NewInt64(tableName, "team_id")
-	_report.CreatedAt = field.NewTime(tableName, "created_at")
-	_report.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_report.TaskType = field.NewInt32(tableName, "task_type")
 	_report.SceneType = field.NewInt32(tableName, "scene_type")
+	_report.CreatedAt = field.NewTime(tableName, "created_at")
+	_report.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_report.DeletedAt = field.NewField(tableName, "deleted_at")
 
 	_report.fillFieldMap()
 
@@ -55,10 +56,11 @@ type report struct {
 	RanAt     field.Time
 	RunUserID field.Int64
 	TeamID    field.Int64
-	CreatedAt field.Time
-	UpdatedAt field.Time
 	TaskType  field.Int32
 	SceneType field.Int32
+	CreatedAt field.Time
+	UpdatedAt field.Time
+	DeletedAt field.Field
 
 	fieldMap map[string]field.Expr
 }
@@ -82,10 +84,11 @@ func (r *report) updateTableName(table string) *report {
 	r.RanAt = field.NewTime(table, "ran_at")
 	r.RunUserID = field.NewInt64(table, "run_user_id")
 	r.TeamID = field.NewInt64(table, "team_id")
-	r.CreatedAt = field.NewTime(table, "created_at")
-	r.UpdatedAt = field.NewTime(table, "updated_at")
 	r.TaskType = field.NewInt32(table, "task_type")
 	r.SceneType = field.NewInt32(table, "scene_type")
+	r.CreatedAt = field.NewTime(table, "created_at")
+	r.UpdatedAt = field.NewTime(table, "updated_at")
+	r.DeletedAt = field.NewField(table, "deleted_at")
 
 	r.fillFieldMap()
 
@@ -108,7 +111,7 @@ func (r *report) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (r *report) fillFieldMap() {
-	r.fieldMap = make(map[string]field.Expr, 11)
+	r.fieldMap = make(map[string]field.Expr, 12)
 	r.fieldMap["id"] = r.ID
 	r.fieldMap["name"] = r.Name
 	r.fieldMap["mode"] = r.Mode
@@ -116,10 +119,11 @@ func (r *report) fillFieldMap() {
 	r.fieldMap["ran_at"] = r.RanAt
 	r.fieldMap["run_user_id"] = r.RunUserID
 	r.fieldMap["team_id"] = r.TeamID
-	r.fieldMap["created_at"] = r.CreatedAt
-	r.fieldMap["updated_at"] = r.UpdatedAt
 	r.fieldMap["task_type"] = r.TaskType
 	r.fieldMap["scene_type"] = r.SceneType
+	r.fieldMap["created_at"] = r.CreatedAt
+	r.fieldMap["updated_at"] = r.UpdatedAt
+	r.fieldMap["deleted_at"] = r.DeletedAt
 }
 
 func (r report) clone(db *gorm.DB) report {

@@ -66,3 +66,10 @@ func ListByTeamID(ctx context.Context, teamID int64, limit, offset int, keyword 
 
 	return packer.TransReportModelToRaoReportList(reports, users), cnt, nil
 }
+
+func DeleteReport(ctx context.Context, teamID, reportID int64) error {
+	tx := query.Use(dal.DB()).Report
+	_, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID), tx.ID.Eq(reportID)).Delete()
+
+	return err
+}
