@@ -32,7 +32,7 @@ func TransPlansToRaoPlanList(plans []*model.Plan, users []*model.User) []*rao.Pl
 	return ret
 }
 
-func TransSavePlanReqToPlanModel(req *rao.SavePlanReq, userID int64) *model.Plan {
+func TransSavePlanReqToPlanModel(req *rao.SavePlanConfReq, userID int64) *model.Plan {
 	return &model.Plan{
 		ID:           req.PlanID,
 		TeamID:       req.TeamID,
@@ -46,7 +46,7 @@ func TransSavePlanReqToPlanModel(req *rao.SavePlanReq, userID int64) *model.Plan
 	}
 }
 
-func TransSavePlanReqToMaoTask(req *rao.SavePlanReq) *mao.Task {
+func TransSavePlanReqToMaoTask(req *rao.SavePlanConfReq) *mao.Task {
 	mc := req.ModeConf
 
 	return &mao.Task{
@@ -68,6 +68,21 @@ func TransSavePlanReqToMaoTask(req *rao.SavePlanReq) *mao.Task {
 
 func TransTaskToRaoPlan(p *model.Plan, t *mao.Task) *rao.Plan {
 
+	var mc rao.ModeConf
+	if t != nil {
+		mc = rao.ModeConf{
+			ReheatTime:       t.ModeConf.ReheatTime,
+			RoundNum:         t.ModeConf.RoundNum,
+			Concurrency:      t.ModeConf.Concurrency,
+			ThresholdValue:   t.ModeConf.ThresholdValue,
+			StartConcurrency: t.ModeConf.StartConcurrency,
+			Step:             t.ModeConf.Step,
+			StepRunTime:      t.ModeConf.StepRunTime,
+			MaxConcurrency:   t.ModeConf.MaxConcurrency,
+			Duration:         t.ModeConf.Duration,
+		}
+	}
+
 	return &rao.Plan{
 		PlanID:         p.ID,
 		TeamID:         p.TeamID,
@@ -81,17 +96,7 @@ func TransTaskToRaoPlan(p *model.Plan, t *mao.Task) *rao.Plan {
 		CreatedTimeSec: p.CreatedAt.Unix(),
 		UpdatedTimeSec: p.UpdatedAt.Unix(),
 		CronExpr:       p.CronExpr,
-		ModeConf: &rao.ModeConf{
-			ReheatTime:       t.ModeConf.ReheatTime,
-			RoundNum:         t.ModeConf.RoundNum,
-			Concurrency:      t.ModeConf.Concurrency,
-			ThresholdValue:   t.ModeConf.ThresholdValue,
-			StartConcurrency: t.ModeConf.StartConcurrency,
-			Step:             t.ModeConf.Step,
-			StepRunTime:      t.ModeConf.StepRunTime,
-			MaxConcurrency:   t.ModeConf.MaxConcurrency,
-			Duration:         t.ModeConf.Duration,
-		},
+		ModeConf:       &mc,
 	}
 }
 

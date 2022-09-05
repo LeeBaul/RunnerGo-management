@@ -22,12 +22,12 @@ func TransSaveFlowReqToMaoFlow(req *rao.SaveFlowReq) *mao.Flow {
 	}
 
 	return &mao.Flow{
-		SceneID:         req.SceneID,
-		TeamID:          req.TeamID,
-		Version:         req.Version,
-		Nodes:           nodes,
-		Edges:           edges,
-		MultiLevelNodes: req.MultiLevelNodes,
+		SceneID: req.SceneID,
+		TeamID:  req.TeamID,
+		Version: req.Version,
+		Nodes:   nodes,
+		Edges:   edges,
+		//MultiLevelNodes: req.MultiLevelNodes,
 	}
 }
 
@@ -44,11 +44,11 @@ func TransMaoFlowToRaoGetFowResp(f *mao.Flow) *rao.GetFlowResp {
 	}
 
 	return &rao.GetFlowResp{
-		SceneID:         f.SceneID,
-		TeamID:          f.TeamID,
-		Version:         f.Version,
-		Nodes:           n.Nodes,
-		Edges:           e.Edges,
-		MultiLevelNodes: f.MultiLevelNodes,
+		SceneID: f.SceneID,
+		TeamID:  f.TeamID,
+		Version: f.Version,
+		Nodes:   n.Nodes,
+		Edges:   e.Edges,
+		//MultiLevelNodes: f.MultiLevelNodes,
 	}
 }

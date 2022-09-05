@@ -53,7 +53,6 @@ func ListPlans(ctx *gin.Context) {
 	return
 }
 
-// SavePlan 创建/修改计划
 func SavePlan(ctx *gin.Context) {
 	var req rao.SavePlanReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -70,9 +69,26 @@ func SavePlan(ctx *gin.Context) {
 	return
 }
 
-// GetPlan 获取计划
-func GetPlan(ctx *gin.Context) {
-	var req rao.GetPlanReq
+// SavePlanTask 创建/修改计划
+func SavePlanTask(ctx *gin.Context) {
+	var req rao.SavePlanConfReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	if err := plan.SaveTask(ctx, &req, jwt.GetUserIDByCtx(ctx)); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
+}
+
+// GetPlanConf 获取计划
+func GetPlanConf(ctx *gin.Context) {
+	var req rao.GetPlanConfReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return

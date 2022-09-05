@@ -55,6 +55,13 @@ type ListPlansResp struct {
 }
 
 type SavePlanReq struct {
+	PlanID int64  `json:"plan_id"`
+	TeamID int64  `json:"team_id" binding:"required,gt=0"`
+	Name   string `json:"name" binding:"required,min=4,max=32"`
+	Remark string `json:"remark"`
+}
+
+type SavePlanConfReq struct {
 	PlanID   int64     `json:"plan_id"`
 	TeamID   int64     `json:"team_id" binding:"required,gt=0"`
 	Name     string    `json:"name" binding:"required,min=4,max=32"`
@@ -68,7 +75,7 @@ type SavePlanReq struct {
 type SavePlanResp struct {
 }
 
-type GetPlanReq struct {
+type GetPlanConfReq struct {
 	TeamID int64 `form:"team_id" binding:"required,gt=0"`
 	PlanID int64 `form:"plan_id" binding:"required,gt=0"`
 }
