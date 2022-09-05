@@ -53,6 +53,7 @@ func ListPlans(ctx *gin.Context) {
 	return
 }
 
+// SavePlan 创建修改计划
 func SavePlan(ctx *gin.Context) {
 	var req rao.SavePlanReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -69,7 +70,7 @@ func SavePlan(ctx *gin.Context) {
 	return
 }
 
-// SavePlanTask 创建/修改计划
+// SavePlanTask 创建/修改计划配置
 func SavePlanTask(ctx *gin.Context) {
 	var req rao.SavePlanConfReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -86,8 +87,8 @@ func SavePlanTask(ctx *gin.Context) {
 	return
 }
 
-// GetPlanConf 获取计划
-func GetPlanConf(ctx *gin.Context) {
+// GetPlan 获取计划
+func GetPlan(ctx *gin.Context) {
 	var req rao.GetPlanConfReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
