@@ -27,6 +27,7 @@ type Target struct {
 	CreatedUserID int64          `gorm:"column:created_user_id;not null" json:"created_user_id"`
 	RecentUserID  int64          `gorm:"column:recent_user_id;not null" json:"recent_user_id"`
 	Source        int32          `gorm:"column:source;not null" json:"source"`
+	PlanID        int64          `gorm:"column:plan_id;not null" json:"plan_id"`
 	CreatedAt     time.Time      `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt     time.Time      `gorm:"column:updated_at;not null;default:CURRENT_TIMESTAMP" json:"updated_at"`
 	DeletedAt     gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`

@@ -81,6 +81,7 @@ type FolderAPI struct {
 type ListGroupSceneReq struct {
 	TeamID int64 `form:"team_id" binding:"required,gt=0"`
 	Source int32 `form:"source,default=1"`
+	PlanID int64 `form:"plan_id"`
 	Page   int   `form:"page,default=1"`
 	Size   int   `form:"size,default=10"`
 }
