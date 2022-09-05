@@ -61,8 +61,8 @@ type Node struct {
 	Type    string `json:"type"`
 	IsCheck bool   `json:"is_check"`
 
-	PositionAbsolute *Point   `json:"positionAbsolute"`
-	Position         *Point   `json:"position"`
+	PositionAbsolute Point    `json:"positionAbsolute"`
+	Position         Point    `json:"position"`
 	PreList          []string `json:"pre_list"`
 	NextList         []string `json:"next_list"`
 	Width            int      `json:"width"`
