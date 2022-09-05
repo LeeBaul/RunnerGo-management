@@ -56,7 +56,7 @@ func TransSaveGroupReqToTargetModel(group *rao.SaveGroupReq, userID int64) *mode
 		Version:       group.Version,
 		CreatedUserID: userID,
 		RecentUserID:  userID,
-		Source:        consts.TargetSourceNormal,
+		Source:        group.Source,
 	}
 }
 
@@ -74,6 +74,6 @@ func TransSaveSceneReqToTargetModel(scene *rao.SaveSceneReq, userID int64) *mode
 		Version:       scene.Version,
 		CreatedUserID: userID,
 		RecentUserID:  userID,
-		Source:        consts.TargetSourceNormal,
+		Source:        scene.Source,
 	}
 }

@@ -9,5 +9,5 @@ const (
 	TargetStatusNormal = 1 // 正常状态
 	TargetStatusTrash  = 2 // 回收站
 
-	TargetSourceNormal = 1 // 添加来源
+	TargetSourceNormal = 1 // 正常来源
 )
