@@ -28,13 +28,13 @@ func ListFolderAPI(ctx context.Context, teamID int64, limit, offset int) ([]*rao
 	return packer.TransTargetToRaoFolderAPIList(targets), cnt, nil
 }
 
-func ListGroupScene(ctx context.Context, teamID int64, limit, offset int) ([]*rao.GroupScene, int64, error) {
+func ListGroupScene(ctx context.Context, teamID int64, source int32, limit, offset int) ([]*rao.GroupScene, int64, error) {
 	tx := query.Use(dal.DB()).Target
 	targets, cnt, err := tx.WithContext(ctx).Where(
 		tx.TeamID.Eq(teamID),
 		tx.TargetType.In(consts.TargetTypeGroup, consts.TargetTypeScene),
 		tx.Status.Eq(consts.TargetStatusNormal),
-		tx.Source.Eq(consts.TargetSourceNormal),
+		tx.Source.Eq(source),
 	).Order(tx.Sort.Desc(), tx.CreatedAt.Desc()).FindByPage(offset, limit)
 
 	if err != nil {

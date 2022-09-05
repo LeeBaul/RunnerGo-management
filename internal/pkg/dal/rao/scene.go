@@ -9,6 +9,7 @@ type SaveSceneReq struct {
 	Sort     int32  `json:"sort"`
 	TypeSort int32  `json:"type_sort"`
 	Version  int32  `json:"version"`
+	Source   int32  `json:"source"`
 	//Request  *Request `json:"request"`
 	//Script   *Script  `json:"script"`
 }
