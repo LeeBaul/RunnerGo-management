@@ -1,6 +1,10 @@
 package packer
 
 import (
+	"fmt"
+
+	"go.mongodb.org/mongo-driver/bson"
+
 	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/dal/mao"
 	"kp-management/internal/pkg/dal/model"
@@ -49,6 +53,16 @@ func TransSavePlanReqToPlanModel(req *rao.SavePlanConfReq, userID int64) *model.
 func TransSavePlanReqToMaoTask(req *rao.SavePlanConfReq) *mao.Task {
 	mc := req.ModeConf
 
+	nodes, err := bson.Marshal(mao.Node{Nodes: req.Nodes})
+	if err != nil {
+		fmt.Sprintln(fmt.Errorf("flow.nodes json marshal err %w", err))
+	}
+
+	edges, err := bson.Marshal(mao.Edge{Edges: req.Edges})
+	if err != nil {
+		fmt.Sprintln(fmt.Errorf("flow.edges json marshal err %w", err))
+	}
+
 	return &mao.Task{
 		PlanID: req.PlanID,
 		ModeConf: &mao.ModeConf{
@@ -62,6 +76,8 @@ func TransSavePlanReqToMaoTask(req *rao.SavePlanConfReq) *mao.Task {
 			MaxConcurrency:   mc.MaxConcurrency,
 			Duration:         mc.Duration,
 		},
+		Nodes: nodes,
+		Edges: edges,
 	}
 
 }
@@ -69,6 +85,8 @@ func TransSavePlanReqToMaoTask(req *rao.SavePlanConfReq) *mao.Task {
 func TransTaskToRaoPlan(p *model.Plan, t *mao.Task) *rao.Plan {
 
 	var mc rao.ModeConf
+	var n []*rao.Node
+	var e []*rao.Edge
 	if t != nil {
 		mc = rao.ModeConf{
 			ReheatTime:       t.ModeConf.ReheatTime,
@@ -81,6 +99,19 @@ func TransTaskToRaoPlan(p *model.Plan, t *mao.Task) *rao.Plan {
 			MaxConcurrency:   t.ModeConf.MaxConcurrency,
 			Duration:         t.ModeConf.Duration,
 		}
+
+		var nb mao.Node
+		if err := bson.Unmarshal(t.Nodes, &nb); err != nil {
+			fmt.Sprintln(fmt.Errorf("plan.nodes json marshal err %w", err))
+		}
+		n = nb.Nodes
+
+		var eb mao.Edge
+		if err := bson.Unmarshal(t.Nodes, &eb); err != nil {
+			fmt.Sprintln(fmt.Errorf("plan.edges json marshal err %w", err))
+		}
+		e = eb.Edges
+
 	}
 
 	return &rao.Plan{
@@ -97,6 +128,8 @@ func TransTaskToRaoPlan(p *model.Plan, t *mao.Task) *rao.Plan {
 		UpdatedTimeSec: p.UpdatedAt.Unix(),
 		CronExpr:       p.CronExpr,
 		ModeConf:       &mc,
+		Nodes:          n,
+		Edges:          e,
 	}
 }
 

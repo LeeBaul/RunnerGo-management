@@ -14,6 +14,8 @@ type Plan struct {
 	UpdatedTimeSec int64     `json:"updated_time_sec"`
 	CronExpr       string    `json:"cron_expr"`
 	ModeConf       *ModeConf `json:"mode_conf"`
+	Nodes          []*Node   `json:"nodes"`
+	Edges          []*Edge   `json:"edges"`
 }
 
 type ModeConf struct {
@@ -70,6 +72,10 @@ type SavePlanConfReq struct {
 	Remark   string    `json:"remark"`
 	ModeConf *ModeConf `json:"mode_conf"`
 	CronExpr string    `json:"cron_expr"`
+
+	Nodes           []*Node `json:"nodes"`
+	Edges           []*Edge `json:"edges"`
+	MultiLevelNodes string  `json:"multi_level_nodes"`
 }
 
 type SavePlanResp struct {
