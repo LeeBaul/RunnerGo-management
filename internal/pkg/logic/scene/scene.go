@@ -17,9 +17,9 @@ import (
 
 func Save(ctx context.Context, req *rao.SaveSceneReq, userID int64) error {
 	target := packer.TransSaveSceneReqToTargetModel(req, userID)
-	scene := packer.TransSaveSceneReqToMaoScene(req)
+	//scene := packer.TransSaveSceneReqToMaoScene(req)
 
-	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectScene)
+	//collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectScene)
 
 	return query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
 		if target.ID == 0 {
@@ -27,23 +27,19 @@ func Save(ctx context.Context, req *rao.SaveSceneReq, userID int64) error {
 				return err
 			}
 
-			scene.TargetID = target.ID
-			_, err := collection.InsertOne(ctx, scene)
+			//scene.TargetID = target.ID
+			//_, err := collection.InsertOne(ctx, scene)
 
-			record.InsertCreate(ctx, target.TeamID, userID, fmt.Sprintf("创建场景 - %s", target.Name))
-
-			return err
+			return record.InsertCreate(ctx, target.TeamID, userID, fmt.Sprintf("创建场景 - %s", target.Name))
 		}
 
 		if _, err := tx.Target.WithContext(ctx).Omit(tx.Target.CreatedUserID).Updates(target); err != nil {
 			return err
 		}
 
-		_, err := collection.UpdateOne(ctx, bson.D{{"target_id", target.ID}}, bson.M{"$set": scene})
+		//_, err := collection.UpdateOne(ctx, bson.D{{"target_id", target.ID}}, bson.M{"$set": scene})
 
-		record.InsertUpdate(ctx, target.TeamID, userID, fmt.Sprintf("修改场景 - %s", target.Name))
-
-		return err
+		return record.InsertUpdate(ctx, target.TeamID, userID, fmt.Sprintf("修改场景 - %s", target.Name))
 	})
 }
 

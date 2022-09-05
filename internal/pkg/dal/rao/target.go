@@ -14,6 +14,14 @@ type SaveTargetReq struct {
 	Response    *Response `json:"response"`
 	Version     int32     `json:"version"`
 	Description string    `json:"description"`
+	Assert      []*Assert `json:"asserts"`
+}
+
+type Assert struct {
+	ResponseType int32  `json:"response_type"`
+	Var          string `json:"var"`
+	Compare      string `json:"compare"`
+	Val          string `json:"val"`
 }
 
 type SaveTargetResp struct {
@@ -126,4 +134,5 @@ type APIDetail struct {
 	Description    string    `json:"description"`
 	CreatedTimeSec int64     `json:"created_time_sec"`
 	UpdatedTimeSec int64     `json:"updated_time_sec"`
+	//Assert         []*Assert `json:"asserts"`
 }
