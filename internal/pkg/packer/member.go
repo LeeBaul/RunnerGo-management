@@ -11,7 +11,7 @@ func TransUsersToRaoMembers(users []*model.User, userTeams []*model.UserTeam) []
 		for _, ut := range userTeams {
 			if ut.UserID == u.ID {
 				ret = append(ret, &rao.Member{
-					Avatar:      "", // todo avatar
+					Avatar:      u.Avatar,
 					UserID:      u.ID,
 					Email:       u.Email,
 					Nickname:    u.Nickname,

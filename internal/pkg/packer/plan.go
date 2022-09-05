@@ -24,7 +24,7 @@ func TransPlansToRaoPlanList(plans []*model.Plan, users []*model.User) []*rao.Pl
 					Mode:              p.Mode,
 					Status:            p.Status,
 					CreatedUserName:   u.Nickname,
-					CreatedUserAvatar: "", // todo 头像
+					CreatedUserAvatar: u.Avatar,
 					CreatedUserID:     p.CreateUserID,
 					Remark:            p.Remark,
 					CreatedTimeSec:    p.CreatedAt.Unix(),
@@ -83,7 +83,7 @@ func TransSavePlanReqToMaoTask(req *rao.SavePlanConfReq) *mao.Task {
 
 }
 
-func TransTaskToRaoPlan(p *model.Plan, t *mao.Task) *rao.Plan {
+func TransTaskToRaoPlan(p *model.Plan, t *mao.Task, u *model.User) *rao.Plan {
 
 	var mc rao.ModeConf
 	var n []*rao.Node
@@ -123,8 +123,8 @@ func TransTaskToRaoPlan(p *model.Plan, t *mao.Task) *rao.Plan {
 		Mode:              p.Mode,
 		Status:            p.Status,
 		CreatedUserID:     p.CreateUserID,
-		CreatedUserAvatar: "", // todo 头像
-		CreatedUserName:   "", // todo 昵称
+		CreatedUserAvatar: u.Avatar,
+		CreatedUserName:   u.Nickname,
 		Remark:            p.Remark,
 		CreatedTimeSec:    p.CreatedAt.Unix(),
 		UpdatedTimeSec:    p.UpdatedAt.Unix(),

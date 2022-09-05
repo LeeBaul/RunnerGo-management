@@ -167,7 +167,13 @@ func GetByPlanID(ctx context.Context, teamID, planID int64) (*rao.Plan, error) {
 		return nil, err
 	}
 
-	return packer.TransTaskToRaoPlan(p, t), nil
+	u := query.Use(dal.DB()).User
+	user, err := u.WithContext(ctx).Where(u.ID.Eq(p.CreateUserID)).First()
+	if err != nil {
+		return nil, err
+	}
+
+	return packer.TransTaskToRaoPlan(p, t, user), nil
 }
 
 func DeleteByPlanID(ctx context.Context, teamID, planID int64) error {
