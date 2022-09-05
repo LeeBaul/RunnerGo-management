@@ -85,7 +85,8 @@ func RegisterRouter(r *gin.Engine) {
 	plan := api.Group("/v1/plan")
 	plan.GET("/list", handler.ListPlans)
 	plan.POST("/save", handler.SavePlan)
-	plan.GET("/detail", handler.GetPlan)
+	plan.GET("/detail", handler.GetPlanConf)
+	plan.POST("/task/save", handler.SavePlanTask)
 	// 计划预设配置
 	plan.POST("/preinstall/save", handler.SetPreinstall)
 	plan.GET("/preinstall/detail", handler.GetPreinstall)

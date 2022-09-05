@@ -13,6 +13,7 @@ import (
 	"kp-management/internal/pkg/biz/record"
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/mao"
+	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/query"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/packer"
@@ -94,18 +95,42 @@ func ListByTeamID(ctx context.Context, teamID int64, limit, offset int, keyword 
 }
 
 func Save(ctx context.Context, req *rao.SavePlanReq, userID int64) error {
+	p := model.Plan{
+		ID:           req.PlanID,
+		TeamID:       req.TeamID,
+		Name:         req.Name,
+		Status:       consts.PlanStatusNormal,
+		CreateUserID: userID,
+		Remark:       req.Remark,
+	}
+
+	tx := query.Use(dal.DB()).Plan
+	ret, err := tx.WithContext(ctx).Where(tx.ID.Eq(req.PlanID)).Find()
+	if err != nil {
+		return err
+	}
+
+	if len(ret) > 0 {
+		return tx.WithContext(ctx).Where(tx.ID.Eq(req.PlanID)).Save(&p)
+	}
+
+	return tx.WithContext(ctx).Create(&p)
+}
+
+func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error {
 	plan := packer.TransSavePlanReqToPlanModel(req, userID)
 	task := packer.TransSavePlanReqToMaoTask(req)
 
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectTask)
 
 	return query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
-		if plan.ID == 0 {
-			if err := tx.Plan.WithContext(ctx).Create(plan); err != nil {
+
+		err := collection.FindOne(ctx, bson.D{{"plan_id", req.PlanID}}).Err()
+		if err == mongo.ErrNoDocuments {
+			if _, err := tx.Plan.WithContext(ctx).Omit(tx.Plan.CreateUserID).Updates(plan); err != nil {
 				return err
 			}
 
-			task.PlanID = plan.ID
 			_, err := collection.InsertOne(ctx, task)
 			if err != nil {
 				return err
@@ -118,7 +143,7 @@ func Save(ctx context.Context, req *rao.SavePlanReq, userID int64) error {
 			return err
 		}
 
-		_, err := collection.UpdateOne(ctx, bson.D{{"plan_id", plan.ID}}, bson.M{"$set": task})
+		_, err = collection.UpdateOne(ctx, bson.D{{"plan_id", plan.ID}}, bson.M{"$set": task})
 		if err != nil {
 			return err
 		}
@@ -138,7 +163,7 @@ func GetByPlanID(ctx context.Context, teamID, planID int64) (*rao.Plan, error) {
 	var t *mao.Task
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectTask)
 	err = collection.FindOne(ctx, bson.D{{"plan_id", planID}}).Decode(&t)
-	if err != nil {
+	if err != nil && err != mongo.ErrNoDocuments {
 		return nil, err
 	}
 
