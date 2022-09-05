@@ -39,7 +39,7 @@ type Scene struct {
 }
 
 type SaveFlowReq struct {
-	SceneID int64 `json:"scene_id"`
+	SceneID int64 `json:"scene_id" binding:"required,gt=0"`
 	TeamID  int64 `json:"team_id" binding:"required,gt=0"`
 	Version int32 `json:"version"`
 
@@ -95,9 +95,11 @@ type Node struct {
 }
 
 type Edge struct {
-	Id     string `json:"id"`
-	Source string `json:"source"`
-	Target string `json:"target"`
+	ID           string `json:"id"`
+	Source       string `json:"source"`
+	SourceHandle string `json:"sourceHandle"`
+	Target       string `json:"target"`
+	TargetHandle string `json:"targetHandle"`
 }
 
 // API 接口详情

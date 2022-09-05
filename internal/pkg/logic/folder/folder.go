@@ -17,9 +17,9 @@ import (
 
 func Save(ctx context.Context, userID int64, req *rao.SaveFolderReq) error {
 	target := packer.TransSaveFolderReqToTargetModel(req, userID)
-	folder := packer.TransSaveFolderReqToMaoFolder(req)
+	//folder := packer.TransSaveFolderReqToMaoFolder(req)
 
-	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectFolder)
+	//collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectFolder)
 
 	return query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
 		if target.ID == 0 {
@@ -27,11 +27,11 @@ func Save(ctx context.Context, userID int64, req *rao.SaveFolderReq) error {
 				return err
 			}
 
-			folder.TargetID = target.ID
-			_, err := collection.InsertOne(ctx, folder)
-			if err != nil {
-				return err
-			}
+			//folder.TargetID = target.ID
+			//_, err := collection.InsertOne(ctx, folder)
+			//if err != nil {
+			//	return err
+			//}
 
 			return record.InsertCreate(ctx, target.TeamID, userID, fmt.Sprintf("创建文件夹 - %s", target.Name))
 		}
@@ -40,10 +40,10 @@ func Save(ctx context.Context, userID int64, req *rao.SaveFolderReq) error {
 			return err
 		}
 
-		_, err := collection.UpdateOne(ctx, bson.D{{"target_id", target.ID}}, bson.M{"$set": folder})
-		if err != nil {
-			return err
-		}
+		//_, err := collection.UpdateOne(ctx, bson.D{{"target_id", target.ID}}, bson.M{"$set": folder})
+		//if err != nil {
+		//	return err
+		//}
 
 		return record.InsertUpdate(ctx, target.TeamID, userID, fmt.Sprintf("修改文件夹 - %s", target.Name))
 	})

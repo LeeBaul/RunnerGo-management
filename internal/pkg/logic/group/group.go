@@ -17,9 +17,9 @@ import (
 
 func Save(ctx context.Context, req *rao.SaveGroupReq, userID int64) error {
 	target := packer.TransSaveGroupReqToTargetModel(req, userID)
-	group := packer.TransSaveGroupReqToMaoGroup(req)
+	//group := packer.TransSaveGroupReqToMaoGroup(req)
 
-	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectGroup)
+	//collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectGroup)
 
 	return query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
 
@@ -28,11 +28,11 @@ func Save(ctx context.Context, req *rao.SaveGroupReq, userID int64) error {
 				return err
 			}
 
-			group.TargetID = target.ID
-			_, err := collection.InsertOne(ctx, group)
-			if err != nil {
-				return err
-			}
+			//group.TargetID = target.ID
+			//_, err := collection.InsertOne(ctx, group)
+			//if err != nil {
+			//	return err
+			//}
 
 			return record.InsertCreate(ctx, target.TeamID, userID, fmt.Sprintf("创建分组 - %s", target.Name))
 		}
@@ -41,10 +41,10 @@ func Save(ctx context.Context, req *rao.SaveGroupReq, userID int64) error {
 			return err
 		}
 
-		_, err := collection.UpdateOne(ctx, bson.D{{"target_id", target.ID}}, bson.M{"$set": group})
-		if err != nil {
-			return err
-		}
+		//_, err := collection.UpdateOne(ctx, bson.D{{"target_id", target.ID}}, bson.M{"$set": group})
+		//if err != nil {
+		//	return err
+		//}
 
 		return record.InsertUpdate(ctx, target.TeamID, userID, fmt.Sprintf("修改分组 - %s", target.Name))
 	})
