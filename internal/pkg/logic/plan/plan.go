@@ -74,8 +74,8 @@ func ListByTeamID(ctx context.Context, teamID int64, limit, offset int, keyword 
 		conditions = append(conditions, tx.CreatedAt.Between(startTime, endTime))
 	}
 
-	ret, cnt, err := tx.WithContext(ctx).Where(conditions...).
-		Order(tx.UpdatedAt.Desc()).FindByPage(offset, limit)
+	conditions = append(conditions, tx.Status.In(consts.PlanStatusNormal, consts.PlanStatusUnderway))
+	ret, cnt, err := tx.WithContext(ctx).Where(conditions...).Order(tx.UpdatedAt.Desc()).FindByPage(offset, limit)
 	if err != nil {
 		return nil, 0, err
 	}
