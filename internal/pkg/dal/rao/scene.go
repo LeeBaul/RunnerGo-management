@@ -46,7 +46,7 @@ type SaveFlowReq struct {
 
 	Nodes           []*Node `json:"nodes"`
 	Edges           []*Edge `json:"edges"`
-	MultiLevelNodes []byte  `json:"multi_level_nodes"`
+	MultiLevelNodes string  `json:"multi_level_nodes"`
 }
 
 type SaveFlowResp struct {

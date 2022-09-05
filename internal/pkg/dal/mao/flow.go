@@ -11,9 +11,9 @@ type Flow struct {
 	TeamID  int64 `bson:"team_id"`
 	Version int32 `bson:"version"`
 	//Flows   string `bson:"flows"`
-	Nodes           bson.Raw `bson:"nodes"`
-	Edges           bson.Raw `bson:"edges"`
-	MultiLevelNodes bson.Raw `bson:"multi_level_nodes"`
+	Nodes bson.Raw `bson:"nodes"`
+	Edges bson.Raw `bson:"edges"`
+	//MultiLevelNodes bson.Raw `bson:"multi_level_nodes"`
 }
 
 type Node struct {
