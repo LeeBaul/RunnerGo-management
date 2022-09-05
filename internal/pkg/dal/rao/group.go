@@ -10,6 +10,7 @@ type SaveGroupReq struct {
 	TypeSort int32  `json:"type_sort"`
 	Version  int32  `json:"version" binding:"required,gt=0"`
 	Source   int32  `json:"source"`
+	PlanID   int64  `json:"plan_id"`
 	//Request  *Request `json:"request"`
 	//Script   *Script  `json:"script"`
 }
@@ -37,4 +38,6 @@ type Group struct {
 	Version  int32    `json:"version"`
 	Request  *Request `json:"request"`
 	Script   *Script  `json:"script"`
+	Source   int32    `json:"source"`
+	PlanID   int64    `json:"plan_id"`
 }

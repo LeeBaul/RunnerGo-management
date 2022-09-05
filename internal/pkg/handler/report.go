@@ -30,6 +30,10 @@ func ListReports(ctx *gin.Context) {
 	return
 }
 
+func GetReport(ctx *gin.Context) {
+
+}
+
 func DeleteReport(ctx *gin.Context) {
 	var req rao.DeleteReportReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {

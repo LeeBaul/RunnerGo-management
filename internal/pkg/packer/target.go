@@ -57,6 +57,7 @@ func TransSaveGroupReqToTargetModel(group *rao.SaveGroupReq, userID int64) *mode
 		CreatedUserID: userID,
 		RecentUserID:  userID,
 		Source:        group.Source,
+		PlanID:        group.PlanID,
 	}
 }
 

@@ -16,6 +16,8 @@ type Config struct {
 	JWT        JWT        `yaml:"jwt"`
 	MongoDB    MongoDB    `yaml:"mongodb"`
 	Prometheus Prometheus `yaml:"prometheus"`
+	Kafka      Kafka      `yaml:"kafka"`
+	ES         ES         `yaml:"es"`
 }
 
 type Http struct {
@@ -48,6 +50,17 @@ type MongoDB struct {
 type Prometheus struct {
 	Host string `yaml:"host"`
 	Port int    `yaml:"port"`
+}
+
+type Kafka struct {
+	Host  string `yaml:"host"`
+	Topic string `yaml:"topic"`
+}
+
+type ES struct {
+	Host     string `yaml:"host"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
 }
 
 func MustInitConf() {
