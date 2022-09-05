@@ -95,9 +95,11 @@ type Node struct {
 }
 
 type Edge struct {
-	Id     string `json:"id"`
-	Source string `json:"source"`
-	Target string `json:"target"`
+	ID           string `json:"id"`
+	Source       string `json:"source"`
+	SourceHandle string `json:"sourceHandle"`
+	Target       string `json:"target"`
+	TargetHandle string `json:"targetHandle"`
 }
 
 // API 接口详情
