@@ -26,9 +26,9 @@ type Assert struct {
 }
 
 type Regex struct {
-	Var     string `bson:"var"`
-	Express string `bson:"express"`
-	Remark  string `bson:"remark"`
+	Var     string `json:"var"`
+	Express string `json:"express"`
+	Val     string `json:"val"`
 }
 
 type SaveTargetResp struct {
