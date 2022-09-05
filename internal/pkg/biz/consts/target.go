@@ -10,4 +10,5 @@ const (
 	TargetStatusTrash  = 2 // 回收站
 
 	TargetSourceNormal = 1 // 正常来源
+	TargetSourcePlan   = 2 // 计划来源
 )

@@ -129,7 +129,7 @@ func ListGroupScene(ctx *gin.Context) {
 		return
 	}
 
-	targets, total, err := target.ListGroupScene(ctx, req.TeamID, req.Source, req.Size, (req.Page-1)*req.Size)
+	targets, total, err := target.ListGroupScene(ctx, req.TeamID, req.Source, req.Size, (req.Page-1)*req.Size, req.PlanID)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return

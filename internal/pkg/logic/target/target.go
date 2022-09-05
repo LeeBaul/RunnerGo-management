@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"gorm.io/gen"
 
 	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/dal"
@@ -28,14 +29,21 @@ func ListFolderAPI(ctx context.Context, teamID int64, limit, offset int) ([]*rao
 	return packer.TransTargetToRaoFolderAPIList(targets), cnt, nil
 }
 
-func ListGroupScene(ctx context.Context, teamID int64, source int32, limit, offset int) ([]*rao.GroupScene, int64, error) {
+func ListGroupScene(ctx context.Context, teamID int64, source int32, limit, offset int, planID int64) ([]*rao.GroupScene, int64, error) {
 	tx := query.Use(dal.DB()).Target
-	targets, cnt, err := tx.WithContext(ctx).Where(
-		tx.TeamID.Eq(teamID),
-		tx.TargetType.In(consts.TargetTypeGroup, consts.TargetTypeScene),
-		tx.Status.Eq(consts.TargetStatusNormal),
-		tx.Source.Eq(source),
-	).Order(tx.Sort.Desc(), tx.CreatedAt.Desc()).FindByPage(offset, limit)
+
+	condition := make([]gen.Condition, 0)
+	condition = append(condition, tx.TeamID.Eq(teamID))
+	condition = append(condition, tx.TargetType.In(consts.TargetTypeGroup, consts.TargetTypeScene))
+	condition = append(condition, tx.Status.Eq(consts.TargetStatusNormal))
+	condition = append(condition, tx.Source.Eq(source))
+
+	if source == consts.TargetSourcePlan {
+		condition = append(condition, tx.PlanID.Eq(planID))
+	}
+
+	targets, cnt, err := tx.WithContext(ctx).Where(condition...).
+		Order(tx.Sort.Desc(), tx.CreatedAt.Desc()).FindByPage(offset, limit)
 
 	if err != nil {
 		return nil, 0, err
