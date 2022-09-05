@@ -44,7 +44,10 @@ func TransTargetToRaoGroup(t *model.Target, g *mao.Group) *rao.Group {
 		Sort:     t.Sort,
 		TypeSort: t.TypeSort,
 		Version:  t.Version,
+		Source:   t.Source,
+		PlanID:   t.PlanID,
 		//Request:  &r,
 		//Script:   &s,
+
 	}
 }
