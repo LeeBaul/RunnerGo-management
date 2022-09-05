@@ -4,12 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"go.mongodb.org/mongo-driver/bson"
-
 	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/biz/record"
 	"kp-management/internal/pkg/dal"
-	"kp-management/internal/pkg/dal/mao"
 	"kp-management/internal/pkg/dal/query"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/packer"
@@ -57,15 +54,15 @@ func BatchGetByTargetID(ctx context.Context, teamID int64, targetIDs []int64) ([
 		return nil, err
 	}
 
-	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectScene)
-	cursor, err := collection.Find(ctx, bson.D{{"target_id", bson.D{{"$in", targetIDs}}}})
-	if err != nil {
-		return nil, err
-	}
-	var s []*mao.Scene
-	if err := cursor.All(ctx, &s); err != nil {
-		return nil, err
-	}
+	//collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectScene)
+	//cursor, err := collection.Find(ctx, bson.D{{"target_id", bson.D{{"$in", targetIDs}}}})
+	//if err != nil {
+	//	return nil, err
+	//}
+	//var s []*mao.Scene
+	//if err := cursor.All(ctx, &s); err != nil {
+	//	return nil, err
+	//}
 
-	return packer.TransTargetToRaoScene(t, s), nil
+	return packer.TransTargetToRaoScene(t, nil), nil
 }

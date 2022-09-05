@@ -36,6 +36,16 @@ func TransSaveTargetReqToMaoAPI(target *rao.SaveTargetReq) *mao.API {
 		fmt.Sprintln(fmt.Errorf("target.request.auth json marshal err %w", err))
 	}
 
+	assert, err := bson.Marshal(mao.Assert{Assert: target.Assert})
+	if err != nil {
+		fmt.Sprintln(fmt.Errorf("target.request.auth json marshal err %w", err))
+	}
+
+	regex, err := bson.Marshal(mao.Regex{Regex: target.Regex})
+	if err != nil {
+		fmt.Sprintln(fmt.Errorf("target.request.auth json marshal err %w", err))
+	}
+
 	return &mao.API{
 		TargetID:    target.TargetID,
 		URL:         target.URL,
@@ -44,6 +54,8 @@ func TransSaveTargetReqToMaoAPI(target *rao.SaveTargetReq) *mao.API {
 		Body:        body,
 		Auth:        auth,
 		Description: target.Description,
+		Assert:      assert,
+		Regex:       regex,
 	}
 }
 
@@ -69,6 +81,16 @@ func TransTargetToRaoAPIDetail(targets []*model.Target, apis []*mao.API) []*rao.
 				var query rao.Query
 				if err := bson.Unmarshal(api.Query, &query); err != nil {
 					fmt.Sprintln(fmt.Errorf("api.query bson Unmarshal err %w", err))
+				}
+
+				var assert mao.Assert
+				if err := bson.Unmarshal(api.Assert, &assert); err != nil {
+					fmt.Sprintln(fmt.Errorf("api.assert bson Unmarshal err %w", err))
+				}
+
+				var regex mao.Regex
+				if err := bson.Unmarshal(api.Regex, &regex); err != nil {
+					fmt.Sprintln(fmt.Errorf("api.regex bson Unmarshal err %w", err))
 				}
 
 				ret = append(ret, &rao.APIDetail{
@@ -97,6 +119,8 @@ func TransTargetToRaoAPIDetail(targets []*model.Target, apis []*mao.API) []*rao.
 					Description:    api.Description,
 					CreatedTimeSec: target.CreatedAt.Unix(),
 					UpdatedTimeSec: target.UpdatedAt.Unix(),
+					Assert:         assert.Assert,
+					Regex:          regex.Regex,
 				})
 			}
 		}

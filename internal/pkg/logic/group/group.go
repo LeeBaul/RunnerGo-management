@@ -7,12 +7,9 @@ import (
 	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/biz/record"
 	"kp-management/internal/pkg/dal"
-	"kp-management/internal/pkg/dal/mao"
 	"kp-management/internal/pkg/dal/query"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/packer"
-
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 func Save(ctx context.Context, req *rao.SaveGroupReq, userID int64) error {
@@ -64,12 +61,12 @@ func GetByTargetID(ctx context.Context, teamID, targetID int64) (*rao.Group, err
 		return nil, err
 	}
 
-	var g *mao.Group
-	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectGroup)
-	err = collection.FindOne(ctx, bson.D{{"target_id", targetID}}).Decode(&g)
-	if err != nil {
-		return nil, err
-	}
+	//var g *mao.Group
+	//collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectGroup)
+	//err = collection.FindOne(ctx, bson.D{{"target_id", targetID}}).Decode(&g)
+	//if err != nil {
+	//	return nil, err
+	//}
 
-	return packer.TransTargetToRaoGroup(t, g), nil
+	return packer.TransTargetToRaoGroup(t, nil), nil
 }

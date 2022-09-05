@@ -1,10 +1,6 @@
 package packer
 
 import (
-	"fmt"
-
-	"go.mongodb.org/mongo-driver/bson"
-
 	"kp-management/internal/pkg/dal/mao"
 	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/rao"
@@ -29,15 +25,15 @@ func TransSaveGroupReqToMaoGroup(group *rao.SaveGroupReq) *mao.Group {
 }
 
 func TransTargetToRaoGroup(t *model.Target, g *mao.Group) *rao.Group {
-	var r rao.Request
-	if err := bson.Unmarshal(g.Request, &r); err != nil {
-		fmt.Sprintln(fmt.Errorf("group.request json UnMarshal err %w", err))
-	}
-
-	var s rao.Script
-	if err := bson.Unmarshal(g.Script, &s); err != nil {
-		fmt.Sprintln(fmt.Errorf("group.script json UnMarshal err %w", err))
-	}
+	//var r rao.Request
+	//if err := bson.Unmarshal(g.Request, &r); err != nil {
+	//	fmt.Sprintln(fmt.Errorf("group.request json UnMarshal err %w", err))
+	//}
+	//
+	//var s rao.Script
+	//if err := bson.Unmarshal(g.Script, &s); err != nil {
+	//	fmt.Sprintln(fmt.Errorf("group.script json UnMarshal err %w", err))
+	//}
 
 	return &rao.Group{
 		TeamID:   t.TeamID,
@@ -48,7 +44,7 @@ func TransTargetToRaoGroup(t *model.Target, g *mao.Group) *rao.Group {
 		Sort:     t.Sort,
 		TypeSort: t.TypeSort,
 		Version:  t.Version,
-		Request:  &r,
-		Script:   &s,
+		//Request:  &r,
+		//Script:   &s,
 	}
 }
