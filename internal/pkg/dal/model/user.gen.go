@@ -18,6 +18,7 @@ type User struct {
 	Email     string         `gorm:"column:email;not null" json:"email"`
 	Password  string         `gorm:"column:password;not null" json:"password"`
 	Nickname  string         `gorm:"column:nickname;not null" json:"nickname"`
+	Avatar    string         `gorm:"column:avatar" json:"avatar"`
 	CreatedAt time.Time      `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt time.Time      `gorm:"column:updated_at;not null;default:CURRENT_TIMESTAMP" json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`
