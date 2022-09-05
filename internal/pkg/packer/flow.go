@@ -1,9 +1,8 @@
 package packer
 
 import (
+	"encoding/json"
 	"fmt"
-
-	"go.mongodb.org/mongo-driver/bson"
 
 	"kp-management/internal/pkg/dal/mao"
 	"kp-management/internal/pkg/dal/rao"
@@ -11,12 +10,12 @@ import (
 
 func TransSaveFlowReqToMaoFlow(req *rao.SaveFlowReq) *mao.Flow {
 
-	nodes, err := bson.Marshal(req.Nodes)
+	nodes, err := json.Marshal(req.Nodes)
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("flow.nodes json marshal err %w", err))
 	}
 
-	edges, err := bson.Marshal(req.Edges)
+	edges, err := json.Marshal(req.Edges)
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("flow.edges json marshal err %w", err))
 	}
@@ -25,21 +24,21 @@ func TransSaveFlowReqToMaoFlow(req *rao.SaveFlowReq) *mao.Flow {
 		SceneID:         req.SceneID,
 		TeamID:          req.TeamID,
 		Version:         req.Version,
-		Nodes:           nodes,
-		Edges:           edges,
-		MultiLevelNodes: req.MultiLevelNodes,
+		Nodes:           string(nodes),
+		Edges:           string(edges),
+		MultiLevelNodes: string(req.MultiLevelNodes),
 	}
 }
 
 func TransMaoFlowToRaoGetFowResp(f *mao.Flow) *rao.GetFlowResp {
 	var nodes []*rao.Node
-	if err := bson.Unmarshal(f.Nodes, &nodes); err != nil {
+	if err := json.Unmarshal([]byte(f.Nodes), &nodes); err != nil {
 		fmt.Sprintln(fmt.Errorf("flow.nodes json unmarshal err %w", err))
 
 	}
 
 	var edges []*rao.Edge
-	if err := bson.Unmarshal(f.Edges, &edges); err != nil {
+	if err := json.Unmarshal([]byte(f.Edges), &edges); err != nil {
 		fmt.Sprintln(fmt.Errorf("flow.edges json unmarshal err %w", err))
 	}
 
@@ -49,6 +48,6 @@ func TransMaoFlowToRaoGetFowResp(f *mao.Flow) *rao.GetFlowResp {
 		Version:         f.Version,
 		Nodes:           nodes,
 		Edges:           edges,
-		MultiLevelNodes: f.MultiLevelNodes,
+		MultiLevelNodes: []byte(f.MultiLevelNodes),
 	}
 }
