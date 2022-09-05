@@ -18,19 +18,6 @@ type SaveTargetReq struct {
 	Regex       []*Regex  `json:"regex"`
 }
 
-type Assert struct {
-	ResponseType int32  `json:"response_type"`
-	Var          string `json:"var"`
-	Compare      string `json:"compare"`
-	Val          string `json:"val"`
-}
-
-type Regex struct {
-	Var     string `json:"var"`
-	Express string `json:"express"`
-	Val     string `json:"val"`
-}
-
 type SaveTargetResp struct {
 }
 
