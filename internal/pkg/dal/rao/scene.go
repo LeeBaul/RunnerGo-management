@@ -51,10 +51,27 @@ type SaveFlowReq struct {
 type SaveFlowResp struct {
 }
 
+type Point struct {
+	X int `json:"x"`
+	Y int `json:"y"`
+}
+
 type Node struct {
 	ID      string `json:"id"`
 	Type    string `json:"type"`
 	IsCheck bool   `json:"is_check"`
+
+	PositionAbsolute *Point   `json:"positionAbsolute"`
+	Position         *Point   `json:"position"`
+	PreList          []string `json:"pre_list"`
+	NextList         []string `json:"next_list"`
+	Width            int      `json:"width"`
+	Height           int      `json:"height"`
+	Selected         bool     `json:"selected"`
+	Dragging         bool     `json:"dragging"`
+	Data             struct {
+		ID string `json:"id"`
+	} `json:"data"`
 
 	// 接口
 	Weight            int        `json:"weight,omitempty"`
