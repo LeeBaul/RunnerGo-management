@@ -26,9 +26,9 @@ type Assert struct {
 }
 
 type Regex struct {
-	Var     string `bson:"var"`
-	Express string `bson:"express"`
-	Remark  string `bson:"remark"`
+	Var     string `json:"var"`
+	Express string `json:"express"`
+	Val     string `json:"val"`
 }
 
 type SaveTargetResp struct {
@@ -142,6 +142,6 @@ type APIDetail struct {
 	Description    string    `json:"description"`
 	CreatedTimeSec int64     `json:"created_time_sec"`
 	UpdatedTimeSec int64     `json:"updated_time_sec"`
-	Assert         []*Assert `json:"asserts"`
+	Assert         []*Assert `json:"assert"`
 	Regex          []*Regex  `json:"regex"`
 }
