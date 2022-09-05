@@ -10,6 +10,7 @@ type SaveSceneReq struct {
 	TypeSort int32  `json:"type_sort"`
 	Version  int32  `json:"version"`
 	Source   int32  `json:"source"`
+	PlanID   int64  `json:"plan_id"`
 	//Request  *Request `json:"request"`
 	//Script   *Script  `json:"script"`
 }

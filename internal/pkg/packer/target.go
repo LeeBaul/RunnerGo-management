@@ -75,5 +75,6 @@ func TransSaveSceneReqToTargetModel(scene *rao.SaveSceneReq, userID int64) *mode
 		CreatedUserID: userID,
 		RecentUserID:  userID,
 		Source:        scene.Source,
+		PlanID:        scene.PlanID,
 	}
 }
