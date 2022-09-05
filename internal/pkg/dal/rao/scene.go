@@ -39,7 +39,7 @@ type Scene struct {
 }
 
 type SaveFlowReq struct {
-	SceneID int64 `json:"scene_id" binding:"required,gt=0"`
+	SceneID int64 `json:"scene_id"`
 	TeamID  int64 `json:"team_id" binding:"required,gt=0"`
 	Version int32 `json:"version"`
 
