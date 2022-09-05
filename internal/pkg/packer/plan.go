@@ -17,17 +17,18 @@ func TransPlansToRaoPlanList(plans []*model.Plan, users []*model.User) []*rao.Pl
 		for _, u := range users {
 			if p.CreateUserID == u.ID {
 				ret = append(ret, &rao.Plan{
-					PlanID:         p.ID,
-					TeamID:         p.TeamID,
-					Name:           p.Name,
-					TaskType:       p.TaskType,
-					Mode:           p.Mode,
-					Status:         p.Status,
-					RunUserID:      p.RunUserID,
-					RunUserName:    u.Nickname,
-					Remark:         p.Remark,
-					CreatedTimeSec: p.CreatedAt.Unix(),
-					UpdatedTimeSec: p.UpdatedAt.Unix(),
+					PlanID:            p.ID,
+					TeamID:            p.TeamID,
+					Name:              p.Name,
+					TaskType:          p.TaskType,
+					Mode:              p.Mode,
+					Status:            p.Status,
+					CreatedUserName:   u.Nickname,
+					CreatedUserAvatar: "", // todo 头像
+					CreatedUserID:     p.CreateUserID,
+					Remark:            p.Remark,
+					CreatedTimeSec:    p.CreatedAt.Unix(),
+					UpdatedTimeSec:    p.UpdatedAt.Unix(),
 				})
 			}
 		}
@@ -115,21 +116,22 @@ func TransTaskToRaoPlan(p *model.Plan, t *mao.Task) *rao.Plan {
 	}
 
 	return &rao.Plan{
-		PlanID:         p.ID,
-		TeamID:         p.TeamID,
-		Name:           p.Name,
-		TaskType:       p.TaskType,
-		Mode:           p.Mode,
-		Status:         p.Status,
-		RunUserID:      p.RunUserID,
-		RunUserName:    "",
-		Remark:         p.Remark,
-		CreatedTimeSec: p.CreatedAt.Unix(),
-		UpdatedTimeSec: p.UpdatedAt.Unix(),
-		CronExpr:       p.CronExpr,
-		ModeConf:       &mc,
-		Nodes:          n,
-		Edges:          e,
+		PlanID:            p.ID,
+		TeamID:            p.TeamID,
+		Name:              p.Name,
+		TaskType:          p.TaskType,
+		Mode:              p.Mode,
+		Status:            p.Status,
+		CreatedUserID:     p.CreateUserID,
+		CreatedUserAvatar: "", // todo 头像
+		CreatedUserName:   "", // todo 昵称
+		Remark:            p.Remark,
+		CreatedTimeSec:    p.CreatedAt.Unix(),
+		UpdatedTimeSec:    p.UpdatedAt.Unix(),
+		CronExpr:          p.CronExpr,
+		ModeConf:          &mc,
+		Nodes:             n,
+		Edges:             e,
 	}
 }
 

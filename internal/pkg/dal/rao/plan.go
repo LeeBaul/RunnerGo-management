@@ -1,21 +1,24 @@
 package rao
 
 type Plan struct {
-	PlanID         int64     `json:"plan_id"`
-	TeamID         int64     `json:"team_id"`
-	Name           string    `json:"name"`
-	TaskType       int32     `json:"task_type"`
-	Mode           int32     `json:"mode"`
-	Status         int32     `json:"status"`
-	RunUserID      int64     `json:"run_user_id"`
-	RunUserName    string    `json:"run_user_name"`
-	Remark         string    `json:"remark"`
-	CreatedTimeSec int64     `json:"created_time_sec"`
-	UpdatedTimeSec int64     `json:"updated_time_sec"`
-	CronExpr       string    `json:"cron_expr"`
-	ModeConf       *ModeConf `json:"mode_conf"`
-	Nodes          []*Node   `json:"nodes"`
-	Edges          []*Edge   `json:"edges"`
+	PlanID   int64  `json:"plan_id"`
+	TeamID   int64  `json:"team_id"`
+	Name     string `json:"name"`
+	TaskType int32  `json:"task_type"`
+	Mode     int32  `json:"mode"`
+	Status   int32  `json:"status"`
+	//RunUserID         int64     `json:"run_user_id"`
+	//RunUserName       string    `json:"run_user_name"`
+	CreatedUserID     int64     `json:"created_user_id"`
+	CreatedUserName   string    `json:"created_user_name"`
+	CreatedUserAvatar string    `json:"created_user_avatar"`
+	Remark            string    `json:"remark"`
+	CreatedTimeSec    int64     `json:"created_time_sec"`
+	UpdatedTimeSec    int64     `json:"updated_time_sec"`
+	CronExpr          string    `json:"cron_expr"`
+	ModeConf          *ModeConf `json:"mode_conf"`
+	Nodes             []*Node   `json:"nodes"`
+	Edges             []*Edge   `json:"edges"`
 }
 
 type ModeConf struct {
