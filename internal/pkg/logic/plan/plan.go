@@ -82,7 +82,7 @@ func ListByTeamID(ctx context.Context, teamID int64, limit, offset int, keyword 
 
 	var userIDs []int64
 	for _, r := range ret {
-		userIDs = append(userIDs, r.RunUserID)
+		userIDs = append(userIDs, r.CreateUserID)
 	}
 
 	u := query.Use(dal.DB()).User
