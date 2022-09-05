@@ -1,8 +1,9 @@
 package packer
 
 import (
-	"encoding/json"
 	"fmt"
+
+	"go.mongodb.org/mongo-driver/bson"
 
 	"kp-management/internal/pkg/dal/mao"
 	"kp-management/internal/pkg/dal/rao"
@@ -10,12 +11,12 @@ import (
 
 func TransSaveFlowReqToMaoFlow(req *rao.SaveFlowReq) *mao.Flow {
 
-	nodes, err := json.Marshal(req.Nodes)
+	nodes, err := bson.Marshal(mao.Node{Nodes: req.Nodes})
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("flow.nodes json marshal err %w", err))
 	}
 
-	edges, err := json.Marshal(req.Edges)
+	edges, err := bson.Marshal(mao.Edge{Edges: req.Edges})
 	if err != nil {
 		fmt.Sprintln(fmt.Errorf("flow.edges json marshal err %w", err))
 	}
@@ -24,21 +25,21 @@ func TransSaveFlowReqToMaoFlow(req *rao.SaveFlowReq) *mao.Flow {
 		SceneID:         req.SceneID,
 		TeamID:          req.TeamID,
 		Version:         req.Version,
-		Nodes:           string(nodes),
-		Edges:           string(edges),
-		MultiLevelNodes: string(req.MultiLevelNodes),
+		Nodes:           nodes,
+		Edges:           edges,
+		MultiLevelNodes: req.MultiLevelNodes,
 	}
 }
 
 func TransMaoFlowToRaoGetFowResp(f *mao.Flow) *rao.GetFlowResp {
-	var nodes []*rao.Node
-	if err := json.Unmarshal([]byte(f.Nodes), &nodes); err != nil {
-		fmt.Sprintln(fmt.Errorf("flow.nodes json unmarshal err %w", err))
 
+	var n mao.Node
+	if err := bson.Unmarshal(f.Nodes, &n); err != nil {
+		fmt.Sprintln(fmt.Errorf("flow.nodes json unmarshal err %w", err))
 	}
 
-	var edges []*rao.Edge
-	if err := json.Unmarshal([]byte(f.Edges), &edges); err != nil {
+	var e mao.Edge
+	if err := bson.Unmarshal(f.Edges, &e); err != nil {
 		fmt.Sprintln(fmt.Errorf("flow.edges json unmarshal err %w", err))
 	}
 
@@ -46,8 +47,8 @@ func TransMaoFlowToRaoGetFowResp(f *mao.Flow) *rao.GetFlowResp {
 		SceneID:         f.SceneID,
 		TeamID:          f.TeamID,
 		Version:         f.Version,
-		Nodes:           nodes,
-		Edges:           edges,
-		MultiLevelNodes: []byte(f.MultiLevelNodes),
+		Nodes:           n.Nodes,
+		Edges:           e.Edges,
+		MultiLevelNodes: f.MultiLevelNodes,
 	}
 }
