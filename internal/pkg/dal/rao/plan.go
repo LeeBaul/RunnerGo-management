@@ -90,6 +90,14 @@ type GetPlanResp struct {
 	Plan *Plan `json:"plan"`
 }
 
+type DeletePlanReq struct {
+	PlanID int64 `json:"plan_id"`
+	TeamID int64 `json:"team_id"`
+}
+
+type DeletePlanResp struct {
+}
+
 type SetPreinstallReq struct {
 	TeamID   int64     `json:"team_id" binding:"required,gt=0"`
 	TaskType int32     `json:"task_type" binding:"required,gt=0"`

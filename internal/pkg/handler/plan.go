@@ -105,6 +105,22 @@ func GetPlan(ctx *gin.Context) {
 	return
 }
 
+func DeletePlan(ctx *gin.Context) {
+	var req rao.DeletePlanReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	if err := plan.DeleteByPlanID(ctx, req.TeamID, req.PlanID); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
+}
+
 func SetPreinstall(ctx *gin.Context) {
 	var req rao.SetPreinstallReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {

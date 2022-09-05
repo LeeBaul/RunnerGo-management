@@ -30,6 +30,22 @@ func ListReports(ctx *gin.Context) {
 	return
 }
 
+func DeleteReport(ctx *gin.Context) {
+	var req rao.DeleteReportReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	if err := report.DeleteReport(ctx, req.TeamID, req.ReportID); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
+}
+
 func ListMachines(ctx *gin.Context) {
 	var req rao.ListMachineReq
 	if err := ctx.ShouldBind(&req); err != nil {

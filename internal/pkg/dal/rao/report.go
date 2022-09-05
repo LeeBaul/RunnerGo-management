@@ -29,6 +29,14 @@ type Report struct {
 	SceneType   int32  `json:"scene_type"`
 }
 
+type DeleteReportReq struct {
+	TeamID   int64 `json:"team_id"`
+	ReportID int64 `json:"report_id"`
+}
+
+type DeleteReportResp struct {
+}
+
 type ListMachineReq struct {
 	ReportID int64 `form:"report_id" binding:"required,gt=0"`
 }

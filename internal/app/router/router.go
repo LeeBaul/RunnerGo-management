@@ -87,6 +87,7 @@ func RegisterRouter(r *gin.Engine) {
 	plan.POST("/save", handler.SavePlan)
 	plan.GET("/detail", handler.GetPlan)
 	plan.POST("/task/save", handler.SavePlanTask)
+	plan.POST("/delete", handler.DeletePlan)
 	// 计划预设配置
 	plan.POST("/preinstall/save", handler.SetPreinstall)
 	plan.GET("/preinstall/detail", handler.GetPreinstall)
@@ -96,6 +97,7 @@ func RegisterRouter(r *gin.Engine) {
 	report.GET("/list", handler.ListReports)
 	report.GET("/detail")
 	report.GET("/machine", handler.ListMachines)
+	report.POST("/delete", handler.DeleteReport)
 
 	// 操作日志
 	operation := api.Group("/v1/operation")
