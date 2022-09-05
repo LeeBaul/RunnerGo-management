@@ -40,7 +40,7 @@ func GetFlow(ctx context.Context, sceneID int64) (*rao.GetFlowResp, error) {
 	}
 
 	if err == mongo.ErrNoDocuments {
-		return nil, nil
+		return &rao.GetFlowResp{}, nil
 	}
 
 	return packer.TransMaoFlowToRaoGetFowResp(&ret), nil
