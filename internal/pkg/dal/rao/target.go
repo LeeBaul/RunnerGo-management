@@ -142,6 +142,6 @@ type APIDetail struct {
 	Description    string    `json:"description"`
 	CreatedTimeSec int64     `json:"created_time_sec"`
 	UpdatedTimeSec int64     `json:"updated_time_sec"`
-	Assert         []*Assert `json:"asserts"`
+	Assert         []*Assert `json:"assert"`
 	Regex          []*Regex  `json:"regex"`
 }
