@@ -1,10 +1,6 @@
 package packer
 
 import (
-	"fmt"
-
-	"go.mongodb.org/mongo-driver/bson"
-
 	"kp-management/internal/pkg/dal/mao"
 	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/rao"
@@ -29,15 +25,15 @@ func TransSaveFolderReqToMaoFolder(folder *rao.SaveFolderReq) *mao.Folder {
 }
 
 func TransTargetToRaoFolder(t *model.Target, f *mao.Folder) *rao.Folder {
-	var r rao.Request
-	if err := bson.Unmarshal(f.Request, &r); err != nil {
-		fmt.Sprintln(fmt.Errorf("folder.request json UnMarshal err %w", err))
-	}
-
-	var s rao.Script
-	if err := bson.Unmarshal(f.Script, &s); err != nil {
-		fmt.Sprintln(fmt.Errorf("folder.script json UnMarshal err %w", err))
-	}
+	//var r rao.Request
+	//if err := bson.Unmarshal(f.Request, &r); err != nil {
+	//	fmt.Sprintln(fmt.Errorf("folder.request json UnMarshal err %w", err))
+	//}
+	//
+	//var s rao.Script
+	//if err := bson.Unmarshal(f.Script, &s); err != nil {
+	//	fmt.Sprintln(fmt.Errorf("folder.script json UnMarshal err %w", err))
+	//}
 
 	return &rao.Folder{
 		TargetID: t.ID,
@@ -48,7 +44,7 @@ func TransTargetToRaoFolder(t *model.Target, f *mao.Folder) *rao.Folder {
 		Sort:     t.Sort,
 		TypeSort: t.TypeSort,
 		Version:  t.Version,
-		Request:  &r,
-		Script:   &s,
+		//Request:  &r,
+		//Script:   &s,
 	}
 }
