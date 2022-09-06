@@ -17,6 +17,7 @@ type SaveSceneReq struct {
 }
 
 type SaveSceneResp struct {
+	TargetID int64 `json:"target_id"`
 }
 
 type GetSceneReq struct {

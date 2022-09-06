@@ -12,13 +12,13 @@ import (
 	"kp-management/internal/pkg/packer"
 )
 
-func Save(ctx context.Context, req *rao.SaveSceneReq, userID int64) error {
+func Save(ctx context.Context, req *rao.SaveSceneReq, userID int64) (int64, error) {
 	target := packer.TransSaveSceneReqToTargetModel(req, userID)
 	//scene := packer.TransSaveSceneReqToMaoScene(req)
 
 	//collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectScene)
 
-	return query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
+	err := query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
 		if target.ID == 0 {
 			if err := tx.Target.WithContext(ctx).Create(target); err != nil {
 				return err
@@ -38,6 +38,8 @@ func Save(ctx context.Context, req *rao.SaveSceneReq, userID int64) error {
 
 		return record.InsertUpdate(ctx, target.TeamID, userID, fmt.Sprintf("修改场景 - %s", target.Name))
 	})
+
+	return target.ID, err
 }
 
 func BatchGetByTargetID(ctx context.Context, teamID int64, targetIDs []int64) ([]*rao.Scene, error) {
