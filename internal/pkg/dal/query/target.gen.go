@@ -39,6 +39,7 @@ func newTarget(db *gorm.DB) target {
 	_target.Version = field.NewInt32(tableName, "version")
 	_target.CreatedUserID = field.NewInt64(tableName, "created_user_id")
 	_target.RecentUserID = field.NewInt64(tableName, "recent_user_id")
+	_target.Description = field.NewString(tableName, "description")
 	_target.Source = field.NewInt32(tableName, "source")
 	_target.PlanID = field.NewInt64(tableName, "plan_id")
 	_target.CreatedAt = field.NewTime(tableName, "created_at")
@@ -66,6 +67,7 @@ type target struct {
 	Version       field.Int32
 	CreatedUserID field.Int64
 	RecentUserID  field.Int64
+	Description   field.String
 	Source        field.Int32
 	PlanID        field.Int64
 	CreatedAt     field.Time
@@ -99,6 +101,7 @@ func (t *target) updateTableName(table string) *target {
 	t.Version = field.NewInt32(table, "version")
 	t.CreatedUserID = field.NewInt64(table, "created_user_id")
 	t.RecentUserID = field.NewInt64(table, "recent_user_id")
+	t.Description = field.NewString(table, "description")
 	t.Source = field.NewInt32(table, "source")
 	t.PlanID = field.NewInt64(table, "plan_id")
 	t.CreatedAt = field.NewTime(table, "created_at")
@@ -126,7 +129,7 @@ func (t *target) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (t *target) fillFieldMap() {
-	t.fieldMap = make(map[string]field.Expr, 17)
+	t.fieldMap = make(map[string]field.Expr, 18)
 	t.fieldMap["id"] = t.ID
 	t.fieldMap["team_id"] = t.TeamID
 	t.fieldMap["target_type"] = t.TargetType
@@ -139,6 +142,7 @@ func (t *target) fillFieldMap() {
 	t.fieldMap["version"] = t.Version
 	t.fieldMap["created_user_id"] = t.CreatedUserID
 	t.fieldMap["recent_user_id"] = t.RecentUserID
+	t.fieldMap["description"] = t.Description
 	t.fieldMap["source"] = t.Source
 	t.fieldMap["plan_id"] = t.PlanID
 	t.fieldMap["created_at"] = t.CreatedAt

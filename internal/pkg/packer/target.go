@@ -21,6 +21,7 @@ func TransSaveFolderReqToTargetModel(folder *rao.SaveFolderReq, userID int64) *m
 		CreatedUserID: userID,
 		RecentUserID:  userID,
 		Source:        consts.TargetSourceNormal,
+		Description:   folder.Description,
 	}
 }
 
@@ -39,6 +40,7 @@ func TransSaveTargetReqToTargetModel(target *rao.SaveTargetReq, userID int64) *m
 		CreatedUserID: userID,
 		RecentUserID:  userID,
 		Source:        consts.TargetSourceNormal,
+		Description:   target.Description,
 	}
 }
 
@@ -58,6 +60,7 @@ func TransSaveGroupReqToTargetModel(group *rao.SaveGroupReq, userID int64) *mode
 		RecentUserID:  userID,
 		Source:        group.Source,
 		PlanID:        group.PlanID,
+		Description:   group.Description,
 	}
 }
 
@@ -77,5 +80,6 @@ func TransSaveSceneReqToTargetModel(scene *rao.SaveSceneReq, userID int64) *mode
 		RecentUserID:  userID,
 		Source:        scene.Source,
 		PlanID:        scene.PlanID,
+		Description:   scene.Description,
 	}
 }
