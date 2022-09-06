@@ -61,12 +61,13 @@ func SavePlan(ctx *gin.Context) {
 		return
 	}
 
-	if err := plan.Save(ctx, &req, jwt.GetUserIDByCtx(ctx)); err != nil {
+	planID, err := plan.Save(ctx, &req, jwt.GetUserIDByCtx(ctx))
+	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
-	response.Success(ctx)
+	response.SuccessWithData(ctx, rao.SavePlanResp{PlanID: planID})
 	return
 }
 
