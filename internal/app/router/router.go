@@ -48,6 +48,12 @@ func RegisterRouter(r *gin.Engine) {
 	team.POST("/invite", handler.InviteMember)
 	team.POST("/remove", handler.RemoveMember)
 
+	// 全局变量
+	variable := api.Group("/v1/variable")
+	variable.POST("/save")
+	variable.POST("/delete")
+	variable.GET("/list")
+
 	// 首页
 	dashboard := api.Group("/v1/dashboard")
 	dashboard.GET("/default", handler.DashboardDefault)
