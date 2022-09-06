@@ -22,15 +22,15 @@ func SaveVariable(ctx context.Context, req *rao.SaveVariableReq) error {
 	return err
 }
 
-func ListVariables(ctx context.Context, teamID int64) ([]*rao.Variable, error) {
+func ListVariables(ctx context.Context, teamID int64, limit, offset int) ([]*rao.Variable, int64, error) {
 	tx := query.Use(dal.DB()).Variable
 
-	v, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID)).Find()
+	v, cnt, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID)).FindByPage(offset, limit)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return packer.TransVariablesToRaoVariables(v), nil
+	return packer.TransVariablesToRaoVariables(v), cnt, nil
 }
 
 func DeleteVariable(ctx context.Context, teamID, varID int64) error {

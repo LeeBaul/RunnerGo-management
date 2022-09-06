@@ -32,13 +32,13 @@ func ListVariables(ctx *gin.Context) {
 		return
 	}
 
-	v, err := variable.ListVariables(ctx, req.TeamID)
+	v, cnt, err := variable.ListVariables(ctx, req.TeamID, req.Size, (req.Page-1)*req.Size)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
-	response.SuccessWithData(ctx, rao.ListVariablesResp{Variables: v})
+	response.SuccessWithData(ctx, rao.ListVariablesResp{Variables: v, Total: cnt})
 	return
 }
 
