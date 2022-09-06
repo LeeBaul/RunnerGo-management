@@ -13,7 +13,6 @@ type SaveVariableResp struct {
 
 type ListVariablesReq struct {
 	TeamID int64 `form:"team_id"`
-	VarID  int64 `form:"var_id"`
 }
 
 type ListVariablesResp struct {
@@ -30,6 +29,7 @@ type DeleteVariableResp struct {
 
 type Variable struct {
 	VarID       int64  `json:"var_id"`
+	TeamID      int64  `json:"team_id"`
 	Var         string `json:"var"`
 	Val         string `json:"val"`
 	Description string `json:"description"`

@@ -51,8 +51,8 @@ func RegisterRouter(r *gin.Engine) {
 	// 全局变量
 	variable := api.Group("/v1/variable")
 	variable.POST("/save", handler.SaveVariable)
-	variable.POST("/delete")
-	variable.GET("/list")
+	variable.POST("/delete", handler.DeleteVariable)
+	variable.GET("/list", handler.ListVariables)
 
 	// 首页
 	dashboard := api.Group("/v1/dashboard")
