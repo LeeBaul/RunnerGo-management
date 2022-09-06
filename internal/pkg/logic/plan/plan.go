@@ -13,7 +13,6 @@ import (
 	"kp-management/internal/pkg/biz/record"
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/mao"
-	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/query"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/packer"
@@ -95,26 +94,17 @@ func ListByTeamID(ctx context.Context, teamID int64, limit, offset int, keyword 
 }
 
 func Save(ctx context.Context, req *rao.SavePlanReq, userID int64) error {
-	p := model.Plan{
-		ID:           req.PlanID,
-		TeamID:       req.TeamID,
-		Name:         req.Name,
-		Status:       consts.PlanStatusNormal,
-		CreateUserID: userID,
-		Remark:       req.Remark,
-	}
 
 	tx := query.Use(dal.DB()).Plan
-	ret, err := tx.WithContext(ctx).Where(tx.ID.Eq(req.PlanID)).Find()
-	if err != nil {
-		return err
-	}
+	_, err := tx.WithContext(ctx).Where(tx.ID.Eq(req.PlanID)).Assign(
+		tx.TeamID.Value(req.TeamID),
+		tx.Name.Value(req.Name),
+		tx.Status.Value(consts.PlanStatusNormal),
+		tx.CreateUserID.Value(userID),
+		tx.Remark.Value(req.Remark),
+	).FirstOrCreate()
 
-	if len(ret) > 0 {
-		return tx.WithContext(ctx).Where(tx.ID.Eq(req.PlanID)).Save(&p)
-	}
-
-	return tx.WithContext(ctx).Create(&p)
+	return err
 }
 
 func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error {
