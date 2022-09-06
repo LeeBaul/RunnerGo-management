@@ -29,16 +29,17 @@ type GetGroupResp struct {
 }
 
 type Group struct {
-	TeamID   int64    `json:"team_id"`
-	TargetID int64    `json:"target_id"`
-	ParentID int64    `json:"parent_id"`
-	Name     string   `json:"name"`
-	Method   string   `json:"method"`
-	Sort     int32    `json:"sort"`
-	TypeSort int32    `json:"type_sort"`
-	Version  int32    `json:"version"`
-	Request  *Request `json:"request"`
-	Script   *Script  `json:"script"`
-	Source   int32    `json:"source"`
-	PlanID   int64    `json:"plan_id"`
+	TeamID      int64    `json:"team_id"`
+	TargetID    int64    `json:"target_id"`
+	ParentID    int64    `json:"parent_id"`
+	Name        string   `json:"name"`
+	Method      string   `json:"method"`
+	Sort        int32    `json:"sort"`
+	TypeSort    int32    `json:"type_sort"`
+	Version     int32    `json:"version"`
+	Request     *Request `json:"request"`
+	Script      *Script  `json:"script"`
+	Source      int32    `json:"source"`
+	PlanID      int64    `json:"plan_id"`
+	Description string   `json:"description"`
 }

@@ -36,14 +36,15 @@ func TransTargetToRaoFolder(t *model.Target, f *mao.Folder) *rao.Folder {
 	//}
 
 	return &rao.Folder{
-		TargetID: t.ID,
-		TeamID:   t.TeamID,
-		ParentID: t.ParentID,
-		Name:     t.Name,
-		Method:   t.Method,
-		Sort:     t.Sort,
-		TypeSort: t.TypeSort,
-		Version:  t.Version,
+		TargetID:    t.ID,
+		TeamID:      t.TeamID,
+		ParentID:    t.ParentID,
+		Name:        t.Name,
+		Method:      t.Method,
+		Sort:        t.Sort,
+		TypeSort:    t.TypeSort,
+		Version:     t.Version,
+		Description: t.Description,
 		//Request:  &r,
 		//Script:   &s,
 	}

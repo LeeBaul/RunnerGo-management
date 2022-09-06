@@ -89,9 +89,9 @@ func Delete(ctx context.Context, targetID int64) error {
 
 		filter := bson.D{{"target_id", targetID}}
 
-		if _, err := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectFolder).DeleteOne(ctx, filter); err != nil {
-			return err
-		}
+		//if _, err := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectFolder).DeleteOne(ctx, filter); err != nil {
+		//	return err
+		//}
 
 		if _, err := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectAPI).DeleteOne(ctx, filter); err != nil {
 			return err

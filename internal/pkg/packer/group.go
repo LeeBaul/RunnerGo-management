@@ -36,16 +36,17 @@ func TransTargetToRaoGroup(t *model.Target, g *mao.Group) *rao.Group {
 	//}
 
 	return &rao.Group{
-		TeamID:   t.TeamID,
-		TargetID: t.ID,
-		ParentID: t.ParentID,
-		Name:     t.Name,
-		Method:   t.Method,
-		Sort:     t.Sort,
-		TypeSort: t.TypeSort,
-		Version:  t.Version,
-		Source:   t.Source,
-		PlanID:   t.PlanID,
+		TeamID:      t.TeamID,
+		TargetID:    t.ID,
+		ParentID:    t.ParentID,
+		Name:        t.Name,
+		Method:      t.Method,
+		Sort:        t.Sort,
+		TypeSort:    t.TypeSort,
+		Version:     t.Version,
+		Source:      t.Source,
+		PlanID:      t.PlanID,
+		Description: t.Description,
 		//Request:  &r,
 		//Script:   &s,
 

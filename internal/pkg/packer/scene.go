@@ -41,14 +41,15 @@ func TransTargetToRaoScene(targets []*model.Target, scenes []*mao.Scene) []*rao.
 		//		}
 
 		ret = append(ret, &rao.Scene{
-			TeamID:   t.TeamID,
-			TargetID: t.ID,
-			ParentID: t.ParentID,
-			Name:     t.Name,
-			Method:   t.Method,
-			Sort:     t.Sort,
-			TypeSort: t.TypeSort,
-			Version:  t.Version,
+			TeamID:      t.TeamID,
+			TargetID:    t.ID,
+			ParentID:    t.ParentID,
+			Name:        t.Name,
+			Method:      t.Method,
+			Sort:        t.Sort,
+			TypeSort:    t.TypeSort,
+			Version:     t.Version,
+			Description: t.Description,
 			//Request:  &r,
 			//Script:   &s,
 		})
