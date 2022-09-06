@@ -50,7 +50,7 @@ func RegisterRouter(r *gin.Engine) {
 
 	// 全局变量
 	variable := api.Group("/v1/variable")
-	variable.POST("/save")
+	variable.POST("/save", handler.SaveVariable)
 	variable.POST("/delete")
 	variable.GET("/list")
 
