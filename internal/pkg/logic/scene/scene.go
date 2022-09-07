@@ -42,14 +42,14 @@ func Save(ctx context.Context, req *rao.SaveSceneReq, userID int64) (int64, erro
 	return target.ID, err
 }
 
-func BatchGetByTargetID(ctx context.Context, teamID int64, targetIDs []int64) ([]*rao.Scene, error) {
+func BatchGetByTargetID(ctx context.Context, teamID int64, targetIDs []int64, source int32) ([]*rao.Scene, error) {
 	tx := query.Use(dal.DB()).Target
 	t, err := tx.WithContext(ctx).Where(
 		tx.ID.In(targetIDs...),
 		tx.TeamID.Eq(teamID),
 		tx.TargetType.Eq(consts.TargetTypeScene),
 		tx.Status.Eq(consts.TargetStatusNormal),
-		tx.Source.Eq(consts.TargetSourceNormal),
+		tx.Source.Eq(source),
 	).Find()
 
 	if err != nil {
