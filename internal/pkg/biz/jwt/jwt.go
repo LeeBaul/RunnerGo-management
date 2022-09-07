@@ -26,6 +26,22 @@ func GenerateToken(userID int64) (string, time.Time, error) {
 	return tokenString, exp, err
 }
 
+func GenerateTokenByTime(userID int64, d time.Duration) (string, time.Time, error) {
+	now := time.Now()
+	exp := now.Add(d)
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user_id": userID,
+		"iss":     conf.Conf.JWT.Issuer,
+		"iat":     now.Unix(),
+		"nbf":     now.Unix(),
+		"exp":     exp.Unix(),
+	})
+	tokenString, err := token.SignedString([]byte(conf.Conf.JWT.Secret))
+
+	return tokenString, exp, err
+}
+
 func ParseToken(tokenString string) (int64, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {

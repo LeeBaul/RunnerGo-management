@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"time"
+
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/jwt"
 	"kp-management/internal/pkg/biz/response"
@@ -51,7 +53,12 @@ func AuthLogin(ctx *gin.Context) {
 		return
 	}
 
-	token, exp, err := jwt.GenerateToken(u.ID)
+	d := 2 * time.Hour
+	if req.IsAutoLogin {
+		d = 30 * 24 * time.Hour
+	}
+
+	token, exp, err := jwt.GenerateTokenByTime(u.ID, d)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrInvalidToken, err.Error())
 		return

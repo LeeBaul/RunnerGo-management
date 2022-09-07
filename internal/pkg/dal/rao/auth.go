@@ -13,8 +13,9 @@ type AuthSignupResp struct {
 }
 
 type AuthLoginReq struct {
-	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required,min=6,max=32"`
+	Email       string `json:"email" binding:"required,email"`
+	Password    string `json:"password" binding:"required,min=6,max=32"`
+	IsAutoLogin bool   `json:"is_auto_login"`
 }
 
 type AuthLoginResp struct {
