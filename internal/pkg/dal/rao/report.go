@@ -17,16 +17,18 @@ type ListReportsResp struct {
 
 type Report struct {
 	ReportID    int64  `json:"report_id"`
+	TeamID      int64  `json:"team_id"`
 	Name        string `json:"name"`
-	Mode        int32  `json:"mode"`
+	TaskMode    int32  `json:"task_mode"`
+	TaskType    int32  `json:"task_type"`
 	Status      int32  `json:"status"`
 	RunTimeSec  int64  `json:"run_time_sec"`
 	LastTimeSec int64  `json:"last_time_sec"`
 	RunUserID   int64  `json:"run_user_id"`
 	RunUserName string `json:"run_user_name"`
-	TeamID      int64  `json:"team_id"`
-	TaskType    int32  `json:"task_type"`
-	SceneType   int32  `json:"scene_type"`
+
+	SceneID   int64  `json:"scene_id"`
+	SceneName string `json:"scene_name"`
 }
 
 type DeleteReportReq struct {

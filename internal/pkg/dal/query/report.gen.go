@@ -28,14 +28,14 @@ func newReport(db *gorm.DB) report {
 	tableName := _report.reportDo.TableName()
 	_report.ALL = field.NewAsterisk(tableName)
 	_report.ID = field.NewInt64(tableName, "id")
+	_report.TeamID = field.NewInt64(tableName, "team_id")
 	_report.Name = field.NewString(tableName, "name")
-	_report.Mode = field.NewInt32(tableName, "mode")
+	_report.SceneID = field.NewInt64(tableName, "scene_id")
+	_report.TaskType = field.NewInt32(tableName, "task_type")
+	_report.TaskMode = field.NewInt32(tableName, "task_mode")
 	_report.Status = field.NewInt32(tableName, "status")
 	_report.RanAt = field.NewTime(tableName, "ran_at")
 	_report.RunUserID = field.NewInt64(tableName, "run_user_id")
-	_report.TeamID = field.NewInt64(tableName, "team_id")
-	_report.TaskType = field.NewInt32(tableName, "task_type")
-	_report.SceneType = field.NewInt32(tableName, "scene_type")
 	_report.CreatedAt = field.NewTime(tableName, "created_at")
 	_report.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_report.DeletedAt = field.NewField(tableName, "deleted_at")
@@ -50,14 +50,14 @@ type report struct {
 
 	ALL       field.Asterisk
 	ID        field.Int64
+	TeamID    field.Int64
 	Name      field.String
-	Mode      field.Int32
+	SceneID   field.Int64
+	TaskType  field.Int32
+	TaskMode  field.Int32
 	Status    field.Int32
 	RanAt     field.Time
 	RunUserID field.Int64
-	TeamID    field.Int64
-	TaskType  field.Int32
-	SceneType field.Int32
 	CreatedAt field.Time
 	UpdatedAt field.Time
 	DeletedAt field.Field
@@ -78,14 +78,14 @@ func (r report) As(alias string) *report {
 func (r *report) updateTableName(table string) *report {
 	r.ALL = field.NewAsterisk(table)
 	r.ID = field.NewInt64(table, "id")
+	r.TeamID = field.NewInt64(table, "team_id")
 	r.Name = field.NewString(table, "name")
-	r.Mode = field.NewInt32(table, "mode")
+	r.SceneID = field.NewInt64(table, "scene_id")
+	r.TaskType = field.NewInt32(table, "task_type")
+	r.TaskMode = field.NewInt32(table, "task_mode")
 	r.Status = field.NewInt32(table, "status")
 	r.RanAt = field.NewTime(table, "ran_at")
 	r.RunUserID = field.NewInt64(table, "run_user_id")
-	r.TeamID = field.NewInt64(table, "team_id")
-	r.TaskType = field.NewInt32(table, "task_type")
-	r.SceneType = field.NewInt32(table, "scene_type")
 	r.CreatedAt = field.NewTime(table, "created_at")
 	r.UpdatedAt = field.NewTime(table, "updated_at")
 	r.DeletedAt = field.NewField(table, "deleted_at")
@@ -113,14 +113,14 @@ func (r *report) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 func (r *report) fillFieldMap() {
 	r.fieldMap = make(map[string]field.Expr, 12)
 	r.fieldMap["id"] = r.ID
+	r.fieldMap["team_id"] = r.TeamID
 	r.fieldMap["name"] = r.Name
-	r.fieldMap["mode"] = r.Mode
+	r.fieldMap["scene_id"] = r.SceneID
+	r.fieldMap["task_type"] = r.TaskType
+	r.fieldMap["task_mode"] = r.TaskMode
 	r.fieldMap["status"] = r.Status
 	r.fieldMap["ran_at"] = r.RanAt
 	r.fieldMap["run_user_id"] = r.RunUserID
-	r.fieldMap["team_id"] = r.TeamID
-	r.fieldMap["task_type"] = r.TaskType
-	r.fieldMap["scene_type"] = r.SceneType
 	r.fieldMap["created_at"] = r.CreatedAt
 	r.fieldMap["updated_at"] = r.UpdatedAt
 	r.fieldMap["deleted_at"] = r.DeletedAt
