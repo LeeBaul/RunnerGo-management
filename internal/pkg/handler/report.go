@@ -34,6 +34,7 @@ func GetReport(ctx *gin.Context) {
 
 }
 
+// DeleteReport 删除报告
 func DeleteReport(ctx *gin.Context) {
 	var req rao.DeleteReportReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -50,6 +51,7 @@ func DeleteReport(ctx *gin.Context) {
 	return
 }
 
+// ListMachines 施压机列表
 func ListMachines(ctx *gin.Context) {
 	var req rao.ListMachineReq
 	if err := ctx.ShouldBind(&req); err != nil {

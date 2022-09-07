@@ -106,6 +106,7 @@ func GetPlan(ctx *gin.Context) {
 	return
 }
 
+// DeletePlan 删除计划
 func DeletePlan(ctx *gin.Context) {
 	var req rao.DeletePlanReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -122,6 +123,7 @@ func DeletePlan(ctx *gin.Context) {
 	return
 }
 
+// SetPreinstall 保存预设设置
 func SetPreinstall(ctx *gin.Context) {
 	var req rao.SetPreinstallReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -138,6 +140,7 @@ func SetPreinstall(ctx *gin.Context) {
 	return
 }
 
+// GetPreinstall 获取预设设置
 func GetPreinstall(ctx *gin.Context) {
 	var req rao.GetPreinstallReq
 	if err := ctx.ShouldBind(&req); err != nil {
