@@ -36,7 +36,7 @@ func BatchGetScene(ctx *gin.Context) {
 		return
 	}
 
-	s, err := scene.BatchGetByTargetID(ctx, req.TeamID, req.TargetID)
+	s, err := scene.BatchGetByTargetID(ctx, req.TeamID, req.TargetID, req.Source)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
