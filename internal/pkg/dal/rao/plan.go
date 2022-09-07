@@ -82,6 +82,7 @@ type SavePlanConfReq struct {
 }
 
 type SavePlanResp struct {
+	PlanID int64 `json:"plan_id"`
 }
 
 type GetPlanConfReq struct {

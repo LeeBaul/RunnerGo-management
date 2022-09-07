@@ -32,13 +32,13 @@ func ListVariables(ctx *gin.Context) {
 		return
 	}
 
-	v, err := variable.ListVariables(ctx, req.TeamID)
+	v, cnt, err := variable.ListVariables(ctx, req.TeamID, req.Size, (req.Page-1)*req.Size)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
-	response.SuccessWithData(ctx, rao.ListVariablesResp{Variables: v})
+	response.SuccessWithData(ctx, rao.ListVariablesResp{Variables: v, Total: cnt})
 	return
 }
 
@@ -50,6 +50,22 @@ func DeleteVariable(ctx *gin.Context) {
 	}
 
 	if err := variable.DeleteVariable(ctx, req.TeamID, req.VarID); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
+}
+
+func SyncVariables(ctx *gin.Context) {
+	var req rao.SyncVariablesReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	if err := variable.SyncVariables(ctx, req.TeamID, req.Variables); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}

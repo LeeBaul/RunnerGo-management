@@ -93,10 +93,10 @@ func ListByTeamID(ctx context.Context, teamID int64, limit, offset int, keyword 
 	return packer.TransPlansToRaoPlanList(ret, users), cnt, nil
 }
 
-func Save(ctx context.Context, req *rao.SavePlanReq, userID int64) error {
+func Save(ctx context.Context, req *rao.SavePlanReq, userID int64) (int64, error) {
 
 	tx := query.Use(dal.DB()).Plan
-	_, err := tx.WithContext(ctx).Where(tx.ID.Eq(req.PlanID)).Assign(
+	p, err := tx.WithContext(ctx).Where(tx.ID.Eq(req.PlanID)).Assign(
 		tx.TeamID.Value(req.TeamID),
 		tx.Name.Value(req.Name),
 		tx.Status.Value(consts.PlanStatusNormal),
@@ -104,7 +104,7 @@ func Save(ctx context.Context, req *rao.SavePlanReq, userID int64) error {
 		tx.Remark.Value(req.Remark),
 	).FirstOrCreate()
 
-	return err
+	return p.ID, err
 }
 
 func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error {
