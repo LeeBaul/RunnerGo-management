@@ -13,15 +13,16 @@ func TransReportModelToRaoReportList(reports []*model.Report, users []*model.Use
 				ret = append(ret, &rao.Report{
 					ReportID:    r.ID,
 					Name:        r.Name,
-					Mode:        r.Mode,
+					TaskType:    r.TaskType,
+					TaskMode:    r.TaskMode,
 					Status:      r.Status,
 					RunTimeSec:  r.RanAt.Unix(),
 					LastTimeSec: r.UpdatedAt.Unix(),
 					RunUserID:   r.RunUserID,
 					RunUserName: u.Nickname,
 					TeamID:      r.TeamID,
-					TaskType:    r.TaskType,
-					SceneType:   r.SceneType,
+					SceneID:     r.SceneID,
+					SceneName:   "", // todo scene name
 				})
 			}
 		}
