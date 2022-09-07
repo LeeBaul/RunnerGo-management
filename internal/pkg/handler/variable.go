@@ -9,6 +9,7 @@ import (
 	"kp-management/internal/pkg/logic/variable"
 )
 
+// SaveVariable 保存变量
 func SaveVariable(ctx *gin.Context) {
 	var req rao.SaveVariableReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -25,6 +26,7 @@ func SaveVariable(ctx *gin.Context) {
 	return
 }
 
+// ListVariables 变量列表
 func ListVariables(ctx *gin.Context) {
 	var req rao.ListVariablesReq
 	if err := ctx.ShouldBind(&req); err != nil {
@@ -42,6 +44,7 @@ func ListVariables(ctx *gin.Context) {
 	return
 }
 
+// DeleteVariable 删除变量
 func DeleteVariable(ctx *gin.Context) {
 	var req rao.DeleteVariableReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -58,6 +61,7 @@ func DeleteVariable(ctx *gin.Context) {
 	return
 }
 
+// SyncVariables 同步变量
 func SyncVariables(ctx *gin.Context) {
 	var req rao.SyncVariablesReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
