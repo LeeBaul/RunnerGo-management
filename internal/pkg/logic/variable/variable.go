@@ -30,7 +30,7 @@ func ListVariables(ctx context.Context, teamID int64, limit, offset int) ([]*rao
 		return nil, 0, err
 	}
 
-	return packer.TransVariablesToRaoVariables(v), cnt, nil
+	return packer.TransModelVariablesToRaoVariables(v), cnt, nil
 }
 
 func DeleteVariable(ctx context.Context, teamID, varID int64) error {
@@ -38,4 +38,16 @@ func DeleteVariable(ctx context.Context, teamID, varID int64) error {
 
 	_, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID), tx.ID.Eq(varID)).Delete()
 	return err
+}
+
+func SyncVariables(ctx context.Context, teamID int64, variables []*rao.Variable) error {
+	vs := packer.TransRaoVariablesToModelVariables(teamID, variables)
+
+	return query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
+		if _, err := tx.Variable.WithContext(ctx).Where(tx.Variable.TeamID.Eq(teamID)).Unscoped().Delete(); err != nil {
+			return err
+		}
+
+		return tx.Variable.WithContext(ctx).CreateInBatches(vs, 10)
+	})
 }

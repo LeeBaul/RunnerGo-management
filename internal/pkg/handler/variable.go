@@ -57,3 +57,19 @@ func DeleteVariable(ctx *gin.Context) {
 	response.Success(ctx)
 	return
 }
+
+func SyncVariables(ctx *gin.Context) {
+	var req rao.SyncVariablesReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	if err := variable.SyncVariables(ctx, req.TeamID, req.Variables); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
+}
