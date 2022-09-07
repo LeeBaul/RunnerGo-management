@@ -137,3 +137,22 @@ type GetFlowResp struct {
 	Edges           []*Edge `json:"edges"`
 	MultiLevelNodes []byte  `json:"multi_level_nodes"`
 }
+
+type BatchGetFlowReq struct {
+	TeamID  int64   `form:"team_id" binding:"required,gt=0"`
+	SceneID []int64 `form:"scene_id" binding:"required"`
+}
+
+type BatchGetFlowResp struct {
+	Flows []*Flow `json:"flows"`
+}
+
+type Flow struct {
+	SceneID int64 `json:"scene_id"`
+	TeamID  int64 `json:"team_id"`
+	Version int32 `json:"version"`
+
+	Nodes           []*Node `json:"nodes"`
+	Edges           []*Edge `json:"edges"`
+	MultiLevelNodes []byte  `json:"multi_level_nodes"`
+}

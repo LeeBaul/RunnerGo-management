@@ -45,3 +45,19 @@ func GetFlow(ctx context.Context, sceneID int64) (*rao.GetFlowResp, error) {
 
 	return packer.TransMaoFlowToRaoGetFowResp(&ret), nil
 }
+
+func BatchGetFlow(ctx context.Context, sceneIDs []int64) ([]*rao.Flow, error) {
+
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectFlow)
+	cursor, err := collection.Find(ctx, bson.D{{"scene_id", bson.D{{"$in", sceneIDs}}}})
+	if err != nil {
+		return nil, err
+	}
+
+	var flows []*mao.Flow
+	if err := cursor.All(ctx, &flows); err != nil {
+		return nil, err
+	}
+
+	return packer.TransMaoFlowsToRaoFlows(flows), nil
+}

@@ -80,3 +80,20 @@ func GetFlow(ctx *gin.Context) {
 	response.SuccessWithData(ctx, resp)
 	return
 }
+
+func BatchGetFlow(ctx *gin.Context) {
+	var req rao.BatchGetFlowReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	flows, err := scene.BatchGetFlow(ctx, req.SceneID)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.SuccessWithData(ctx, rao.BatchGetFlowResp{Flows: flows})
+	return
+}

@@ -52,3 +52,28 @@ func TransMaoFlowToRaoGetFowResp(f *mao.Flow) *rao.GetFlowResp {
 		//MultiLevelNodes: f.MultiLevelNodes,
 	}
 }
+
+func TransMaoFlowsToRaoFlows(flows []*mao.Flow) []*rao.Flow {
+	ret := make([]*rao.Flow, 0)
+	for _, f := range flows {
+		var n mao.Node
+		if err := bson.Unmarshal(f.Nodes, &n); err != nil {
+			fmt.Sprintln(fmt.Errorf("flow.nodes json unmarshal err %w", err))
+		}
+
+		var e mao.Edge
+		if err := bson.Unmarshal(f.Edges, &e); err != nil {
+			fmt.Sprintln(fmt.Errorf("flow.edges json unmarshal err %w", err))
+		}
+
+		ret = append(ret, &rao.Flow{
+			SceneID: f.SceneID,
+			TeamID:  f.TeamID,
+			Version: f.Version,
+			Nodes:   n.Nodes,
+			Edges:   e.Edges,
+			//MultiLevelNodes: nil,
+		})
+	}
+	return ret
+}
