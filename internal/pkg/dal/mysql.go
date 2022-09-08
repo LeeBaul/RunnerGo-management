@@ -27,6 +27,10 @@ func MustInitMySQL() {
 		panic(fmt.Errorf("fatal error db init: %w", err))
 	}
 
+	if c.Base.IsDebug {
+		db = db.Debug()
+	}
+
 	fmt.Println("mysql initialized")
 }
 
