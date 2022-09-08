@@ -12,12 +12,12 @@ func TransSaveFlowReqToMaoFlow(req *rao.SaveFlowReq) *mao.Flow {
 
 	nodes, err := bson.Marshal(mao.Node{Nodes: req.Nodes})
 	if err != nil {
-		proof.Errorf("flow.nodes json marshal err %w", err)
+		proof.Errorf("flow.nodes bson marshal err %w", err)
 	}
 
 	edges, err := bson.Marshal(mao.Edge{Edges: req.Edges})
 	if err != nil {
-		proof.Errorf("flow.edges json marshal err %w", err)
+		proof.Errorf("flow.edges bson marshal err %w", err)
 	}
 
 	return &mao.Flow{
@@ -34,12 +34,12 @@ func TransMaoFlowToRaoGetFowResp(f *mao.Flow) *rao.GetFlowResp {
 
 	var n mao.Node
 	if err := bson.Unmarshal(f.Nodes, &n); err != nil {
-		proof.Errorf("flow.nodes json unmarshal err %w", err)
+		proof.Errorf("flow.nodes bson unmarshal err %w", err)
 	}
 
 	var e mao.Edge
 	if err := bson.Unmarshal(f.Edges, &e); err != nil {
-		proof.Errorf("flow.edges json unmarshal err %w", err)
+		proof.Errorf("flow.edges bson unmarshal err %w", err)
 	}
 
 	return &rao.GetFlowResp{
@@ -57,12 +57,12 @@ func TransMaoFlowsToRaoFlows(flows []*mao.Flow) []*rao.Flow {
 	for _, f := range flows {
 		var n mao.Node
 		if err := bson.Unmarshal(f.Nodes, &n); err != nil {
-			proof.Errorf("flow.nodes json unmarshal err %w", err)
+			proof.Errorf("flow.nodes bson unmarshal err %w", err)
 		}
 
 		var e mao.Edge
 		if err := bson.Unmarshal(f.Edges, &e); err != nil {
-			proof.Errorf("flow.edges json unmarshal err %w", err)
+			proof.Errorf("flow.edges bson unmarshal err %w", err)
 		}
 
 		ret = append(ret, &rao.Flow{

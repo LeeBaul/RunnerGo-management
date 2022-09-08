@@ -52,8 +52,12 @@ func RegisterRouter(r *gin.Engine) {
 	variable := api.Group("/v1/variable")
 	variable.POST("/save", handler.SaveVariable)
 	variable.POST("/delete", handler.DeleteVariable)
-	variable.POST("/sync", handler.SyncVariables)
-	variable.GET("/list", handler.ListVariables)
+	variable.POST("/sync", handler.SyncGlobalVariables)
+	variable.GET("/list", handler.ListGlobalVariables)
+	// 场景变量
+	variable.POST("/scene/sync", handler.SyncSceneVariables)
+	variable.GET("/scene/list", handler.ListSceneVariables)
+	variable.POST("/scene/import", handler.ImportSceneVariables)
 
 	// 首页
 	dashboard := api.Group("/v1/dashboard")

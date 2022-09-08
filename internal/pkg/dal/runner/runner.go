@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/go-omnibus/proof"
 	"github.com/go-resty/resty/v2"
 
 	"kp-management/internal/pkg/conf"
@@ -22,6 +23,8 @@ func RunAPI(ctx context.Context, body *rao.APIDetail) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	proof.Info("msg", proof.WithByteString("body", bodyByte))
 
 	var ret RunAPIResp
 	_, err = resty.New().R().

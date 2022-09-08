@@ -17,32 +17,32 @@ func TransSaveTargetReqToMaoAPI(target *rao.SaveTargetReq) *mao.API {
 
 	header, err := bson.Marshal(target.Request.Header)
 	if err != nil {
-		proof.Errorf("target.request.header json marshal err %+v", err)
+		proof.Error("target.request.header bson marshal err", proof.WithError(err))
 	}
 
 	query, err := bson.Marshal(target.Request.Query)
 	if err != nil {
-		proof.Errorf("target.request.query json marshal err %+v", err)
+		proof.Errorf("target.request.query bson marshal err", proof.WithError(err))
 	}
 
 	body, err := bson.Marshal(target.Request.Body)
 	if err != nil {
-		proof.Errorf("target.request.body json marshal err %+v", err)
+		proof.Errorf("target.request.body bson marshal err", proof.WithError(err))
 	}
 
 	auth, err := bson.Marshal(target.Request.Auth)
 	if err != nil {
-		proof.Errorf("target.request.auth json marshal err %+v", err)
+		proof.Errorf("target.request.auth bson marshal err", proof.WithError(err))
 	}
 
 	assert, err := bson.Marshal(mao.Assert{Assert: target.Assert})
 	if err != nil {
-		proof.Errorf("target.request.assert json marshal err %+v", err)
+		proof.Errorf("target.request.assert bson marshal err", proof.WithError(err))
 	}
 
 	regex, err := bson.Marshal(mao.Regex{Regex: target.Regex})
 	if err != nil {
-		proof.Errorf("target.request.regex json marshal err %+v", err)
+		proof.Errorf("target.request.regex bson marshal err", proof.WithError(err))
 	}
 
 	return &mao.API{
@@ -61,29 +61,29 @@ func TransSaveTargetReqToMaoAPI(target *rao.SaveTargetReq) *mao.API {
 func TransTargetToRaoAPIDetail(target *model.Target, api *mao.API) *rao.APIDetail {
 	var auth rao.Auth
 	if err := bson.Unmarshal(api.Auth, &auth); err != nil {
-		proof.Errorf("api.auth bson Unmarshal err %w", err)
+		proof.Errorf("api.auth bson Unmarshal err", proof.WithError(err))
 	}
 	var body rao.Body
 	if err := bson.Unmarshal(api.Body, &body); err != nil {
-		proof.Errorf("api.body bson Unmarshal err %w", err)
+		proof.Errorf("api.body bson Unmarshal err", proof.WithError(err))
 	}
 	var header rao.Header
 	if err := bson.Unmarshal(api.Header, &header); err != nil {
-		proof.Errorf("api.header bson Unmarshal err %w", err)
+		proof.Errorf("api.header bson Unmarshal err", proof.WithError(err))
 	}
 	var query rao.Query
 	if err := bson.Unmarshal(api.Query, &query); err != nil {
-		proof.Errorf("api.query bson Unmarshal err %w", err)
+		proof.Errorf("api.query bson Unmarshal err", proof.WithError(err))
 	}
 
 	var assert mao.Assert
 	if err := bson.Unmarshal(api.Assert, &assert); err != nil {
-		proof.Errorf("api.assert bson Unmarshal err %w", err)
+		proof.Errorf("api.assert bson Unmarshal err", proof.WithError(err))
 	}
 
 	var regex mao.Regex
 	if err := bson.Unmarshal(api.Regex, &regex); err != nil {
-		proof.Errorf("api.regex bson Unmarshal err %w", err)
+		proof.Errorf("api.regex bson Unmarshal err", proof.WithError(err))
 	}
 
 	return &rao.APIDetail{

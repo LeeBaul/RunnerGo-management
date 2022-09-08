@@ -29,12 +29,14 @@ func newVariable(db *gorm.DB) variable {
 	_variable.ALL = field.NewAsterisk(tableName)
 	_variable.ID = field.NewInt64(tableName, "id")
 	_variable.TeamID = field.NewInt64(tableName, "team_id")
+	_variable.Type = field.NewInt32(tableName, "type")
 	_variable.Var = field.NewString(tableName, "var")
 	_variable.Val = field.NewString(tableName, "val")
 	_variable.Description = field.NewString(tableName, "description")
 	_variable.CreatedAt = field.NewTime(tableName, "created_at")
 	_variable.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_variable.DeletedAt = field.NewField(tableName, "deleted_at")
+	_variable.SceneID = field.NewInt64(tableName, "scene_id")
 
 	_variable.fillFieldMap()
 
@@ -47,12 +49,14 @@ type variable struct {
 	ALL         field.Asterisk
 	ID          field.Int64
 	TeamID      field.Int64
+	Type        field.Int32 // 全局变量：1，场景变量：2
 	Var         field.String
 	Val         field.String
 	Description field.String
 	CreatedAt   field.Time
 	UpdatedAt   field.Time
 	DeletedAt   field.Field
+	SceneID     field.Int64
 
 	fieldMap map[string]field.Expr
 }
@@ -71,12 +75,14 @@ func (v *variable) updateTableName(table string) *variable {
 	v.ALL = field.NewAsterisk(table)
 	v.ID = field.NewInt64(table, "id")
 	v.TeamID = field.NewInt64(table, "team_id")
+	v.Type = field.NewInt32(table, "type")
 	v.Var = field.NewString(table, "var")
 	v.Val = field.NewString(table, "val")
 	v.Description = field.NewString(table, "description")
 	v.CreatedAt = field.NewTime(table, "created_at")
 	v.UpdatedAt = field.NewTime(table, "updated_at")
 	v.DeletedAt = field.NewField(table, "deleted_at")
+	v.SceneID = field.NewInt64(table, "scene_id")
 
 	v.fillFieldMap()
 
@@ -99,15 +105,17 @@ func (v *variable) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (v *variable) fillFieldMap() {
-	v.fieldMap = make(map[string]field.Expr, 8)
+	v.fieldMap = make(map[string]field.Expr, 10)
 	v.fieldMap["id"] = v.ID
 	v.fieldMap["team_id"] = v.TeamID
+	v.fieldMap["type"] = v.Type
 	v.fieldMap["var"] = v.Var
 	v.fieldMap["val"] = v.Val
 	v.fieldMap["description"] = v.Description
 	v.fieldMap["created_at"] = v.CreatedAt
 	v.fieldMap["updated_at"] = v.UpdatedAt
 	v.fieldMap["deleted_at"] = v.DeletedAt
+	v.fieldMap["scene_id"] = v.SceneID
 }
 
 func (v variable) clone(db *gorm.DB) variable {

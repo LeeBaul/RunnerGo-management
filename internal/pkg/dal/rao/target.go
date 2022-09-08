@@ -34,6 +34,7 @@ type SaveTargetReq struct {
 }
 
 type SaveTargetResp struct {
+	TargetID int64 `json:"target_id"`
 }
 
 type TrashTargetReq struct {

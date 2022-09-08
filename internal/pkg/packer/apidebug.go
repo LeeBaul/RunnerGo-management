@@ -13,19 +13,19 @@ import (
 func TransMaoAPIDebugToRaoAPIDebug(m *mao.APIDebug) *rao.APIDebug {
 	rawNodes, err := m.Assertion.Values()
 	if err != nil {
-		proof.Errorf("apidebug.assertion json unmarshal err %w", err)
+		proof.Errorf("api_debug.assertion get values err", proof.WithError(err))
 	}
 
 	var as []*rao.Assertion
 	for _, node := range rawNodes {
 		d, ok := node.DocumentOK()
 		if !ok {
-			proof.Errorf("apidebug.assertion json unmarshal err %w", err)
+			proof.Errorf("api_debug.assertion DocumentOK err", proof.WithError(err))
 		}
 
 		var a rao.Assertion
 		if err := bson.Unmarshal(d, &a); err != nil {
-			proof.Errorf("apidebug.assertion json unmarshal err %w", err)
+			proof.Errorf("api_debug.assertion bson unmarshal err", proof.WithError(err))
 		}
 
 		as = append(as, &a)
@@ -33,12 +33,12 @@ func TransMaoAPIDebugToRaoAPIDebug(m *mao.APIDebug) *rao.APIDebug {
 
 	var regex interface{}
 	if err := bson.Unmarshal(m.Regex, &regex); err != nil {
-		proof.Errorf("apidebug.assertion json unmarshal err %w", err)
+		proof.Errorf("api_debug.regex bson unmarshal err", proof.WithError(err))
 	}
 
 	r, err := json.Marshal(regex)
 	if err != nil {
-		proof.Errorf("apidebug.assertion json unmarshal err %w", err)
+		proof.Errorf("api_debug.regex json marshal err", proof.WithError(err))
 	}
 
 	return &rao.APIDebug{

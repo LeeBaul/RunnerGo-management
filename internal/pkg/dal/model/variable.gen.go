@@ -16,12 +16,14 @@ const TableNameVariable = "variable"
 type Variable struct {
 	ID          int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
 	TeamID      int64          `gorm:"column:team_id;not null" json:"team_id"`
+	Type        int32          `gorm:"column:type" json:"type"` // 全局变量：1，场景变量：2
 	Var         string         `gorm:"column:var;not null" json:"var"`
 	Val         string         `gorm:"column:val;not null" json:"val"`
 	Description string         `gorm:"column:description" json:"description"`
 	CreatedAt   time.Time      `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt   time.Time      `gorm:"column:updated_at;not null;default:CURRENT_TIMESTAMP" json:"updated_at"`
 	DeletedAt   gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`
+	SceneID     int64          `gorm:"column:scene_id" json:"scene_id"`
 }
 
 // TableName Variable's table name

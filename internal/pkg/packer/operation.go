@@ -12,10 +12,9 @@ func TransOperationsToRaoOperationList(operations []*model.Operation, users []*m
 		for _, u := range users {
 			if u.ID == o.UserID {
 				ret = append(ret, &rao.Operation{
-					UserID: o.UserID,
-					//todo user
+					UserID:         o.UserID,
 					UserName:       u.Nickname,
-					UserAvatar:     "",
+					UserAvatar:     u.Avatar,
 					UserStatus:     0,
 					Category:       o.Category,
 					Name:           o.Name,

@@ -88,8 +88,8 @@ github.com/go-gl/glfw/v3.3/glfw v0.0.0-20191125211704-12ad95a8df72/go.mod h1:tQ2
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20200222043503-6f7a984d4dc4/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=
 github.com/go-kit/log v0.1.0/go.mod h1:zbhenjAZHb184qTLMA9ZjW7ThYL0H2mk7Q6pNt4vbaY=
 github.com/go-logfmt/logfmt v0.5.0/go.mod h1:wCYkCAKZfumFQihp8CzCvQ3paCTfi41vtzG1KdI/P7A=
-github.com/go-omnibus/proof v0.0.0-20220908041815-c692445fdc15 h1:5AR1v+b/VHNMCQGkPFFkdf8Unll3OmS27f2jdh9oHv0=
-github.com/go-omnibus/proof v0.0.0-20220908041815-c692445fdc15/go.mod h1:iHezBeaNe2FQwnTB5Zy4x93r31KMVtiwjjdbOgH8Smc=
+github.com/go-omnibus/proof v0.0.0-20220908070108-a90f62e7dadc h1:gDH7nT2gD+85TS6pXa+XqZsNkwoBafvl1glZYme4now=
+github.com/go-omnibus/proof v0.0.0-20220908070108-a90f62e7dadc/go.mod h1:iHezBeaNe2FQwnTB5Zy4x93r31KMVtiwjjdbOgH8Smc=
 github.com/go-playground/assert/v2 v2.0.1 h1:MsBgLAaY856+nPRTKrp3/OZK38U/wa0CcBYNjji3q3A=
 github.com/go-playground/assert/v2 v2.0.1/go.mod h1:VDjEfimB/XKnb+ZQfWdccd7VUvScMdVu0Titje2rxJ4=
 github.com/go-playground/locales v0.14.0 h1:u50s323jtVGugKlcYeyzC0etD1HifMjqmJqb8WugfUU=

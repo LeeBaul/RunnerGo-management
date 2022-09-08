@@ -53,12 +53,13 @@ func SaveTarget(ctx *gin.Context) {
 		return
 	}
 
-	if err := api.Save(ctx, &req, jwt.GetUserIDByCtx(ctx)); err != nil {
+	targetID, err := api.Save(ctx, &req, jwt.GetUserIDByCtx(ctx))
+	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
-	response.Success(ctx)
+	response.SuccessWithData(ctx, rao.SaveTargetResp{TargetID: targetID})
 	return
 }
 

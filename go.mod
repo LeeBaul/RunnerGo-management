@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.8.1
-	github.com/go-omnibus/proof v0.0.0-20220908041815-c692445fdc15
+	github.com/go-omnibus/proof v0.0.0-20220908070108-a90f62e7dadc
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/olivere/elastic/v7 v7.0.32
