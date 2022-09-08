@@ -12,7 +12,7 @@ func InitProof() {
 	p := proof.New()
 	p.SetDivision(proof.TimeDivision)
 	p.SetTimeUnit(proof.Day)
-	p.SetEncoding(proof.JSONEncoder)
+	p.SetEncoding(proof.ConsoleEncoder)
 	p.SetInfoFile(conf.Conf.Proof.InfoLog)
 	p.SetErrorFile(conf.Conf.Proof.ErrLog)
 

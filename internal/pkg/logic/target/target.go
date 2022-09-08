@@ -18,7 +18,7 @@ import (
 
 func SendScene(ctx context.Context, sceneID int64) (string, error) {
 	tx := dal.GetQuery().Target
-	t, err := tx.WithContext(ctx).Where(tx.ID.Eq(sceneID)).First()
+	t, err := tx.WithContext(ctx).Where(tx.ID.Eq(sceneID), tx.TargetType.Eq(consts.TargetTypeScene)).First()
 	if err != nil {
 		return "", err
 	}
