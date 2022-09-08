@@ -27,6 +27,22 @@ type SyncVariablesReq struct {
 type SyncVariablesResp struct {
 }
 
+type SyncSceneVariablesReq struct {
+	TeamID    int64       `json:"team_id"`
+	SceneID   int64       `json:"scene_id"`
+	Variables []*Variable `json:"variables"`
+}
+
+type SyncSceneVariablesResp struct {
+}
+
+type ListSceneVariablesReq struct {
+	TeamID  int64 `form:"team_id"`
+	SceneID int64 `form:"scene_id"`
+	Page    int   `form:"page"`
+	Size    int   `form:"size"`
+}
+
 type ListVariablesReq struct {
 	TeamID int64 `form:"team_id"`
 	Page   int   `form:"page"`
@@ -44,4 +60,14 @@ type Variable struct {
 	Var         string `json:"var"`
 	Val         string `json:"val"`
 	Description string `json:"description"`
+}
+
+type ImportVariablesReq struct {
+	TeamID  int64  `json:"team_id"`
+	SceneID int64  `json:"scene_id"`
+	Name    string `json:"name"`
+	URL     string `json:"url"`
+}
+
+type ImportVariablesResp struct {
 }

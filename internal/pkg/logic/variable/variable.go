@@ -3,7 +3,9 @@ package variable
 import (
 	"context"
 
+	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/dal"
+	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/query"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/packer"
@@ -22,17 +24,6 @@ func SaveVariable(ctx context.Context, req *rao.SaveVariableReq) error {
 	return err
 }
 
-func ListVariables(ctx context.Context, teamID int64, limit, offset int) ([]*rao.Variable, int64, error) {
-	tx := query.Use(dal.DB()).Variable
-
-	v, cnt, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID)).FindByPage(offset, limit)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	return packer.TransModelVariablesToRaoVariables(v), cnt, nil
-}
-
 func DeleteVariable(ctx context.Context, teamID, varID int64) error {
 	tx := query.Use(dal.DB()).Variable
 
@@ -40,14 +31,60 @@ func DeleteVariable(ctx context.Context, teamID, varID int64) error {
 	return err
 }
 
-func SyncVariables(ctx context.Context, teamID int64, variables []*rao.Variable) error {
+func ListGlobalVariables(ctx context.Context, teamID int64, limit, offset int) ([]*rao.Variable, int64, error) {
+	tx := query.Use(dal.DB()).Variable
+
+	v, cnt, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID), tx.Type.Eq(consts.VariableTypeGlobal)).FindByPage(offset, limit)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return packer.TransModelVariablesToRaoVariables(v), cnt, nil
+}
+
+func SyncGlobalVariables(ctx context.Context, teamID int64, variables []*rao.Variable) error {
 	vs := packer.TransRaoVariablesToModelVariables(teamID, variables)
 
 	return query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
-		if _, err := tx.Variable.WithContext(ctx).Where(tx.Variable.TeamID.Eq(teamID)).Unscoped().Delete(); err != nil {
+		if _, err := tx.Variable.WithContext(ctx).Where(tx.Variable.TeamID.Eq(teamID), tx.Variable.Type.Eq(consts.VariableTypeGlobal)).Unscoped().Delete(); err != nil {
 			return err
 		}
 
 		return tx.Variable.WithContext(ctx).CreateInBatches(vs, 10)
+	})
+}
+
+func ListSceneVariables(ctx context.Context, teamID, sceneID int64, limit, offset int) ([]*rao.Variable, int64, error) {
+	tx := query.Use(dal.DB()).Variable
+
+	v, cnt, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID), tx.SceneID.Eq(sceneID), tx.Type.Eq(consts.VariableTypeScene)).FindByPage(offset, limit)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return packer.TransModelVariablesToRaoVariables(v), cnt, nil
+}
+
+func SyncSceneVariables(ctx context.Context, teamID, sceneID int64, variables []*rao.Variable) error {
+	vs := packer.TransSceneRaoVariablesToModelVariables(teamID, sceneID, variables)
+
+	return query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
+		if _, err := tx.Variable.WithContext(ctx).Where(tx.Variable.TeamID.Eq(teamID), tx.Variable.Type.Eq(consts.VariableTypeScene)).Unscoped().Delete(); err != nil {
+			return err
+		}
+
+		return tx.Variable.WithContext(ctx).CreateInBatches(vs, 10)
+	})
+}
+
+func ImportSceneVariables(ctx context.Context, req *rao.ImportVariablesReq, userID int64) error {
+
+	tx := dal.GetQuery().VariableImport
+	return tx.WithContext(ctx).Create(&model.VariableImport{
+		TeamID:     req.TeamID,
+		SceneID:    req.SceneID,
+		Name:       req.Name,
+		URL:        req.URL,
+		UploaderID: userID,
 	})
 }

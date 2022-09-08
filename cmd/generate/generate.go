@@ -30,6 +30,7 @@ func main() {
 		g.GenerateModel("report"),
 		g.GenerateModel("report_machine"),
 		g.GenerateModel("variable"),
+		g.GenerateModel("variable_import"),
 	)
 
 	g.Execute()
