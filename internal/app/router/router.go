@@ -92,6 +92,10 @@ func RegisterRouter(r *gin.Engine) {
 
 	// 场景
 	scene := api.Group("/v1/scene")
+	// 场景调试
+	scene.POST("/send", handler.SendScene)
+	//scene.GET("/result", handler.GetSendTargetResult)
+	// 场景管理
 	scene.POST("/save", handler.SaveScene)
 	scene.GET("/list", handler.ListGroupScene)
 	scene.GET("/detail", handler.BatchGetScene)

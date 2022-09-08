@@ -1,5 +1,13 @@
 package rao
 
+type SendSceneReq struct {
+	SceneID int64 `json:"scene_id" binding:"required,gt=0"`
+}
+
+type SendSceneResp struct {
+	RetID string `json:"ret_id"`
+}
+
 type SaveSceneReq struct {
 	TeamID      int64  `json:"team_id" binding:"required,gt=0"`
 	TargetID    int64  `json:"target_id"`
@@ -155,4 +163,26 @@ type Flow struct {
 	Nodes           []*Node `json:"nodes"`
 	Edges           []*Edge `json:"edges"`
 	MultiLevelNodes []byte  `json:"multi_level_nodes"`
+}
+
+type SceneFlow struct {
+	SceneID       int64         `json:"scene_id"`
+	SceneName     string        `json:"scene_name"`
+	TeamID        int64         `json:"team_id"`
+	Nodes         []*Node       `json:"nodes"`
+	Configuration Configuration `json:"configuration"`
+}
+
+type Configuration struct {
+	ParameterizedFile ConfPath       `json:"parameterizedFile"`
+	Variable          []ConfVariable `json:"variable"`
+}
+
+type ConfPath struct {
+	Path []string `json:"path"`
+}
+
+type ConfVariable struct {
+	Var string `json:"Var"`
+	Val string `json:"Val"`
 }

@@ -5,6 +5,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 
 	"kp-management/internal/pkg/dal/mao"
+	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/rao"
 )
 
@@ -27,6 +28,39 @@ func TransSaveFlowReqToMaoFlow(req *rao.SaveFlowReq) *mao.Flow {
 		Nodes:   nodes,
 		Edges:   edges,
 		//MultiLevelNodes: req.MultiLevelNodes,
+	}
+}
+
+func TransMaoFlowToRaoSceneFlow(t *model.Target, f *mao.Flow, vis []*model.VariableImport, variables []*model.Variable) *rao.SceneFlow {
+	var n mao.Node
+	if err := bson.Unmarshal(f.Nodes, &n); err != nil {
+		proof.Errorf("flow.nodes bson unmarshal err %w", err)
+	}
+
+	var paths []string
+	for _, vi := range vis {
+		paths = append(paths, vi.URL)
+	}
+
+	var v []rao.ConfVariable
+	for _, variable := range variables {
+		v = append(v, rao.ConfVariable{
+			Var: variable.Var,
+			Val: variable.Val,
+		})
+	}
+
+	return &rao.SceneFlow{
+		SceneID:   t.ID,
+		SceneName: t.Name,
+		TeamID:    t.TeamID,
+		Nodes:     n.Nodes,
+		Configuration: rao.Configuration{
+			ParameterizedFile: rao.ConfPath{
+				Path: paths,
+			},
+			Variable: v,
+		},
 	}
 }
 

@@ -43,3 +43,29 @@ func RunAPI(ctx context.Context, body *rao.APIDetail) (string, error) {
 
 	return ret.Data, nil
 }
+
+func RunScene(ctx context.Context, body *rao.SceneFlow) (string, error) {
+	bodyByte, err := json.Marshal(body)
+	if err != nil {
+		return "", err
+	}
+
+	proof.Info("msg", proof.WithByteString("body", bodyByte))
+
+	var ret RunAPIResp
+	_, err = resty.New().R().
+		SetHeader("Content-Type", "application/json").
+		SetBody(bodyByte).
+		SetResult(&ret).
+		Post(conf.Conf.Clients.Runner.RunScene)
+
+	if err != nil {
+		return "", err
+	}
+
+	if ret.Code != 200 {
+		return "", fmt.Errorf("ret code not 200")
+	}
+
+	return ret.Data, nil
+}

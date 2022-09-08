@@ -1,8 +1,6 @@
 package packer
 
 import (
-	"encoding/json"
-
 	"github.com/go-omnibus/proof"
 	"go.mongodb.org/mongo-driver/bson"
 
@@ -31,22 +29,22 @@ func TransMaoAPIDebugToRaoAPIDebug(m *mao.APIDebug) *rao.APIDebug {
 		as = append(as, &a)
 	}
 
-	var regex interface{}
-	if err := bson.Unmarshal(m.Regex, &regex); err != nil {
-		proof.Errorf("api_debug.regex bson unmarshal err", proof.WithError(err))
-	}
-
-	r, err := json.Marshal(regex)
-	if err != nil {
-		proof.Errorf("api_debug.regex json marshal err", proof.WithError(err))
-	}
+	//var regex interface{}
+	//if err := bson.Unmarshal(m.Regex, &regex); err != nil {
+	//	proof.Errorf("api_debug.regex bson unmarshal err", proof.WithError(err))
+	//}
+	//
+	//r, err := json.Marshal(regex)
+	//if err != nil {
+	//	proof.Errorf("api_debug.regex json marshal err", proof.WithError(err))
+	//}
 
 	return &rao.APIDebug{
 		ApiID:                 m.ApiID,
 		APIName:               m.APIName,
 		Assertion:             as,
 		EventID:               m.EventID,
-		Regex:                 string(r),
+		Regex:                 m.Regex.String(),
 		RequestBody:           m.RequestBody,
 		RequestCode:           m.RequestCode,
 		RequestHeader:         m.RequestHeader,
