@@ -67,9 +67,14 @@ func RegisterRouter(r *gin.Engine) {
 
 	// 接口
 	target := api.Group("/v1/target")
+	// 接口调试
+	target.POST("/send", handler.SendTarget)
+	target.GET("/result", handler.GetSendTargetResult)
+	// 接口保存
 	target.POST("/save", handler.SaveTarget)
 	target.GET("/list", handler.ListFolderAPI)
 	target.GET("/detail", handler.BatchGetTarget)
+	// 接口回收站
 	target.GET("/trash_list", handler.TrashTargetList)
 	target.POST("/trash", handler.TrashTarget)
 	target.POST("/recall", handler.RecallTarget)

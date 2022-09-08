@@ -59,69 +59,72 @@ func TransSaveTargetReqToMaoAPI(target *rao.SaveTargetReq) *mao.API {
 	}
 }
 
-func TransTargetToRaoAPIDetail(targets []*model.Target, apis []*mao.API) []*rao.APIDetail {
+func TransTargetToRaoAPIDetail(target *model.Target, api *mao.API) *rao.APIDetail {
+	var auth rao.Auth
+	if err := bson.Unmarshal(api.Auth, &auth); err != nil {
+		fmt.Sprintln(fmt.Errorf("api.auth bson Unmarshal err %w", err))
+	}
+	var body rao.Body
+	if err := bson.Unmarshal(api.Body, &body); err != nil {
+		fmt.Sprintln(fmt.Errorf("api.body bson Unmarshal err %w", err))
+	}
+	var header rao.Header
+	if err := bson.Unmarshal(api.Header, &header); err != nil {
+		fmt.Sprintln(fmt.Errorf("api.header bson Unmarshal err %w", err))
+	}
+	var query rao.Query
+	if err := bson.Unmarshal(api.Query, &query); err != nil {
+		fmt.Sprintln(fmt.Errorf("api.query bson Unmarshal err %w", err))
+	}
+
+	var assert mao.Assert
+	if err := bson.Unmarshal(api.Assert, &assert); err != nil {
+		fmt.Sprintln(fmt.Errorf("api.assert bson Unmarshal err %w", err))
+	}
+
+	var regex mao.Regex
+	if err := bson.Unmarshal(api.Regex, &regex); err != nil {
+		fmt.Sprintln(fmt.Errorf("api.regex bson Unmarshal err %w", err))
+	}
+
+	return &rao.APIDetail{
+		TargetID:   target.ID,
+		ParentID:   target.ParentID,
+		TeamID:     target.TeamID,
+		TargetType: target.TargetType,
+		Name:       target.Name,
+		Method:     target.Method,
+		URL:        api.URL,
+		Sort:       target.Sort,
+		TypeSort:   target.TypeSort,
+		Request: &rao.Request{
+			URL:         api.URL,
+			Description: api.Description,
+			Auth:        &auth,
+			Body:        &body,
+			Header:      &header,
+			Query:       &query,
+			Event:       nil,
+			Cookie:      nil,
+			Resful:      nil,
+		},
+		Response:       nil,
+		Version:        target.Version,
+		Description:    api.Description,
+		CreatedTimeSec: target.CreatedAt.Unix(),
+		UpdatedTimeSec: target.UpdatedAt.Unix(),
+		Assert:         assert.Assert,
+		Regex:          regex.Regex,
+	}
+}
+
+func TransTargetsToRaoAPIDetails(targets []*model.Target, apis []*mao.API) []*rao.APIDetail {
 	ret := make([]*rao.APIDetail, 0, len(targets))
 
 	for _, target := range targets {
 		for _, api := range apis {
 			if api.TargetID == target.ID {
-
-				var auth rao.Auth
-				if err := bson.Unmarshal(api.Auth, &auth); err != nil {
-					fmt.Sprintln(fmt.Errorf("api.auth bson Unmarshal err %w", err))
-				}
-				var body rao.Body
-				if err := bson.Unmarshal(api.Body, &body); err != nil {
-					fmt.Sprintln(fmt.Errorf("api.body bson Unmarshal err %w", err))
-				}
-				var header rao.Header
-				if err := bson.Unmarshal(api.Header, &header); err != nil {
-					fmt.Sprintln(fmt.Errorf("api.header bson Unmarshal err %w", err))
-				}
-				var query rao.Query
-				if err := bson.Unmarshal(api.Query, &query); err != nil {
-					fmt.Sprintln(fmt.Errorf("api.query bson Unmarshal err %w", err))
-				}
-
-				var assert mao.Assert
-				if err := bson.Unmarshal(api.Assert, &assert); err != nil {
-					fmt.Sprintln(fmt.Errorf("api.assert bson Unmarshal err %w", err))
-				}
-
-				var regex mao.Regex
-				if err := bson.Unmarshal(api.Regex, &regex); err != nil {
-					fmt.Sprintln(fmt.Errorf("api.regex bson Unmarshal err %w", err))
-				}
-
-				ret = append(ret, &rao.APIDetail{
-					TargetID:   target.ID,
-					ParentID:   target.ParentID,
-					TeamID:     target.TeamID,
-					TargetType: target.TargetType,
-					Name:       target.Name,
-					Method:     target.Method,
-					URL:        api.URL,
-					Sort:       target.Sort,
-					TypeSort:   target.TypeSort,
-					Request: &rao.Request{
-						URL:         api.URL,
-						Description: api.Description,
-						Auth:        &auth,
-						Body:        &body,
-						Header:      &header,
-						Query:       &query,
-						Event:       nil,
-						Cookie:      nil,
-						Resful:      nil,
-					},
-					Response:       nil,
-					Version:        target.Version,
-					Description:    api.Description,
-					CreatedTimeSec: target.CreatedAt.Unix(),
-					UpdatedTimeSec: target.UpdatedAt.Unix(),
-					Assert:         assert.Assert,
-					Regex:          regex.Regex,
-				})
+				ret = append(ret, TransTargetToRaoAPIDetail(target, api))
 			}
 		}
 	}

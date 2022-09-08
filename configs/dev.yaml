@@ -25,3 +25,9 @@ es:
   host: "http://172.17.101.191:9200"
   username: "elastic"
   password: "ZSrfx4R6ICa3skGBpCdf"
+
+clients:
+  runner:
+    run_api: "https://kprunner.apipost.cn/runner/run_api"
+    run_scene: ""
+    run_plan: ""

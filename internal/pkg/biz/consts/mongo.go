@@ -8,4 +8,6 @@ const (
 	CollectTask       = "task"
 	CollectFlow       = "flow"
 	CollectPreinstall = "preinstall"
+
+	CollectAPIDebug = "api_debug"
 )

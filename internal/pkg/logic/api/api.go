@@ -73,5 +73,5 @@ func DetailByTargetIDs(ctx context.Context, teamID int64, targetIDs []int64) ([]
 		return nil, err
 	}
 
-	return packer.TransTargetToRaoAPIDetail(targets, apis), nil
+	return packer.TransTargetsToRaoAPIDetails(targets, apis), nil
 }
