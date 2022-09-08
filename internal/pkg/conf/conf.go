@@ -18,6 +18,7 @@ type Config struct {
 	Prometheus Prometheus `yaml:"prometheus"`
 	Kafka      Kafka      `yaml:"kafka"`
 	ES         ES         `yaml:"es"`
+	Clients    Clients    `yaml:"clients"`
 }
 
 type Http struct {
@@ -61,6 +62,16 @@ type ES struct {
 	Host     string `yaml:"host"`
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
+}
+
+type Clients struct {
+	Runner Runner
+}
+
+type Runner struct {
+	RunAPI   string `mapstructure:"run_api"`
+	RunScene string `mapstructure:"run_scene"`
+	RunPlan  string `mapstructure:"run_plan"`
 }
 
 func MustInitConf() {

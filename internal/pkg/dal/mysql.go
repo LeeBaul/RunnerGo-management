@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"kp-management/internal/pkg/conf"
+	"kp-management/internal/pkg/dal/query"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -31,4 +32,8 @@ func MustInitMySQL() {
 
 func DB() *gorm.DB {
 	return db
+}
+
+func GetQuery() *query.Query {
+	return query.Use(db)
 }

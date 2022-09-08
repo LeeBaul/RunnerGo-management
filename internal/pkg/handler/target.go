@@ -11,6 +11,23 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func SendTarget(ctx *gin.Context) {
+	var req rao.SendTargetReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	retID, err := target.SendAPI(ctx, req.TargetID)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.SuccessWithData(ctx, rao.SendTargetResp{RetID: retID})
+	return
+}
+
 // SaveTarget 创建/修改接口
 func SaveTarget(ctx *gin.Context) {
 	var req rao.SaveTargetReq
