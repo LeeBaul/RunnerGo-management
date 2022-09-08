@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gen"
 
 	"kp-management/internal/pkg/biz/consts"
@@ -36,8 +37,12 @@ func GetSendAPIResult(ctx context.Context, retID string) (*rao.APIDebug, error) 
 	var ad mao.APIDebug
 	err := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectAPIDebug).
 		FindOne(ctx, bson.D{{"uuid", retID}}).Decode(&ad)
-	if err != nil {
+	if err != nil && err != mongo.ErrNoDocuments {
 		return nil, err
+	}
+
+	if err == mongo.ErrNoDocuments {
+		return nil, nil
 	}
 
 	return packer.TransMaoAPIDebugToRaoAPIDebug(&ad), nil
