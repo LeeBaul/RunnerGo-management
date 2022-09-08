@@ -9,12 +9,12 @@ import (
 func TransSaveSceneReqToMaoScene(scene *rao.SaveSceneReq) *mao.Scene {
 	//request, err := bson.Marshal(scene.Request)
 	//if err != nil {
-	//	fmt.Sprintln(fmt.Errorf("scene.request json marshal err %w", err))
+	//	fmt.Println(fmt.Errorf("scene.request json marshal err %w", err))
 	//}
 	//
 	//script, err := bson.Marshal(scene.Script)
 	//if err != nil {
-	//	fmt.Sprintln(fmt.Errorf("scene.script json marshal err %w", err))
+	//	fmt.Println(fmt.Errorf("scene.script json marshal err %w", err))
 	//}
 
 	return &mao.Scene{
@@ -32,12 +32,12 @@ func TransTargetToRaoScene(targets []*model.Target, scenes []*mao.Scene) []*rao.
 		//	if t.ID == scene.TargetID {
 		//		var r rao.Request
 		//		if err := bson.Unmarshal(scene.Request, &r); err != nil {
-		//			fmt.Sprintln(fmt.Errorf("scene.request json UnMarshal err %w", err))
+		//			fmt.Println(fmt.Errorf("scene.request json UnMarshal err %w", err))
 		//		}
 		//
 		//		var s rao.Script
 		//		if err := bson.Unmarshal(scene.Script, &s); err != nil {
-		//			fmt.Sprintln(fmt.Errorf("scene.script json UnMarshal err %w", err))
+		//			fmt.Println(fmt.Errorf("scene.script json UnMarshal err %w", err))
 		//		}
 
 		ret = append(ret, &rao.Scene{

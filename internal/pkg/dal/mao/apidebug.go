@@ -1,6 +1,8 @@
 package mao
 
-import "go.mongodb.org/mongo-driver/bson"
+import (
+	"go.mongodb.org/mongo-driver/bson"
+)
 
 type APIDebug struct {
 	ApiID                 int64    `bson:"api_id"`
@@ -8,11 +10,11 @@ type APIDebug struct {
 	Assertion             bson.Raw `bson:"assertion"`
 	EventID               string   `bson:"event_id"`
 	Regex                 bson.Raw `bson:"regex"`
-	RequestBody           bson.Raw `bson:"request_body"`
+	RequestBody           string   `bson:"request_body"`
 	RequestCode           int64    `bson:"request_code"`
 	RequestHeader         string   `bson:"request_header"`
 	RequestTime           int64    `bson:"request_time"`
-	ResponseBody          bson.Raw `bson:"response_body"`
+	ResponseBody          string   `bson:"response_body"`
 	ResponseBytes         int64    `bson:"response_bytes"`
 	ResponseHeader        string   `bson:"response_header"`
 	ResponseTime          string   `bson:"response_time"`
