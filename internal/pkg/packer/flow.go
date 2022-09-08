@@ -1,8 +1,7 @@
 package packer
 
 import (
-	"fmt"
-
+	"github.com/go-omnibus/proof"
 	"go.mongodb.org/mongo-driver/bson"
 
 	"kp-management/internal/pkg/dal/mao"
@@ -13,12 +12,12 @@ func TransSaveFlowReqToMaoFlow(req *rao.SaveFlowReq) *mao.Flow {
 
 	nodes, err := bson.Marshal(mao.Node{Nodes: req.Nodes})
 	if err != nil {
-		fmt.Println(fmt.Errorf("flow.nodes json marshal err %w", err))
+		proof.Errorf("flow.nodes json marshal err %w", err)
 	}
 
 	edges, err := bson.Marshal(mao.Edge{Edges: req.Edges})
 	if err != nil {
-		fmt.Println(fmt.Errorf("flow.edges json marshal err %w", err))
+		proof.Errorf("flow.edges json marshal err %w", err)
 	}
 
 	return &mao.Flow{
@@ -35,12 +34,12 @@ func TransMaoFlowToRaoGetFowResp(f *mao.Flow) *rao.GetFlowResp {
 
 	var n mao.Node
 	if err := bson.Unmarshal(f.Nodes, &n); err != nil {
-		fmt.Println(fmt.Errorf("flow.nodes json unmarshal err %w", err))
+		proof.Errorf("flow.nodes json unmarshal err %w", err)
 	}
 
 	var e mao.Edge
 	if err := bson.Unmarshal(f.Edges, &e); err != nil {
-		fmt.Println(fmt.Errorf("flow.edges json unmarshal err %w", err))
+		proof.Errorf("flow.edges json unmarshal err %w", err)
 	}
 
 	return &rao.GetFlowResp{
@@ -58,12 +57,12 @@ func TransMaoFlowsToRaoFlows(flows []*mao.Flow) []*rao.Flow {
 	for _, f := range flows {
 		var n mao.Node
 		if err := bson.Unmarshal(f.Nodes, &n); err != nil {
-			fmt.Println(fmt.Errorf("flow.nodes json unmarshal err %w", err))
+			proof.Errorf("flow.nodes json unmarshal err %w", err)
 		}
 
 		var e mao.Edge
 		if err := bson.Unmarshal(f.Edges, &e); err != nil {
-			fmt.Println(fmt.Errorf("flow.edges json unmarshal err %w", err))
+			proof.Errorf("flow.edges json unmarshal err %w", err)
 		}
 
 		ret = append(ret, &rao.Flow{

@@ -2,8 +2,8 @@ package packer
 
 import (
 	"encoding/json"
-	"fmt"
 
+	"github.com/go-omnibus/proof"
 	"go.mongodb.org/mongo-driver/bson"
 
 	"kp-management/internal/pkg/dal/mao"
@@ -13,19 +13,19 @@ import (
 func TransMaoAPIDebugToRaoAPIDebug(m *mao.APIDebug) *rao.APIDebug {
 	rawNodes, err := m.Assertion.Values()
 	if err != nil {
-		fmt.Println(fmt.Errorf("apidebug.assertion json unmarshal err %w", err))
+		proof.Errorf("apidebug.assertion json unmarshal err %w", err)
 	}
 
 	var as []*rao.Assertion
 	for _, node := range rawNodes {
 		d, ok := node.DocumentOK()
 		if !ok {
-			fmt.Println(fmt.Errorf("apidebug.assertion json unmarshal err %w", err))
+			proof.Errorf("apidebug.assertion json unmarshal err %w", err)
 		}
 
 		var a rao.Assertion
 		if err := bson.Unmarshal(d, &a); err != nil {
-			fmt.Println(fmt.Errorf("apidebug.assertion json unmarshal err %w", err))
+			proof.Errorf("apidebug.assertion json unmarshal err %w", err)
 		}
 
 		as = append(as, &a)
@@ -33,12 +33,12 @@ func TransMaoAPIDebugToRaoAPIDebug(m *mao.APIDebug) *rao.APIDebug {
 
 	var regex interface{}
 	if err := bson.Unmarshal(m.Regex, &regex); err != nil {
-		fmt.Println(fmt.Errorf("apidebug.assertion json unmarshal err %w", err))
+		proof.Errorf("apidebug.assertion json unmarshal err %w", err)
 	}
 
 	r, err := json.Marshal(regex)
 	if err != nil {
-		fmt.Println(fmt.Errorf("apidebug.assertion json unmarshal err %w", err))
+		proof.Errorf("apidebug.assertion json unmarshal err %w", err)
 	}
 
 	return &rao.APIDebug{

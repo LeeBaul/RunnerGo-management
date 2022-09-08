@@ -1,8 +1,7 @@
 package packer
 
 import (
-	"fmt"
-
+	"github.com/go-omnibus/proof"
 	"go.mongodb.org/mongo-driver/bson"
 
 	"kp-management/internal/pkg/biz/consts"
@@ -56,12 +55,12 @@ func TransSavePlanReqToMaoTask(req *rao.SavePlanConfReq) *mao.Task {
 
 	nodes, err := bson.Marshal(mao.Node{Nodes: req.Nodes})
 	if err != nil {
-		fmt.Println(fmt.Errorf("flow.nodes json marshal err %w", err))
+		proof.Errorf("flow.nodes json marshal err %w", err)
 	}
 
 	edges, err := bson.Marshal(mao.Edge{Edges: req.Edges})
 	if err != nil {
-		fmt.Println(fmt.Errorf("flow.edges json marshal err %w", err))
+		proof.Errorf("flow.edges json marshal err %w", err)
 	}
 
 	return &mao.Task{
@@ -103,13 +102,13 @@ func TransTaskToRaoPlan(p *model.Plan, t *mao.Task, u *model.User) *rao.Plan {
 
 		var nb mao.Node
 		if err := bson.Unmarshal(t.Nodes, &nb); err != nil {
-			fmt.Println(fmt.Errorf("plan.nodes json marshal err %w", err))
+			proof.Errorf("plan.nodes json marshal err %w", err)
 		}
 		n = nb.Nodes
 
 		var eb mao.Edge
 		if err := bson.Unmarshal(t.Nodes, &eb); err != nil {
-			fmt.Println(fmt.Errorf("plan.edges json marshal err %w", err))
+			proof.Errorf("plan.edges json marshal err %w", err)
 		}
 		e = eb.Edges
 
