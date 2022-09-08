@@ -88,3 +88,13 @@ func ImportSceneVariables(ctx context.Context, req *rao.ImportVariablesReq, user
 		UploaderID: userID,
 	})
 }
+
+func ListImportSceneVariables(ctx context.Context, teamID, sceneID int64) ([]*rao.Import, error) {
+	tx := dal.GetQuery().VariableImport
+	vi, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID), tx.SceneID.Eq(sceneID)).Limit(5).Find()
+	if err != nil {
+		return nil, err
+	}
+
+	return packer.TransImportVariablesToRaoImportVariables(vi), nil
+}
