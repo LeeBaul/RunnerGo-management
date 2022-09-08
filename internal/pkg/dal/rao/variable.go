@@ -20,7 +20,7 @@ type DeleteVariableResp struct {
 }
 
 type SyncVariablesReq struct {
-	TeamID    int64       `json:"team_id"`
+	TeamID    int64       `json:"team_id" binding:"required,gt=0"`
 	Variables []*Variable `json:"variables"`
 }
 
@@ -28,8 +28,8 @@ type SyncVariablesResp struct {
 }
 
 type SyncSceneVariablesReq struct {
-	TeamID    int64       `json:"team_id"`
-	SceneID   int64       `json:"scene_id"`
+	TeamID    int64       `json:"team_id" binding:"required,gt=0"`
+	SceneID   int64       `json:"scene_id" binding:"required,gt=0"`
 	Variables []*Variable `json:"variables"`
 }
 
@@ -37,14 +37,14 @@ type SyncSceneVariablesResp struct {
 }
 
 type ListSceneVariablesReq struct {
-	TeamID  int64 `form:"team_id"`
-	SceneID int64 `form:"scene_id"`
+	TeamID  int64 `form:"team_id" binding:"required,gt=0"`
+	SceneID int64 `form:"scene_id" binding:"required,gt=0"`
 	Page    int   `form:"page"`
 	Size    int   `form:"size"`
 }
 
 type ListVariablesReq struct {
-	TeamID int64 `form:"team_id"`
+	TeamID int64 `form:"team_id" binding:"required,gt=0"`
 	Page   int   `form:"page"`
 	Size   int   `form:"size"`
 }
@@ -63,8 +63,8 @@ type Variable struct {
 }
 
 type ImportVariablesReq struct {
-	TeamID  int64  `json:"team_id"`
-	SceneID int64  `json:"scene_id"`
+	TeamID  int64  `json:"team_id" binding:"required,gt=0"`
+	SceneID int64  `json:"scene_id" binding:"required,gt=0"`
 	Name    string `json:"name"`
 	URL     string `json:"url"`
 }
@@ -73,8 +73,8 @@ type ImportVariablesResp struct {
 }
 
 type ListImportVariablesReq struct {
-	TeamID  int64 `form:"team_id"`
-	SceneID int64 `form:"scene_id"`
+	TeamID  int64 `form:"team_id" binding:"required,gt=0"`
+	SceneID int64 `form:"scene_id" binding:"required,gt=0"`
 }
 
 type ListImportVariablesResp struct {
