@@ -1,11 +1,18 @@
 package rao
 
 type SendTargetReq struct {
-	TargetID int64 `json:"target_id"`
+	TargetID int64 `json:"target_id" binding:"required,gt=0"`
 }
 
 type SendTargetResp struct {
 	RetID string `json:"ret_id"`
+}
+
+type GetSendTargetResultReq struct {
+	RetID string `form:"ret_id" binding:"required,gt=0"`
+}
+
+type GetSendTargetResultResp struct {
 }
 
 type SaveTargetReq struct {

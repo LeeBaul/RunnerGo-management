@@ -3,7 +3,6 @@ package target
 import (
 	"context"
 
-	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"gorm.io/gen"
 
@@ -16,7 +15,7 @@ import (
 	"kp-management/internal/pkg/packer"
 )
 
-func SendAPI(ctx *gin.Context, targetID int64) (string, error) {
+func SendAPI(ctx context.Context, targetID int64) (string, error) {
 	tx := dal.GetQuery().Target
 	t, err := tx.WithContext(ctx).Where(tx.ID.Eq(targetID)).First()
 	if err != nil {
@@ -31,6 +30,17 @@ func SendAPI(ctx *gin.Context, targetID int64) (string, error) {
 	}
 
 	return runner.RunAPI(ctx, packer.TransTargetToRaoAPIDetail(t, &a))
+}
+
+func GetSendAPIResult(ctx context.Context, retID string) (*rao.APIDebug, error) {
+	var ad mao.APIDebug
+	err := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectAPIDebug).
+		FindOne(ctx, bson.D{{"uuid", retID}}).Decode(&ad)
+	if err != nil {
+		return nil, err
+	}
+
+	return packer.TransMaoAPIDebugToRaoAPIDebug(&ad), nil
 }
 
 func ListFolderAPI(ctx context.Context, teamID int64, limit, offset int) ([]*rao.FolderAPI, int64, error) {
