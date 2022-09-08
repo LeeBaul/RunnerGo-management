@@ -1,3 +1,6 @@
+base:
+  is_debug: true
+
 http:
   port: 8080
 
@@ -31,3 +34,7 @@ clients:
     run_api: "https://kprunner.apipost.cn/runner/run_api"
     run_scene: "https://kprunner.apipost.cn/runner/run_scene"
     run_plan: ""
+
+proof:
+  info_log: "./logs/application.log"
+  err_log: "./logs/application_err.log"

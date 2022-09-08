@@ -1,3 +1,6 @@
+base:
+  is_debug: false
+
 http:
   port: 20123
 
@@ -31,3 +34,7 @@ clients:
     run_api: "https://kprunner.apipost.cn/runner/run_api"
     run_scene: "https://kprunner.apipost.cn/runner/run_scene"
     run_plan: ""
+
+proof:
+  info_log: "/data/logs/kp-management/info.log"
+  err_log: "/data/logs/kp-management/err.log"

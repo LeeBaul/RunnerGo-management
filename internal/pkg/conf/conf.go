@@ -10,6 +10,7 @@ import (
 var Conf Config
 
 type Config struct {
+	Base       Base       `yaml:"base"`
 	Http       Http       `yaml:"http"`
 	GRPC       GRPC       `yaml:"grpc"`
 	MySQL      MySQL      `yaml:"mysql"`
@@ -19,6 +20,11 @@ type Config struct {
 	Kafka      Kafka      `yaml:"kafka"`
 	ES         ES         `yaml:"es"`
 	Clients    Clients    `yaml:"clients"`
+	Proof      Proof      `yaml:"proof"`
+}
+
+type Base struct {
+	IsDebug bool `mapstructure:"is_debug"`
 }
 
 type Http struct {
@@ -72,6 +78,11 @@ type Runner struct {
 	RunAPI   string `mapstructure:"run_api"`
 	RunScene string `mapstructure:"run_scene"`
 	RunPlan  string `mapstructure:"run_plan"`
+}
+
+type Proof struct {
+	InfoLog string `json:"info_log"`
+	ErrLog  string `json:"err_log"`
 }
 
 func MustInitConf() {
