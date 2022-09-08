@@ -9,12 +9,12 @@ import (
 func TransSaveFolderReqToMaoFolder(folder *rao.SaveFolderReq) *mao.Folder {
 	//request, err := bson.Marshal(folder.Request)
 	//if err != nil {
-	//	fmt.Sprintln(fmt.Errorf("folder.request json marshal err %w", err))
+	//	fmt.Println(fmt.Errorf("folder.request json marshal err %w", err))
 	//}
 	//
 	//script, err := bson.Marshal(folder.Script)
 	//if err != nil {
-	//	fmt.Sprintln(fmt.Errorf("folder.script json marshal err %w", err))
+	//	fmt.Println(fmt.Errorf("folder.script json marshal err %w", err))
 	//}
 
 	return &mao.Folder{
@@ -27,12 +27,12 @@ func TransSaveFolderReqToMaoFolder(folder *rao.SaveFolderReq) *mao.Folder {
 func TransTargetToRaoFolder(t *model.Target, f *mao.Folder) *rao.Folder {
 	//var r rao.Request
 	//if err := bson.Unmarshal(f.Request, &r); err != nil {
-	//	fmt.Sprintln(fmt.Errorf("folder.request json UnMarshal err %w", err))
+	//	fmt.Println(fmt.Errorf("folder.request json UnMarshal err %w", err))
 	//}
 	//
 	//var s rao.Script
 	//if err := bson.Unmarshal(f.Script, &s); err != nil {
-	//	fmt.Sprintln(fmt.Errorf("folder.script json UnMarshal err %w", err))
+	//	fmt.Println(fmt.Errorf("folder.script json UnMarshal err %w", err))
 	//}
 
 	return &rao.Folder{
