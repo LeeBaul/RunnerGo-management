@@ -8,7 +8,25 @@ import (
 	"kp-management/internal/pkg/biz/response"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/logic/scene"
+	"kp-management/internal/pkg/logic/target"
 )
+
+func SendScene(ctx *gin.Context) {
+	var req rao.SendSceneReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	retID, err := target.SendScene(ctx, req.SceneID)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.SuccessWithData(ctx, rao.SendSceneResp{RetID: retID})
+	return
+}
 
 // SaveScene 创建/修改场景
 func SaveScene(ctx *gin.Context) {

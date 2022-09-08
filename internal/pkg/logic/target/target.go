@@ -16,6 +16,36 @@ import (
 	"kp-management/internal/pkg/packer"
 )
 
+func SendScene(ctx context.Context, sceneID int64) (string, error) {
+	tx := dal.GetQuery().Target
+	t, err := tx.WithContext(ctx).Where(tx.ID.Eq(sceneID)).First()
+	if err != nil {
+		return "", err
+	}
+
+	var f mao.Flow
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectFlow)
+	err = collection.FindOne(ctx, bson.D{{"scene_id", sceneID}}).Decode(&f)
+	if err != nil {
+		return "", err
+	}
+
+	vi := dal.GetQuery().VariableImport
+	vis, err := vi.WithContext(ctx).Where(vi.SceneID.Eq(sceneID)).Limit(5).Find()
+	if err != nil {
+		return "", err
+	}
+
+	sv := dal.GetQuery().Variable
+	variables, err := sv.WithContext(ctx).Where(sv.SceneID.Eq(sceneID)).Find()
+	if err != nil {
+		return "", err
+	}
+
+	req := packer.TransMaoFlowToRaoSceneFlow(t, &f, vis, variables)
+	return runner.RunScene(ctx, req)
+}
+
 func SendAPI(ctx context.Context, targetID int64) (string, error) {
 	tx := dal.GetQuery().Target
 	t, err := tx.WithContext(ctx).Where(tx.ID.Eq(targetID)).First()
