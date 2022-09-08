@@ -58,6 +58,7 @@ func RegisterRouter(r *gin.Engine) {
 	variable.POST("/scene/sync", handler.SyncSceneVariables)
 	variable.GET("/scene/list", handler.ListSceneVariables)
 	variable.POST("/scene/import", handler.ImportSceneVariables)
+	variable.GET("/scene/import/list", handler.ListImportSceneVariables)
 
 	// 首页
 	dashboard := api.Group("/v1/dashboard")

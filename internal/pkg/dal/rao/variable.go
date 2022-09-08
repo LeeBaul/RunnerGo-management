@@ -71,3 +71,20 @@ type ImportVariablesReq struct {
 
 type ImportVariablesResp struct {
 }
+
+type ListImportVariablesReq struct {
+	TeamID  int64 `form:"team_id"`
+	SceneID int64 `form:"scene_id"`
+}
+
+type ListImportVariablesResp struct {
+	Imports []*Import `json:"imports"`
+}
+
+type Import struct {
+	TeamID         int64  `json:"team_id"`
+	SceneID        int64  `json:"scene_id"`
+	Name           string `json:"name"`
+	URL            string `json:"url"`
+	CreatedTimeSec int64  `json:"created_time_sec"`
+}

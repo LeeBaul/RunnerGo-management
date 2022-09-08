@@ -48,3 +48,17 @@ func TransSceneRaoVariablesToModelVariables(teamID, sceneID int64, vs []*rao.Var
 	}
 	return ret
 }
+
+func TransImportVariablesToRaoImportVariables(vi []*model.VariableImport) []*rao.Import {
+	ret := make([]*rao.Import, 0)
+	for _, v := range vi {
+		ret = append(ret, &rao.Import{
+			TeamID:         v.TeamID,
+			SceneID:        v.SceneID,
+			Name:           v.Name,
+			URL:            v.URL,
+			CreatedTimeSec: v.CreatedAt.Unix(),
+		})
+	}
+	return ret
+}
