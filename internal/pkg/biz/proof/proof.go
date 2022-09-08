@@ -17,6 +17,7 @@ func InitProof() {
 	p.SetErrorFile("./logs/application_err.log")
 
 	p.Run()
+	defer proof.Sync()
 
 	fmt.Println("proof initialized")
 }
