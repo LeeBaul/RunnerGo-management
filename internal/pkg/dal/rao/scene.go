@@ -1,8 +1,7 @@
 package rao
 
 type SendSceneReq struct {
-	SceneID int64  `json:"scene_id" binding:"required,gt=0"`
-	NodeID  string `json:"node_id" binding:"required"`
+	SceneID int64 `json:"scene_id" binding:"required,gt=0"`
 }
 
 type SendSceneResp struct {
@@ -10,8 +9,8 @@ type SendSceneResp struct {
 }
 
 type SendSceneAPIReq struct {
-	SceneID int64 `json:"scene_id" binding:"required,gt=0"`
-	NodeID  string
+	SceneID int64  `json:"scene_id" binding:"required,gt=0"`
+	NodeID  string `json:"node_id" binding:"required"`
 }
 
 type SendSceneAPIResp struct {
