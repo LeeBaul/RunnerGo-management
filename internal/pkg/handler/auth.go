@@ -3,6 +3,8 @@ package handler
 import (
 	"time"
 
+	"github.com/go-omnibus/proof"
+
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/jwt"
 	"kp-management/internal/pkg/biz/response"
@@ -64,9 +66,22 @@ func AuthLogin(ctx *gin.Context) {
 		return
 	}
 
+	// first login
+	var isAPIPostUser bool
+	if u.LastLoginAt.IsZero() {
+		i, err := auth.IsAPIPostUser(ctx, u.Email)
+		proof.Errorf("is apipost user err %s", err)
+		isAPIPostUser = i
+	}
+
+	if err := auth.UpdateLoginTime(ctx, u.ID); err != nil {
+		proof.Errorf("update login time err %s", err)
+	}
+
 	response.SuccessWithData(ctx, rao.AuthLoginResp{
 		Token:         token,
 		ExpireTimeSec: exp.Unix(),
+		IsAPIPostUser: isAPIPostUser,
 	})
 	return
 }
