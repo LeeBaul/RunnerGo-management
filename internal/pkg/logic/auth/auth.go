@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"golang.org/x/crypto/bcrypt"
+	"github.com/go-omnibus/omnibus"
 
 	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/dal"
@@ -15,12 +15,12 @@ import (
 )
 
 func SignUp(ctx context.Context, email, password, nickname string) (*model.User, error) {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	hashedPassword, err := omnibus.GenerateBcryptFromPassword(password)
 	if err != nil {
 		return nil, err
 	}
 
-	user := model.User{Email: email, Password: string(hashedPassword), Nickname: nickname}
+	user := model.User{Email: email, Password: hashedPassword, Nickname: nickname}
 	team := model.Team{Name: fmt.Sprintf("%s 的团队", nickname)}
 
 	err = query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
@@ -55,7 +55,7 @@ func Login(ctx context.Context, email, password string) (*model.User, error) {
 		return nil, err
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+	if err := omnibus.CompareBcryptHashAndPassword(user.Password, password); err != nil {
 		return nil, err
 	}
 
