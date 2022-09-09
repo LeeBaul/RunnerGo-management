@@ -13,6 +13,8 @@ func InitProof() {
 	p.SetDivision(proof.TimeDivision)
 	p.SetTimeUnit(proof.Day)
 	p.SetEncoding(proof.ConsoleEncoder)
+	p.SetCaller(true)
+	p.SetCapitalColor(true)
 	p.SetInfoFile(conf.Conf.Proof.InfoLog)
 	p.SetErrorFile(conf.Conf.Proof.ErrLog)
 

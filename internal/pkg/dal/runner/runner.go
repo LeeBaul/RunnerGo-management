@@ -24,7 +24,7 @@ func RunAPI(ctx context.Context, body *rao.APIDetail) (string, error) {
 		return "", err
 	}
 
-	proof.Info("msg", proof.WithByteString("body", bodyByte))
+	proof.Infof("body %s", bodyByte)
 
 	var ret RunAPIResp
 	_, err = resty.New().R().
@@ -50,7 +50,7 @@ func RunScene(ctx context.Context, body *rao.SceneFlow) (string, error) {
 		return "", err
 	}
 
-	proof.Info("msg", proof.WithByteString("body", bodyByte))
+	proof.Infof("body %s", bodyByte)
 
 	var ret RunAPIResp
 	_, err = resty.New().R().
