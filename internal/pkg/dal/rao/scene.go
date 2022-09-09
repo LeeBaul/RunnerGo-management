@@ -1,10 +1,20 @@
 package rao
 
 type SendSceneReq struct {
-	SceneID int64 `json:"scene_id" binding:"required,gt=0"`
+	SceneID int64  `json:"scene_id" binding:"required,gt=0"`
+	NodeID  string `json:"node_id" binding:"required"`
 }
 
 type SendSceneResp struct {
+	RetID string `json:"ret_id"`
+}
+
+type SendSceneAPIReq struct {
+	SceneID int64 `json:"scene_id" binding:"required,gt=0"`
+	NodeID  string
+}
+
+type SendSceneAPIResp struct {
 	RetID string `json:"ret_id"`
 }
 

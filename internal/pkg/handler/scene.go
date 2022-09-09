@@ -28,6 +28,23 @@ func SendScene(ctx *gin.Context) {
 	return
 }
 
+func SendSceneAPI(ctx *gin.Context) {
+	var req rao.SendSceneReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	retID, err := target.SendSceneAPI(ctx, req.SceneID, req.NodeID)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.SuccessWithData(ctx, rao.SendSceneAPIResp{RetID: retID})
+	return
+}
+
 func GetSendSceneResult(ctx *gin.Context) {
 	var req rao.GetSendSceneResultReq
 	if err := ctx.ShouldBind(&req); err != nil {
