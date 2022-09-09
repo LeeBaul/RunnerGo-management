@@ -128,6 +128,22 @@ func ImportSceneVariables(ctx *gin.Context) {
 	return
 }
 
+func DeleteImportSceneVariables(ctx *gin.Context) {
+	var req rao.DeleteImportSceneVariablesReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	if err := variable.DeleteImportSceneVariables(ctx, &req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
+}
+
 func ListImportSceneVariables(ctx *gin.Context) {
 	var req rao.ListImportVariablesReq
 	if err := ctx.ShouldBind(&req); err != nil {

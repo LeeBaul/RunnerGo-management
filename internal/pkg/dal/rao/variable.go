@@ -72,6 +72,12 @@ type ImportVariablesReq struct {
 type ImportVariablesResp struct {
 }
 
+type DeleteImportSceneVariablesReq struct {
+	TeamID  int64  `json:"team_id" binding:"required,gt=0"`
+	SceneID int64  `json:"scene_id" binding:"required,gt=0"`
+	Name    string `json:"name"`
+}
+
 type ListImportVariablesReq struct {
 	TeamID  int64 `form:"team_id" binding:"required,gt=0"`
 	SceneID int64 `form:"scene_id" binding:"required,gt=0"`

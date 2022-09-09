@@ -32,9 +32,10 @@ func newVariableImport(db *gorm.DB) variableImport {
 	_variableImport.SceneID = field.NewInt64(tableName, "scene_id")
 	_variableImport.Name = field.NewString(tableName, "name")
 	_variableImport.URL = field.NewString(tableName, "url")
+	_variableImport.UploaderID = field.NewInt64(tableName, "uploader_id")
 	_variableImport.CreatedAt = field.NewTime(tableName, "created_at")
 	_variableImport.UpdatedAt = field.NewTime(tableName, "updated_at")
-	_variableImport.UploaderID = field.NewInt64(tableName, "uploader_id")
+	_variableImport.DeletedAt = field.NewField(tableName, "deleted_at")
 
 	_variableImport.fillFieldMap()
 
@@ -50,9 +51,10 @@ type variableImport struct {
 	SceneID    field.Int64
 	Name       field.String
 	URL        field.String
+	UploaderID field.Int64
 	CreatedAt  field.Time
 	UpdatedAt  field.Time
-	UploaderID field.Int64
+	DeletedAt  field.Field
 
 	fieldMap map[string]field.Expr
 }
@@ -74,9 +76,10 @@ func (v *variableImport) updateTableName(table string) *variableImport {
 	v.SceneID = field.NewInt64(table, "scene_id")
 	v.Name = field.NewString(table, "name")
 	v.URL = field.NewString(table, "url")
+	v.UploaderID = field.NewInt64(table, "uploader_id")
 	v.CreatedAt = field.NewTime(table, "created_at")
 	v.UpdatedAt = field.NewTime(table, "updated_at")
-	v.UploaderID = field.NewInt64(table, "uploader_id")
+	v.DeletedAt = field.NewField(table, "deleted_at")
 
 	v.fillFieldMap()
 
@@ -101,15 +104,16 @@ func (v *variableImport) GetFieldByName(fieldName string) (field.OrderExpr, bool
 }
 
 func (v *variableImport) fillFieldMap() {
-	v.fieldMap = make(map[string]field.Expr, 8)
+	v.fieldMap = make(map[string]field.Expr, 9)
 	v.fieldMap["id"] = v.ID
 	v.fieldMap["team_id"] = v.TeamID
 	v.fieldMap["scene_id"] = v.SceneID
 	v.fieldMap["name"] = v.Name
 	v.fieldMap["url"] = v.URL
+	v.fieldMap["uploader_id"] = v.UploaderID
 	v.fieldMap["created_at"] = v.CreatedAt
 	v.fieldMap["updated_at"] = v.UpdatedAt
-	v.fieldMap["uploader_id"] = v.UploaderID
+	v.fieldMap["deleted_at"] = v.DeletedAt
 }
 
 func (v variableImport) clone(db *gorm.DB) variableImport {
