@@ -29,7 +29,7 @@ func SendScene(ctx *gin.Context) {
 }
 
 func SendSceneAPI(ctx *gin.Context) {
-	var req rao.SendSceneReq
+	var req rao.SendSceneAPIReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
