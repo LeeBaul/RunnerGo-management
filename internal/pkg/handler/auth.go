@@ -70,7 +70,9 @@ func AuthLogin(ctx *gin.Context) {
 	var isAPIPostUser bool
 	if u.LastLoginAt.IsZero() {
 		i, err := auth.IsAPIPostUser(ctx, u.Email)
-		proof.Errorf("is apipost user err %s", err)
+		if err != nil {
+			proof.Errorf("is apipost user err %s", err)
+		}
 		isAPIPostUser = i
 	}
 

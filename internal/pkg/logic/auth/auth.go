@@ -64,7 +64,7 @@ func Login(ctx context.Context, email, password string) (*model.User, error) {
 
 func UpdateLoginTime(ctx context.Context, userID int64) error {
 	tx := query.Use(dal.DB()).User
-	_, err := tx.WithContext(ctx).UpdateColumn(tx.LastLoginAt, time.Now())
+	_, err := tx.WithContext(ctx).Where(tx.ID.Eq(userID)).UpdateColumn(tx.LastLoginAt, time.Now())
 	return err
 }
 
