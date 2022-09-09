@@ -21,6 +21,7 @@ type AuthLoginReq struct {
 type AuthLoginResp struct {
 	Token         string `json:"token"`
 	ExpireTimeSec int64  `json:"expire_time_sec"`
+	IsAPIPostUser bool   `json:"is_api_post_user"`
 }
 
 type SetUserSettingsReq struct {

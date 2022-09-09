@@ -89,6 +89,12 @@ func ImportSceneVariables(ctx context.Context, req *rao.ImportVariablesReq, user
 	})
 }
 
+func DeleteImportSceneVariables(ctx context.Context, req *rao.DeleteImportSceneVariablesReq) error {
+	tx := dal.GetQuery().VariableImport
+	_, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(req.TeamID), tx.SceneID.Eq(req.SceneID), tx.Name.Eq(req.Name)).Delete()
+	return err
+}
+
 func ListImportSceneVariables(ctx context.Context, teamID, sceneID int64) ([]*rao.Import, error) {
 	tx := dal.GetQuery().VariableImport
 	vi, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID), tx.SceneID.Eq(sceneID)).Limit(5).Find()

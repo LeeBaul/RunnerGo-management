@@ -32,6 +32,7 @@ func newUser(db *gorm.DB) user {
 	_user.Password = field.NewString(tableName, "password")
 	_user.Nickname = field.NewString(tableName, "nickname")
 	_user.Avatar = field.NewString(tableName, "avatar")
+	_user.LastLoginAt = field.NewTime(tableName, "last_login_at")
 	_user.CreatedAt = field.NewTime(tableName, "created_at")
 	_user.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_user.DeletedAt = field.NewField(tableName, "deleted_at")
@@ -44,15 +45,16 @@ func newUser(db *gorm.DB) user {
 type user struct {
 	userDo userDo
 
-	ALL       field.Asterisk
-	ID        field.Int64
-	Email     field.String
-	Password  field.String
-	Nickname  field.String
-	Avatar    field.String
-	CreatedAt field.Time
-	UpdatedAt field.Time
-	DeletedAt field.Field
+	ALL         field.Asterisk
+	ID          field.Int64
+	Email       field.String
+	Password    field.String
+	Nickname    field.String
+	Avatar      field.String
+	LastLoginAt field.Time
+	CreatedAt   field.Time
+	UpdatedAt   field.Time
+	DeletedAt   field.Field
 
 	fieldMap map[string]field.Expr
 }
@@ -74,6 +76,7 @@ func (u *user) updateTableName(table string) *user {
 	u.Password = field.NewString(table, "password")
 	u.Nickname = field.NewString(table, "nickname")
 	u.Avatar = field.NewString(table, "avatar")
+	u.LastLoginAt = field.NewTime(table, "last_login_at")
 	u.CreatedAt = field.NewTime(table, "created_at")
 	u.UpdatedAt = field.NewTime(table, "updated_at")
 	u.DeletedAt = field.NewField(table, "deleted_at")
@@ -99,12 +102,13 @@ func (u *user) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (u *user) fillFieldMap() {
-	u.fieldMap = make(map[string]field.Expr, 8)
+	u.fieldMap = make(map[string]field.Expr, 9)
 	u.fieldMap["id"] = u.ID
 	u.fieldMap["email"] = u.Email
 	u.fieldMap["password"] = u.Password
 	u.fieldMap["nickname"] = u.Nickname
 	u.fieldMap["avatar"] = u.Avatar
+	u.fieldMap["last_login_at"] = u.LastLoginAt
 	u.fieldMap["created_at"] = u.CreatedAt
 	u.fieldMap["updated_at"] = u.UpdatedAt
 	u.fieldMap["deleted_at"] = u.DeletedAt

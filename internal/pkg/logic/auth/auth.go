@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -59,4 +60,15 @@ func Login(ctx context.Context, email, password string) (*model.User, error) {
 	}
 
 	return user, nil
+}
+
+func UpdateLoginTime(ctx context.Context, userID int64) error {
+	tx := query.Use(dal.DB()).User
+	_, err := tx.WithContext(ctx).UpdateColumn(tx.LastLoginAt, time.Now())
+	return err
+}
+
+func IsAPIPostUser(ctx context.Context, email string) (bool, error) {
+	// todo 是否是apipost用户
+	return false, nil
 }

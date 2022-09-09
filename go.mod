@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.8.1
-	github.com/go-omnibus/proof v0.0.0-20220909042518-5ba1afe6c793
+	github.com/go-omnibus/proof v0.0.0-20220909073128-622a0102b6af
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/olivere/elastic/v7 v7.0.32
@@ -38,6 +38,7 @@ require (
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible // indirect
 	github.com/lestrrat-go/strftime v1.0.6 // indirect
+	github.com/luci/go-render v0.0.0-20160219211803-9a04cc21af0f // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
