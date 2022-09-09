@@ -52,6 +52,7 @@ type JWT struct {
 type MongoDB struct {
 	DSN      string `yaml:"dsn"`
 	Database string `yaml:"database"`
+	PoolSize uint64 `mapstructure:"pool_size"`
 }
 
 type Prometheus struct {
