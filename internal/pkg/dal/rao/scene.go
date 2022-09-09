@@ -90,8 +90,10 @@ type Node struct {
 	Height           int      `json:"height"`
 	Selected         bool     `json:"selected"`
 	Dragging         bool     `json:"dragging"`
+	DragHandle       string   `json:"drag_handle"`
 	Data             struct {
-		ID string `json:"id"`
+		ID   string `json:"id"`
+		From string `json:"from"`
 	} `json:"data"`
 
 	// 接口
