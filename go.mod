@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.8.1
+	github.com/go-omnibus/omnibus v0.0.0-20220909090716-391a9749236b
 	github.com/go-omnibus/proof v0.0.0-20220909073128-622a0102b6af
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/golang-jwt/jwt/v4 v4.4.2
@@ -12,7 +13,6 @@ require (
 	github.com/spf13/viper v1.13.0
 	github.com/valyala/fasthttp v1.40.0
 	go.mongodb.org/mongo-driver v1.10.2
-	golang.org/x/crypto v0.0.0-20220829220503-c86fa9a7ed90
 	gorm.io/driver/mysql v1.3.6
 	gorm.io/gen v0.3.16
 	gorm.io/gorm v1.23.9-0.20220713102635-3262daf8d468
@@ -64,6 +64,7 @@ require (
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	go.uber.org/zap v1.23.0 // indirect
+	golang.org/x/crypto v0.0.0-20220829220503-c86fa9a7ed90 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
 	golang.org/x/net v0.0.0-20220907135653-1e95f45603a7 // indirect
 	golang.org/x/sync v0.0.0-20220907140024-f12130a52804 // indirect
