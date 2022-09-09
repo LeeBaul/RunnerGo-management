@@ -16,6 +16,28 @@ import (
 	"kp-management/internal/pkg/packer"
 )
 
+func SendSceneAPI(ctx context.Context, sceneID int64, nodeID string) (string, error) {
+	var f mao.Flow
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectFlow)
+	err := collection.FindOne(ctx, bson.D{{"scene_id", sceneID}}).Decode(&f)
+	if err != nil {
+		return "", err
+	}
+
+	var n mao.Node
+	if err := bson.Unmarshal(f.Nodes, &n); err != nil {
+		return "", err
+	}
+
+	for _, node := range n.Nodes {
+		if node.ID == nodeID {
+			return runner.RunAPI(ctx, node.API)
+		}
+	}
+
+	return "", nil
+}
+
 func SendScene(ctx context.Context, sceneID int64) (string, error) {
 	tx := dal.GetQuery().Target
 	t, err := tx.WithContext(ctx).Where(tx.ID.Eq(sceneID), tx.TargetType.Eq(consts.TargetTypeScene)).First()
