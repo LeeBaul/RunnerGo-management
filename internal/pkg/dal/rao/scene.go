@@ -8,6 +8,14 @@ type SendSceneResp struct {
 	RetID string `json:"ret_id"`
 }
 
+type GetSendSceneResultReq struct {
+	RetID string `form:"ret_id" binding:"required,gt=0"`
+}
+
+type GetSendSceneResultResp struct {
+	Scenes []*SceneDebug `json:"scenes"`
+}
+
 type SaveSceneReq struct {
 	TeamID      int64  `json:"team_id" binding:"required,gt=0"`
 	TargetID    int64  `json:"target_id"`

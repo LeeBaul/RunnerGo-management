@@ -14,14 +14,14 @@ func TransMaoAPIDebugToRaoAPIDebug(m *mao.APIDebug) *rao.APIDebug {
 		proof.Errorf("api_debug.assertion get values err", proof.WithError(err))
 	}
 
-	var as []*rao.Assertion
+	var as []*rao.DebugAssertion
 	for _, node := range rawNodes {
 		d, ok := node.DocumentOK()
 		if !ok {
 			proof.Errorf("api_debug.assertion DocumentOK err", proof.WithError(err))
 		}
 
-		var a rao.Assertion
+		var a rao.DebugAssertion
 		if err := bson.Unmarshal(d, &a); err != nil {
 			proof.Errorf("api_debug.assertion bson unmarshal err", proof.WithError(err))
 		}

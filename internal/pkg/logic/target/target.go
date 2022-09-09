@@ -18,7 +18,7 @@ import (
 
 func SendScene(ctx context.Context, sceneID int64) (string, error) {
 	tx := dal.GetQuery().Target
-	t, err := tx.WithContext(ctx).Where(tx.ID.Eq(sceneID)).First()
+	t, err := tx.WithContext(ctx).Where(tx.ID.Eq(sceneID), tx.TargetType.Eq(consts.TargetTypeScene)).First()
 	if err != nil {
 		return "", err
 	}
@@ -44,6 +44,26 @@ func SendScene(ctx context.Context, sceneID int64) (string, error) {
 
 	req := packer.TransMaoFlowToRaoSceneFlow(t, &f, vis, variables)
 	return runner.RunScene(ctx, req)
+}
+
+func GetSendSceneResult(ctx context.Context, retID string) ([]*rao.SceneDebug, error) {
+	cur, err := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectSceneDebug).
+		Find(ctx, bson.D{{"uuid", retID}})
+	if err != nil {
+		return nil, err
+	}
+
+	var sds []*mao.SceneDebug
+	if err := cur.All(ctx, &sds); err != nil {
+		return nil, err
+	}
+
+	if len(sds) == 0 {
+		return nil, nil
+	}
+
+	return packer.TransMaoSceneDebugsToRaoSceneDebugs(sds), nil
+
 }
 
 func SendAPI(ctx context.Context, targetID int64) (string, error) {

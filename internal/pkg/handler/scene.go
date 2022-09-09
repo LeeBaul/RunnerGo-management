@@ -28,6 +28,23 @@ func SendScene(ctx *gin.Context) {
 	return
 }
 
+func GetSendSceneResult(ctx *gin.Context) {
+	var req rao.GetSendSceneResultReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	s, err := target.GetSendSceneResult(ctx, req.RetID)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.SuccessWithData(ctx, rao.GetSendSceneResultResp{Scenes: s})
+	return
+}
+
 // SaveScene 创建/修改场景
 func SaveScene(ctx *gin.Context) {
 	var req rao.SaveSceneReq

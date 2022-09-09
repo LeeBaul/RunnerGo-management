@@ -81,8 +81,8 @@ type Runner struct {
 }
 
 type Proof struct {
-	InfoLog string `json:"info_log"`
-	ErrLog  string `json:"err_log"`
+	InfoLog string `mapstructure:"info_log"`
+	ErrLog  string `mapstructure:"err_log"`
 }
 
 func MustInitConf() {
