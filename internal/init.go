@@ -11,5 +11,5 @@ func InitProjects() {
 	dal.MustInitMySQL()
 	dal.MustInitMongo()
 	dal.MustInitElasticSearch()
-	proof.InitProof()
+	proof.MustInitProof()
 }
