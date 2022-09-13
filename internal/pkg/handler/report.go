@@ -30,6 +30,26 @@ func ListReports(ctx *gin.Context) {
 	return
 }
 
+func ListUnderwayReports(ctx *gin.Context) {
+	var req rao.ListUnderwayReportReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	reports, total, err := report.ListUnderway(ctx, req.TeamID, req.Size, (req.Page-1)*req.Size)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.SuccessWithData(ctx, rao.ListReportsResp{
+		Reports: reports,
+		Total:   total,
+	})
+	return
+}
+
 func GetReport(ctx *gin.Context) {
 
 }
