@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/jwt"
 	"kp-management/internal/pkg/biz/response"
@@ -9,6 +10,27 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+
+// ListUnderwayPlan 运行中的计划
+func ListUnderwayPlan(ctx *gin.Context) {
+	var req rao.ListUnderwayPlanReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	plans, total, err := plan.ListByStatus(ctx, req.TeamID, consts.PlanStatusUnderway, req.Size, (req.Page-1)*req.Size)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.SuccessWithData(ctx, rao.ListUnderwayPlanResp{
+		Plans: plans,
+		Total: total,
+	})
+	return
+}
 
 // ListPlans 测试计划列表
 func ListPlans(ctx *gin.Context) {

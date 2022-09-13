@@ -29,7 +29,7 @@ func ListByStatus(ctx context.Context, teamID int64, status int32, limit, offset
 
 	var userIDs []int64
 	for _, r := range ret {
-		userIDs = append(userIDs, r.RunUserID)
+		userIDs = append(userIDs, r.CreateUserID)
 	}
 
 	u := query.Use(dal.DB()).User

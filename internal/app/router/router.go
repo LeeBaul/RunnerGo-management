@@ -64,7 +64,7 @@ func RegisterRouter(r *gin.Engine) {
 	// 首页
 	dashboard := api.Group("/v1/dashboard")
 	dashboard.GET("/default", handler.DashboardDefault)
-	dashboard.GET("/underway_plans", handler.ListUnderwayReports)
+	dashboard.GET("/underway_plans", handler.ListUnderwayPlan)
 
 	// 文件夹
 	folder := api.Group("/v1/folder")

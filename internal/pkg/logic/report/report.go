@@ -7,7 +7,6 @@ import (
 
 	"gorm.io/gen"
 
-	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/query"
 	"kp-management/internal/pkg/dal/rao"
@@ -18,49 +17,6 @@ func CountByTeamID(ctx context.Context, teamID int64) (int64, error) {
 	tx := query.Use(dal.DB()).Report
 
 	return tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID)).Count()
-}
-
-func ListUnderway(ctx context.Context, teamID int64, limit, offset int) ([]*rao.Report, int64, error) {
-	tx := query.Use(dal.DB()).Report
-
-	reports, cnt, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID), tx.Status.Eq(consts.ReportStatusNormal)).
-		Order(tx.UpdatedAt.Desc(), tx.CreatedAt.Desc()).
-		FindByPage(offset, limit)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	var userIDs []int64
-	for _, r := range reports {
-		userIDs = append(userIDs, r.RunUserID)
-	}
-
-	u := query.Use(dal.DB()).User
-	users, err := u.WithContext(ctx).Where(u.ID.In(userIDs...)).Find()
-	if err != nil {
-		return nil, 0, err
-	}
-
-	var planIDs []int64
-	var sceneIDs []int64
-	for _, report := range reports {
-		planIDs = append(planIDs, report.PlanID)
-		sceneIDs = append(sceneIDs, report.SceneID)
-	}
-
-	p := dal.GetQuery().Plan
-	plans, err := p.WithContext(ctx).Where(p.ID.In(planIDs...)).Find()
-	if err != nil {
-		return nil, 0, err
-	}
-
-	s := dal.GetQuery().Target
-	scenes, err := s.WithContext(ctx).Where(s.ID.In(sceneIDs...)).Find()
-	if err != nil {
-		return nil, 0, err
-	}
-
-	return packer.TransReportModelToRaoReportList(reports, users, plans, scenes), cnt, nil
 }
 
 func ListByTeamID(ctx context.Context, teamID int64, limit, offset int, keyword string, startTimeSec, endTimeSec int64) ([]*rao.Report, int64, error) {
@@ -144,7 +100,7 @@ func ListByTeamID(ctx context.Context, teamID int64, limit, offset int, keyword 
 	}
 
 	s := dal.GetQuery().Target
-	scenes, err := s.WithContext(ctx).Where(s.ID.In(sceneIDs...)).Find()
+	scenes, err := s.WithContext(ctx).Where(p.ID.In(sceneIDs...)).Find()
 	if err != nil {
 		return nil, 0, err
 	}
