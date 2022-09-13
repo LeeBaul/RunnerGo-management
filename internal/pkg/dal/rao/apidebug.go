@@ -5,7 +5,7 @@ type APIDebug struct {
 	APIName               string            `json:"api_name"`
 	Assertion             []*DebugAssertion `json:"assertion"`
 	EventID               string            `json:"event_id"`
-	Regex                 string            `json:"regex"`
+	Regex                 []*DebugRegex     `json:"regex"`
 	RequestBody           string            `json:"request_body"`
 	RequestCode           int64             `json:"request_code"`
 	RequestHeader         string            `json:"request_header"`

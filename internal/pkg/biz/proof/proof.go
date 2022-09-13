@@ -8,7 +8,7 @@ import (
 	"kp-management/internal/pkg/conf"
 )
 
-func InitProof() {
+func MustInitProof() {
 	p := proof.New()
 	p.SetDivision(proof.TimeDivision)
 	p.SetTimeUnit(proof.Day)
