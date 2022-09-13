@@ -16,7 +16,7 @@ const TableNameReport = "report"
 type Report struct {
 	ID        int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
 	TeamID    int64          `gorm:"column:team_id;not null" json:"team_id"`
-	Name      string         `gorm:"column:name;not null" json:"name"`
+	PlanID    int64          `gorm:"column:plan_id;not null" json:"plan_id"`
 	SceneID   int64          `gorm:"column:scene_id;not null" json:"scene_id"`
 	TaskType  int32          `gorm:"column:task_type;not null" json:"task_type"`
 	TaskMode  int32          `gorm:"column:task_mode;not null" json:"task_mode"`

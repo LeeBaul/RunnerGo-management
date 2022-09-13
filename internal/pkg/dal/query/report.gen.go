@@ -29,7 +29,7 @@ func newReport(db *gorm.DB) report {
 	_report.ALL = field.NewAsterisk(tableName)
 	_report.ID = field.NewInt64(tableName, "id")
 	_report.TeamID = field.NewInt64(tableName, "team_id")
-	_report.Name = field.NewString(tableName, "name")
+	_report.PlanID = field.NewInt64(tableName, "plan_id")
 	_report.SceneID = field.NewInt64(tableName, "scene_id")
 	_report.TaskType = field.NewInt32(tableName, "task_type")
 	_report.TaskMode = field.NewInt32(tableName, "task_mode")
@@ -51,7 +51,7 @@ type report struct {
 	ALL       field.Asterisk
 	ID        field.Int64
 	TeamID    field.Int64
-	Name      field.String
+	PlanID    field.Int64
 	SceneID   field.Int64
 	TaskType  field.Int32
 	TaskMode  field.Int32
@@ -79,7 +79,7 @@ func (r *report) updateTableName(table string) *report {
 	r.ALL = field.NewAsterisk(table)
 	r.ID = field.NewInt64(table, "id")
 	r.TeamID = field.NewInt64(table, "team_id")
-	r.Name = field.NewString(table, "name")
+	r.PlanID = field.NewInt64(table, "plan_id")
 	r.SceneID = field.NewInt64(table, "scene_id")
 	r.TaskType = field.NewInt32(table, "task_type")
 	r.TaskMode = field.NewInt32(table, "task_mode")
@@ -114,7 +114,7 @@ func (r *report) fillFieldMap() {
 	r.fieldMap = make(map[string]field.Expr, 12)
 	r.fieldMap["id"] = r.ID
 	r.fieldMap["team_id"] = r.TeamID
-	r.fieldMap["name"] = r.Name
+	r.fieldMap["plan_id"] = r.PlanID
 	r.fieldMap["scene_id"] = r.SceneID
 	r.fieldMap["task_type"] = r.TaskType
 	r.fieldMap["task_mode"] = r.TaskMode
