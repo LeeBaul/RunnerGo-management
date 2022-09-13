@@ -26,7 +26,29 @@ func ListByTeamID(ctx context.Context, teamID int64, limit, offset int, keyword 
 	conditions = append(conditions, tx.TeamID.Eq(teamID))
 
 	if keyword != "" {
-		conditions = append(conditions, tx.Name.Like(fmt.Sprintf("%%%s%%", keyword)))
+		p := dal.GetQuery().Plan
+		plans, err := p.WithContext(ctx).Where(p.Name.Like(fmt.Sprintf("%%%s%%", keyword))).Find()
+		if err != nil {
+			return nil, 0, err
+		}
+		var planIDs []int64
+		for _, plan := range plans {
+			planIDs = append(planIDs, plan.ID)
+		}
+		conditions = append(conditions, tx.PlanID.In(planIDs...))
+
+		s := dal.GetQuery().Target
+		scenes, err := s.WithContext(ctx).Where(s.Name.Like(fmt.Sprintf("%%%s%%", keyword))).Find()
+		if err != nil {
+			return nil, 0, err
+		}
+		var sceneIDs []int64
+		for _, scene := range scenes {
+			sceneIDs = append(sceneIDs, scene.ID)
+		}
+		if len(sceneIDs) > 0 {
+			conditions[1] = tx.SceneID.In(sceneIDs...)
+		}
 
 		u := query.Use(dal.DB()).User
 		users, err := u.WithContext(ctx).Where(u.Nickname.Like(fmt.Sprintf("%%%s%%", keyword))).Find()
@@ -64,7 +86,26 @@ func ListByTeamID(ctx context.Context, teamID int64, limit, offset int, keyword 
 		return nil, 0, err
 	}
 
-	return packer.TransReportModelToRaoReportList(reports, users), cnt, nil
+	var planIDs []int64
+	var sceneIDs []int64
+	for _, report := range reports {
+		planIDs = append(planIDs, report.PlanID)
+		sceneIDs = append(sceneIDs, report.SceneID)
+	}
+
+	p := dal.GetQuery().Plan
+	plans, err := p.WithContext(ctx).Where(p.ID.In(planIDs...)).Find()
+	if err != nil {
+		return nil, 0, err
+	}
+
+	s := dal.GetQuery().Target
+	scenes, err := s.WithContext(ctx).Where(s.ID.In(sceneIDs...)).Find()
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return packer.TransReportModelToRaoReportList(reports, users, plans, scenes), cnt, nil
 }
 
 func DeleteReport(ctx context.Context, teamID, reportID int64) error {
