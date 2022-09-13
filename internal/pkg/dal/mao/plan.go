@@ -1,13 +1,11 @@
 package mao
 
-import "go.mongodb.org/mongo-driver/bson"
-
 type Task struct {
 	PlanID   int64     `bson:"plan_id"`
 	ModeConf *ModeConf `bson:"mode_conf"`
 
-	Nodes bson.Raw `bson:"nodes"`
-	Edges bson.Raw `bson:"edges"`
+	//Nodes bson.Raw `bson:"nodes"`
+	//Edges bson.Raw `bson:"edges"`
 }
 
 type ModeConf struct {
