@@ -47,7 +47,7 @@ func TransSaveTargetReqToMaoAPI(target *rao.SaveTargetReq) *mao.API {
 
 	return &mao.API{
 		TargetID:    target.TargetID,
-		URL:         target.URL,
+		URL:         target.Request.URL,
 		Header:      header,
 		Query:       query,
 		Body:        body,
