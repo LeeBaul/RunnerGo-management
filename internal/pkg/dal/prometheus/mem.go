@@ -16,7 +16,7 @@ func GetMemRangeUsage(ip string, s, e int64) ([][]interface{}, error) {
 		Scheme:   "http",
 		Host:     fmt.Sprintf("%s:%d", conf.Conf.Prometheus.Host, conf.Conf.Prometheus.Port),
 		Path:     "/api/v1/query_range",
-		RawQuery: "start=1663171200&end=1663254000&step=15&query=(node_memory_MemTotal_bytes-node_memory_MemAvailable_bytes)/node_memory_MemTotal_bytes{instance=\"172.17.101.188:9100\"}",
+		RawQuery: fmt.Sprintf("start=%d&end=%d&step=15&query=(node_memory_MemTotal_bytes-node_memory_MemAvailable_bytes)/node_memory_MemTotal_bytes{instance=\"%s:9100\"}", s, e, ip),
 	}
 
 	uu := u.String()
