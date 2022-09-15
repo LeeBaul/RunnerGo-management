@@ -26,11 +26,9 @@ func MustInitGRPC() {
 		RootCAs: systemRoots,
 	})
 
-	//conn, err := grpc.DialContext(context.TODO(), "",
-	//	grpc.WithTransportCredentials(creds),
-	//)
-
 	conn, err = grpc.Dial("kpcontroller.apipost.cn:443", grpc.WithTransportCredentials(creds))
+
+	//var err error
 	//conn, err = grpc.Dial("127.0.0.1:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		proof.Errorf("grpc dial err", err)
