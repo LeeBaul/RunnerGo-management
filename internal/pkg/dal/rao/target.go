@@ -22,7 +22,7 @@ type SaveTargetReq struct {
 	Mark        string    `json:"mark"`
 	Name        string    `json:"name" binding:"required,gt=0"`
 	Method      string    `json:"method" binding:"required"`
-	URL         string    `json:"url" binding:"required"`
+	URL         string    `json:"url"`
 	Sort        int32     `json:"sort"`
 	TypeSort    int32     `json:"type_sort"`
 	Request     *Request  `json:"request"`

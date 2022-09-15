@@ -1,5 +1,16 @@
 package rao
 
+type ListUnderwayReportReq struct {
+	TeamID int64 `form:"team_id" binding:"required,gt=0"`
+	Page   int   `form:"page,default=1"`
+	Size   int   `form:"size,default=10"`
+}
+
+type ListUnderwayReportResp struct {
+	Reports []*Report `json:"reports"`
+	Total   int64     `json:"total"`
+}
+
 type ListReportsReq struct {
 	TeamID int64 `form:"team_id" binding:"required,gt=0"`
 	Page   int   `form:"page,default=1"`
