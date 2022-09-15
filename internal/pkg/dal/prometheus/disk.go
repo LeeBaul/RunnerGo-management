@@ -16,7 +16,7 @@ func GetDiskRangeUsage(ip string, s, e int64) ([][]interface{}, error) {
 		Scheme:   "http",
 		Host:     fmt.Sprintf("%s:%d", conf.Conf.Prometheus.Host, conf.Conf.Prometheus.Port),
 		Path:     "/api/v1/query_range",
-		RawQuery: "start=1661911200&end=1661911500&step=15&query=avg(rate(node_disk_io_time_seconds_total{instance=\"172.17.101.188:9100\"}[1m]))",
+		RawQuery: "start=1663171200&end=1663254000&step=15&query=avg(rate(node_disk_io_time_seconds_total{instance=\"172.17.101.188:9100\"}[1m]))",
 	}
 
 	uu := u.String()
