@@ -16,7 +16,7 @@ func GetCPURangeUsage(ip string, s, e int64) ([][]interface{}, error) {
 		Scheme:   "http",
 		Host:     fmt.Sprintf("%s:%d", conf.Conf.Prometheus.Host, conf.Conf.Prometheus.Port),
 		Path:     "/api/v1/query_range",
-		RawQuery: "start=1661911200&end=1661911500&step=15&query=1-irate(node_cpu_seconds_total{cpu=\"0\",instance=\"172.17.101.188:9100\",mode=\"idle\"}[1m])",
+		RawQuery: "start=1663171200&end=1663254000&step=15&query=1-irate(node_cpu_seconds_total{cpu=\"0\",instance=\"172.17.101.188:9100\",mode=\"idle\"}[1m])",
 	}
 
 	uu := u.String()
