@@ -12,4 +12,5 @@ func InitProjects() {
 	dal.MustInitMongo()
 	dal.MustInitElasticSearch()
 	proof.MustInitProof()
+	dal.MustInitGRPC()
 }

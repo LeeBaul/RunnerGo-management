@@ -33,6 +33,15 @@ type ModeConf struct {
 	Duration         int64 `json:"duration"`          // 稳定持续时长，持续时长
 }
 
+type RunPlanReq struct {
+	PlanID  int64   `json:"plan_id"`
+	TeamID  int64   `json:"team_id"`
+	SceneID []int64 `json:"scene_id"`
+}
+
+type RunPlanResp struct {
+}
+
 type ListUnderwayPlanReq struct {
 	TeamID int64 `form:"team_id" binding:"required,gt=0"`
 	Page   int   `form:"page,default=1"`

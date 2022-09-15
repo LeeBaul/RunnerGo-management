@@ -1,15 +1,40 @@
 package handler
 
 import (
+	services "kp-management/api"
 	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/jwt"
 	"kp-management/internal/pkg/biz/response"
+	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/logic/plan"
 
 	"github.com/gin-gonic/gin"
 )
+
+func RunPlan(ctx *gin.Context) {
+	var req rao.RunPlanReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	_, err := dal.ClientGRPC().RunStress(ctx, &services.RunStressReq{
+		PlanID:  req.PlanID,
+		TeamID:  req.TeamID,
+		SceneID: req.SceneID,
+		UserID:  jwt.GetUserIDByCtx(ctx),
+	})
+
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrHttpFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
+}
 
 // ListUnderwayPlan 运行中的计划
 func ListUnderwayPlan(ctx *gin.Context) {
