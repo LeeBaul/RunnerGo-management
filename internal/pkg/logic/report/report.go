@@ -100,7 +100,7 @@ func ListByTeamID(ctx context.Context, teamID int64, limit, offset int, keyword 
 	}
 
 	s := dal.GetQuery().Target
-	scenes, err := s.WithContext(ctx).Where(p.ID.In(sceneIDs...)).Find()
+	scenes, err := s.WithContext(ctx).Where(s.ID.In(sceneIDs...)).Find()
 	if err != nil {
 		return nil, 0, err
 	}
