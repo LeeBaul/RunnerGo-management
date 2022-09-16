@@ -79,6 +79,7 @@ type Runner struct {
 	RunAPI   string `mapstructure:"run_api"`
 	RunScene string `mapstructure:"run_scene"`
 	RunPlan  string `mapstructure:"run_plan"`
+	StopPlan string `mapstructure:"stop_plan"`
 }
 
 type Proof struct {
