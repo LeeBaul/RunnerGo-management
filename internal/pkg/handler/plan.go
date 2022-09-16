@@ -1,13 +1,18 @@
 package handler
 
 import (
+	"github.com/go-omnibus/omnibus"
+	"github.com/go-resty/resty/v2"
+
 	services "kp-management/api"
 	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/jwt"
 	"kp-management/internal/pkg/biz/response"
+	"kp-management/internal/pkg/conf"
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/rao"
+	"kp-management/internal/pkg/dal/runner"
 	"kp-management/internal/pkg/logic/plan"
 
 	"github.com/gin-gonic/gin"
@@ -27,6 +32,25 @@ func RunPlan(ctx *gin.Context) {
 		UserID:  jwt.GetUserIDByCtx(ctx),
 	})
 
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrHttpFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
+}
+
+func StopPlan(ctx *gin.Context) {
+	var req rao.StopPlanReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	_, err := resty.New().R().
+		SetBody(runner.StopRunnerReq{ReportIds: omnibus.Int64sToStrings(req.ReportIds)}).
+		Post(conf.Conf.Clients.Runner.StopPlan)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrHttpFailed, err.Error())
 		return

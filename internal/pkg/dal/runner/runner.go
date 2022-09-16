@@ -18,6 +18,10 @@ type RunAPIResp struct {
 	Data string `json:"data"`
 }
 
+type StopRunnerReq struct {
+	ReportIds []string `json:"report_ids"`
+}
+
 func RunAPI(ctx context.Context, body *rao.APIDetail) (string, error) {
 	bodyByte, err := json.Marshal(body)
 	if err != nil {

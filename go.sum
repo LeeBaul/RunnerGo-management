@@ -90,6 +90,8 @@ github.com/go-kit/log v0.1.0/go.mod h1:zbhenjAZHb184qTLMA9ZjW7ThYL0H2mk7Q6pNt4vb
 github.com/go-logfmt/logfmt v0.5.0/go.mod h1:wCYkCAKZfumFQihp8CzCvQ3paCTfi41vtzG1KdI/P7A=
 github.com/go-omnibus/omnibus v0.0.0-20220909112429-60b5f1618a01 h1:NMBerEjVrfC0tTGwFVqPDNN7I5x6Hyr10oRTBQA/gpY=
 github.com/go-omnibus/omnibus v0.0.0-20220909112429-60b5f1618a01/go.mod h1:vKhaItawR01k478zZl2zMIhlH9gUvVHtRqGYglbmAho=
+github.com/go-omnibus/omnibus v0.0.0-20220916064730-73f307617fbc h1:oILp8f7GUyLeosukQgU1QieKSkPFlqar40N+0d9tgZ4=
+github.com/go-omnibus/omnibus v0.0.0-20220916064730-73f307617fbc/go.mod h1:vKhaItawR01k478zZl2zMIhlH9gUvVHtRqGYglbmAho=
 github.com/go-omnibus/proof v0.0.0-20220909073128-622a0102b6af h1:PJjK+ml9eOzt3KzNkmpXFfVmY1YBlRFgeEAjyuMez10=
 github.com/go-omnibus/proof v0.0.0-20220909073128-622a0102b6af/go.mod h1:JhJtolU+QVI1LtpqiWGnrhqb0JUAACRJ4pmGfZRzzM0=
 github.com/go-playground/assert/v2 v2.0.1 h1:MsBgLAaY856+nPRTKrp3/OZK38U/wa0CcBYNjji3q3A=

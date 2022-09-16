@@ -42,6 +42,13 @@ type RunPlanReq struct {
 type RunPlanResp struct {
 }
 
+type StopPlanReq struct {
+	ReportIds []int64 `json:"report_ids"`
+}
+
+type StopPlanResp struct {
+}
+
 type ListUnderwayPlanReq struct {
 	TeamID int64 `form:"team_id" binding:"required,gt=0"`
 	Page   int   `form:"page,default=1"`

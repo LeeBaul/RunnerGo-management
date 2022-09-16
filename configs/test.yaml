@@ -34,7 +34,8 @@ clients:
   runner:
     run_api: "https://kprunner.apipost.cn/runner/run_api"
     run_scene: "https://kprunner.apipost.cn/runner/run_scene"
-    run_plan: ""
+    run_plan: "https://kprunner.apipost.cn/runner/run_plan"
+    stop_plan: "https://kprunner.apipost.cn/runner/stop"
 
 proof:
   info_log: "/data/logs/kp-management/info.log"
