@@ -20,7 +20,7 @@ type SaveTargetReq struct {
 	ParentID    int64     `json:"parent_id"`
 	TeamID      int64     `json:"team_id" binding:"required,gt=0"`
 	Mark        string    `json:"mark"`
-	Name        string    `json:"name" binding:"required,gt=0"`
+	Name        string    `json:"name" binding:"required,min=1"`
 	Method      string    `json:"method" binding:"required"`
 	URL         string    `json:"url"`
 	Sort        int32     `json:"sort"`
