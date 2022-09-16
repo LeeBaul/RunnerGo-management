@@ -37,18 +37,18 @@ func ListByTeamID(ctx context.Context, teamID int64, limit, offset int, keyword 
 		}
 		conditions = append(conditions, tx.PlanID.In(planIDs...))
 
-		s := dal.GetQuery().Target
-		scenes, err := s.WithContext(ctx).Where(s.Name.Like(fmt.Sprintf("%%%s%%", keyword))).Find()
-		if err != nil {
-			return nil, 0, err
-		}
-		var sceneIDs []int64
-		for _, scene := range scenes {
-			sceneIDs = append(sceneIDs, scene.ID)
-		}
-		if len(sceneIDs) > 0 {
-			conditions[1] = tx.SceneID.In(sceneIDs...)
-		}
+		//s := dal.GetQuery().Target
+		//scenes, err := s.WithContext(ctx).Where(s.Name.Like(fmt.Sprintf("%%%s%%", keyword))).Find()
+		//if err != nil {
+		//	return nil, 0, err
+		//}
+		//var sceneIDs []int64
+		//for _, scene := range scenes {
+		//	sceneIDs = append(sceneIDs, scene.ID)
+		//}
+		//if len(sceneIDs) > 0 {
+		//	conditions[1] = tx.SceneID.In(sceneIDs...)
+		//}
 
 		u := query.Use(dal.DB()).User
 		users, err := u.WithContext(ctx).Where(u.Nickname.Like(fmt.Sprintf("%%%s%%", keyword))).Find()
