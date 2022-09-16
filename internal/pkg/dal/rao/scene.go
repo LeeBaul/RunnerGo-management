@@ -99,7 +99,7 @@ type Node struct {
 	Height           int      `json:"height"`
 	Selected         bool     `json:"selected"`
 	Dragging         bool     `json:"dragging"`
-	DragHandle       string   `json:"drag_handle"`
+	DragHandle       string   `json:"dragHandle"`
 	Data             struct {
 		ID   string `json:"id"`
 		From string `json:"from"`
