@@ -214,6 +214,8 @@ func APICountByTeamID(ctx context.Context, teamID int64) (int64, error) {
 	return tx.WithContext(ctx).Where(
 		tx.TargetType.Eq(consts.TargetTypeAPI),
 		tx.TeamID.Eq(teamID),
+		tx.Status.Eq(consts.TargetStatusNormal),
+		tx.Source.Eq(consts.TargetSourceNormal),
 	).Count()
 }
 
@@ -222,6 +224,8 @@ func SceneCountByTeamID(ctx context.Context, teamID int64) (int64, error) {
 
 	return tx.WithContext(ctx).Where(
 		tx.TargetType.Eq(consts.TargetTypeScene),
+		tx.Status.Eq(consts.TargetStatusNormal),
+		tx.Source.Eq(consts.TargetSourceNormal),
 		tx.TeamID.Eq(teamID),
 	).Count()
 }
