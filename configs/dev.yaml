@@ -29,6 +29,7 @@ es:
   host: "http://172.17.101.191:9200"
   username: "elastic"
   password: "ZSrfx4R6ICa3skGBpCdf"
+  index: "report"
 
 clients:
   runner:

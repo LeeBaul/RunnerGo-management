@@ -67,3 +67,7 @@ type Metric struct {
 	NetIO  [][]interface{} `json:"net_io"`
 	DiskIO [][]interface{} `json:"disk_io"`
 }
+
+type GetReport struct {
+	ReportId string `json:"report_id" bson:"report_id"`
+}

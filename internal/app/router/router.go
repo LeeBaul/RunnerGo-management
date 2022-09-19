@@ -121,7 +121,7 @@ func RegisterRouter(r *gin.Engine) {
 	// 测试报告
 	report := api.Group("/v1/report")
 	report.GET("/list", handler.ListReports)
-	report.GET("/detail")
+	report.GET("/detail", handler.ReportDetail)
 	report.GET("/machine", handler.ListMachines)
 	report.POST("/delete", handler.DeleteReport)
 

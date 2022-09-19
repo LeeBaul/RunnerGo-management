@@ -3,6 +3,7 @@ package handler
 import (
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/response"
+	"kp-management/internal/pkg/conf"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/logic/report"
 
@@ -30,10 +31,6 @@ func ListReports(ctx *gin.Context) {
 	return
 }
 
-func GetReport(ctx *gin.Context) {
-
-}
-
 // DeleteReport 删除报告
 func DeleteReport(ctx *gin.Context) {
 	var req rao.DeleteReportReq
@@ -48,6 +45,21 @@ func DeleteReport(ctx *gin.Context) {
 	}
 
 	response.Success(ctx)
+	return
+}
+
+func ReportDetail(ctx *gin.Context) {
+	var req rao.GetReport
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+	err, result := report.GetReportDetail(ctx, conf.Conf.ES.Index, req.ReportId, conf.Conf.ES.Host, conf.Conf.ES.Username, conf.Conf.ES.Password)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+	response.SuccessWithData(ctx, result)
 	return
 }
 
@@ -67,4 +79,8 @@ func ListMachines(ctx *gin.Context) {
 
 	response.SuccessWithData(ctx, resp)
 	return
+}
+
+func GetReport(ctx *gin.Context) {
+
 }
