@@ -7,7 +7,7 @@ require (
 	github.com/gin-contrib/zap v0.1.0
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-omnibus/omnibus v0.0.0-20220916064730-73f307617fbc
-	github.com/go-omnibus/proof v0.0.0-20220909073128-622a0102b6af
+	github.com/go-omnibus/proof v0.0.0-20220920035050-20c928df67bd
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/olivere/elastic/v7 v7.0.32

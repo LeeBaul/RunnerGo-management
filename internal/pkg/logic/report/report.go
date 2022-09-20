@@ -141,19 +141,19 @@ func GetTaskDetail(ctx context.Context, report rao.GetReport) (err error, detail
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectStressDebug)
 	err = collection.FindOne(ctx, filter).Decode(&detail)
 	if err != nil {
-		proof.Error("mongo decode err", proof.WithError(err))
+		log.Fatal(err)
 		return
 	}
 	r := query.Use(dal.DB()).Report
 	ru, err := r.WithContext(ctx).Where(r.TeamID.Eq(report.TeamId), r.ID.Eq(report.ReportId)).First()
 	if err != nil {
-		proof.Error("report not found err", proof.WithError(err))
+		log.Fatal(err)
 		return
 	}
 	u := query.Use(dal.DB()).User
 	user, err := u.WithContext(ctx).Where(u.ID.Eq(ru.RunUserID)).First()
 	if err != nil {
-		proof.Error("user not found err", proof.WithError(err))
+		log.Fatal(err)
 		return
 	}
 	detail.UserName = user.Nickname
