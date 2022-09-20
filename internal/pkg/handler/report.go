@@ -78,7 +78,7 @@ func GetReportTaskDetail(ctx *gin.Context) {
 		return
 	}
 
-	response.SuccessWithData(ctx, ret)
+	response.SuccessWithData(ctx, rao.GetReportResp{Report: ret})
 	return
 }
 

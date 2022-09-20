@@ -72,3 +72,20 @@ type GetReportReq struct {
 	TeamID   int64 `form:"team_id"`
 	ReportID int64 `form:"report_id"`
 }
+
+type GetReportResp struct {
+	Report *ReportTask `json:"report"`
+}
+
+type ReportTask struct {
+	UserID         int64     `json:"user_id"`
+	UserName       string    `json:"user_name"`
+	UserAvatar     string    `json:"user_avatar"`
+	PlanID         int64     `json:"plan_id"`
+	PlanName       string    `json:"plan_name"`
+	ReportID       int64     `json:"report_id"`
+	CreatedTimeSec int64     `json:"created_time_sec"`
+	TaskType       int32     `json:"task_type"`
+	TaskMode       int32     `json:"task_mode"`
+	ModeConf       *ModeConf `json:"mode_conf"`
+}

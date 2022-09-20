@@ -124,7 +124,7 @@ func DeleteReport(ctx context.Context, teamID, reportID int64) error {
 	return err
 }
 
-func GetTaskDetail(ctx context.Context, req rao.GetReportReq) (*mao.ReportTask, error) {
+func GetTaskDetail(ctx context.Context, req rao.GetReportReq) (*rao.ReportTask, error) {
 	var detail mao.ReportTask
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectReportTask)
 
@@ -148,10 +148,28 @@ func GetTaskDetail(ctx context.Context, req rao.GetReportReq) (*mao.ReportTask, 
 		return nil, err
 	}
 
-	detail.UserName = user.Nickname
-	detail.UserID = user.ID
-
-	return &detail, nil
+	return &rao.ReportTask{
+		UserID:         user.ID,
+		UserName:       user.Nickname,
+		UserAvatar:     user.Avatar,
+		PlanID:         detail.PlanID,
+		PlanName:       detail.PlanName,
+		ReportID:       detail.ReportID,
+		CreatedTimeSec: ru.CreatedAt.Unix(),
+		TaskType:       detail.TaskType,
+		TaskMode:       detail.TaskMode,
+		ModeConf: &rao.ModeConf{
+			ReheatTime:       detail.ModeConf.ReheatTime,
+			RoundNum:         detail.ModeConf.RoundNum,
+			Concurrency:      detail.ModeConf.Concurrency,
+			ThresholdValue:   detail.ModeConf.ThresholdValue,
+			StartConcurrency: detail.ModeConf.StartConcurrency,
+			Step:             detail.ModeConf.Step,
+			StepRunTime:      detail.ModeConf.StepRunTime,
+			MaxConcurrency:   detail.ModeConf.MaxConcurrency,
+			Duration:         detail.ModeConf.Duration,
+		},
+	}, nil
 }
 
 func GetReportDebugLog(ctx context.Context, report rao.GetReportReq) (err error, debugMsgList []map[string]interface{}) {
