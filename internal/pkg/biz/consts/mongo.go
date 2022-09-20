@@ -9,6 +9,7 @@ const (
 	CollectFlow       = "flow"
 	CollectPreinstall = "preinstall"
 
-	CollectAPIDebug   = "api_debug"
-	CollectSceneDebug = "scene_debug"
+	CollectAPIDebug    = "api_debug"
+	CollectSceneDebug  = "scene_debug"
+	CollectStressDebug = "stress_debug"
 )
