@@ -64,6 +64,7 @@ func ReportDetail(ctx *gin.Context) {
 	return
 }
 
+// GetReportTaskDetail 获取报告任务详情
 func GetReportTaskDetail(ctx *gin.Context) {
 	var req rao.GetReport
 	if err := ctx.ShouldBind(&req); err != nil {
@@ -81,6 +82,7 @@ func GetReportTaskDetail(ctx *gin.Context) {
 	return
 }
 
+// GetDebug 获取debug日志
 func GetDebug(ctx *gin.Context) {
 	var req rao.GetReport
 	if err := ctx.ShouldBind(&req); err != nil {

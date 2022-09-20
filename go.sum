@@ -103,8 +103,6 @@ github.com/go-logr/logr v1.2.3/go.mod h1:jdQByPbusPIv2/zmleS9BjJVeZ6kBagPoEUsqbV
 github.com/go-logr/stdr v1.2.2/go.mod h1:mMo/vtBO5dYbehREoey6XUKy/eSumjCCveDpRre4VKE=
 github.com/go-omnibus/omnibus v0.0.0-20220916064730-73f307617fbc h1:oILp8f7GUyLeosukQgU1QieKSkPFlqar40N+0d9tgZ4=
 github.com/go-omnibus/omnibus v0.0.0-20220916064730-73f307617fbc/go.mod h1:vKhaItawR01k478zZl2zMIhlH9gUvVHtRqGYglbmAho=
-github.com/go-omnibus/proof v0.0.0-20220909073128-622a0102b6af h1:PJjK+ml9eOzt3KzNkmpXFfVmY1YBlRFgeEAjyuMez10=
-github.com/go-omnibus/proof v0.0.0-20220909073128-622a0102b6af/go.mod h1:JhJtolU+QVI1LtpqiWGnrhqb0JUAACRJ4pmGfZRzzM0=
 github.com/go-omnibus/proof v0.0.0-20220920035050-20c928df67bd h1:lv48l1OfVRDEJqWDQElicl3uUM0iv+Xi4AKsVa5ZU4s=
 github.com/go-omnibus/proof v0.0.0-20220920035050-20c928df67bd/go.mod h1:JhJtolU+QVI1LtpqiWGnrhqb0JUAACRJ4pmGfZRzzM0=
 github.com/go-playground/assert/v2 v2.0.1 h1:MsBgLAaY856+nPRTKrp3/OZK38U/wa0CcBYNjji3q3A=
