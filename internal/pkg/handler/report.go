@@ -51,7 +51,7 @@ func DeleteReport(ctx *gin.Context) {
 // ReportDetail 报告详情
 func ReportDetail(ctx *gin.Context) {
 	var req rao.GetReport
-	if err := ctx.ShouldBindJSON(&req); err != nil {
+	if err := ctx.ShouldBind(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
 	}
@@ -80,8 +80,4 @@ func ListMachines(ctx *gin.Context) {
 
 	response.SuccessWithData(ctx, resp)
 	return
-}
-
-func GetReport(ctx *gin.Context) {
-
 }
