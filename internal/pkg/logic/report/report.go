@@ -77,7 +77,7 @@ func ListByTeamID(ctx context.Context, teamID int64, limit, offset int, keyword 
 	}
 
 	reports, cnt, err := tx.WithContext(ctx).Where(conditions...).
-		Order(tx.UpdatedAt.Desc(), tx.CreatedAt.Desc()).
+		Order(tx.ID.Desc()).
 		FindByPage(offset, limit)
 
 	if err != nil {
