@@ -3,6 +3,7 @@ package report
 import (
 	"context"
 	"fmt"
+	"kp-management/internal/pkg/conf"
 	"log"
 	"os"
 	"reflect"
@@ -197,7 +198,8 @@ func GetReportDebugLog(ctx context.Context, report rao.GetReportReq) (err error,
 
 func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, password string) (err error, resultData ResultData) {
 	reportId := strconv.FormatInt(report.ReportID, 10)
-	index := strconv.FormatInt(report.TeamID, 10)
+	//index := strconv.FormatInt(report.TeamID, 10)
+	index := conf.Conf.ES.Index
 
 	query := elastic.NewBoolQuery()
 	query = query.Must(elastic.NewTermQuery("report_id", reportId))
