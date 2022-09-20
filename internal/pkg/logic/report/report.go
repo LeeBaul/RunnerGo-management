@@ -3,15 +3,14 @@ package report
 import (
 	"context"
 	"fmt"
+	"github.com/go-omnibus/proof"
+	"github.com/olivere/elastic/v7"
+	"go.mongodb.org/mongo-driver/bson"
 	"log"
 	"os"
 	"reflect"
 	"strconv"
 	"time"
-
-	"github.com/go-omnibus/proof"
-	"github.com/olivere/elastic/v7"
-	"go.mongodb.org/mongo-driver/bson"
 
 	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/dal/mao"
@@ -170,14 +169,14 @@ func GetReportDebugLog(ctx context.Context, report rao.GetReport) (err error, de
 	filter := bson.D{{"report_id", reportId}}
 	cur, err := collection.Find(ctx, filter)
 	if err != nil {
-		log.Fatal(err)
+		proof.Error("debug日志查询失败", proof.WithError(err))
 		return
 	}
 	for cur.Next(ctx) {
 		debugMsg := make(map[string]interface{})
 		err = cur.Decode(&debugMsg)
 		if err != nil {
-			log.Fatal(err)
+			proof.Error("debug日志转换失败", proof.WithError(err))
 			return
 		}
 		debugMsgList = append(debugMsgList, debugMsg)
@@ -201,17 +200,17 @@ func GetReportDetail(ctx context.Context, report rao.GetReport, host, user, pass
 	)
 	_, _, err = client.Ping(host).Do(ctx)
 	if err != nil {
-		log.Fatal("获取详情失败", err)
+		proof.Error("es连接失败", proof.WithError(err))
 		return
 	}
 	//res, err := client.Search(index).Query(query).From(0).Size(size).Pretty(true).Do(context.Background())
 	res, err := client.Search(index).Query(query).Sort("time_stamp", true).Pretty(true).Do(context.Background())
 	if err != nil {
-		log.Fatal(err)
+		proof.Error("获取报告详情失败", proof.WithError(err))
 		return
 	}
 	if res == nil {
-		log.Fatal("测试详情null")
+		proof.Error("报告详情为空")
 		return
 	}
 	var result SceneTestResultDataMsg // 从es中获取得数据结构
