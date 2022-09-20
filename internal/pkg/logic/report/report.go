@@ -124,48 +124,40 @@ func DeleteReport(ctx context.Context, teamID, reportID int64) error {
 	return err
 }
 
-type TaskDetail struct {
-	UserId   int64         `json:"user_id" bson:"user_id"`
-	UserName string        `json:"user_name" bson:"user_name"`
-	ReportID int64         `bson:"report_id" bson:"report_id"`
-	TaskType int32         `bson:"task_type" bson:"task_type"`
-	TaskMode int32         `bson:"task_mode" bson:"task_mode"`
-	ModeConf *mao.ModeConf `bson:"mode_conf" bson:"mode_conf"`
-}
-
-func GetTaskDetail(ctx context.Context, req rao.GetReport) (err error, detail TaskDetail) {
-	filter := bson.D{{"report_id", req.ReportId}}
+func GetTaskDetail(ctx context.Context, req rao.GetReportReq) (*mao.ReportTask, error) {
+	var detail mao.ReportTask
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectReportTask)
-	err = collection.FindOne(ctx, filter).Decode(&detail)
+
+	err := collection.FindOne(ctx, bson.D{{"report_id", req.ReportID}}).Decode(&detail)
 	if err != nil {
 		proof.Error("mongo decode err", proof.WithError(err))
-		return
+		return nil, err
 	}
 
 	r := query.Use(dal.DB()).Report
-	ru, err := r.WithContext(ctx).Where(r.TeamID.Eq(req.TeamId), r.ID.Eq(req.ReportId)).First()
+	ru, err := r.WithContext(ctx).Where(r.TeamID.Eq(req.TeamID), r.ID.Eq(req.ReportID)).First()
 	if err != nil {
 		proof.Error("req not found err", proof.WithError(err))
-		return
+		return nil, err
 	}
 
 	u := query.Use(dal.DB()).User
 	user, err := u.WithContext(ctx).Where(u.ID.Eq(ru.RunUserID)).First()
 	if err != nil {
 		proof.Error("user not found err", proof.WithError(err))
-		return
+		return nil, err
 	}
 
 	detail.UserName = user.Nickname
-	detail.UserId = user.ID
-	return
+	detail.UserID = user.ID
 
+	return &detail, nil
 }
 
-func GetReportDebugLog(ctx context.Context, report rao.GetReport) (err error, debugMsgList []map[string]interface{}) {
+func GetReportDebugLog(ctx context.Context, report rao.GetReportReq) (err error, debugMsgList []map[string]interface{}) {
 	//clientOptions := options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:%s@%s/%s", user, password, host, db))
 
-	reportId := report.ReportId
+	reportId := report.ReportID
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectStressDebug)
 	filter := bson.D{{"report_id", reportId}}
 	cur, err := collection.Find(ctx, filter)
@@ -185,9 +177,9 @@ func GetReportDebugLog(ctx context.Context, report rao.GetReport) (err error, de
 	return
 }
 
-func GetReportDetail(ctx context.Context, report rao.GetReport, host, user, password string) (err error, resultData ResultData) {
-	reportId := strconv.FormatInt(report.ReportId, 10)
-	index := strconv.FormatInt(report.TeamId, 10)
+func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, password string) (err error, resultData ResultData) {
+	reportId := strconv.FormatInt(report.ReportID, 10)
+	index := strconv.FormatInt(report.TeamID, 10)
 
 	query := elastic.NewBoolQuery()
 	query = query.Must(elastic.NewTermQuery("report_id", reportId))

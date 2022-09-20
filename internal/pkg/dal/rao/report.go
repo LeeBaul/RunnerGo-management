@@ -68,7 +68,7 @@ type Metric struct {
 	DiskIO [][]interface{} `json:"disk_io"`
 }
 
-type GetReport struct {
-	TeamId   int64 `json:"team_id" bson:"team_id"`
-	ReportId int64 `json:"report_id" bson:"report_id"`
+type GetReportReq struct {
+	TeamID   int64 `form:"team_id"`
+	ReportID int64 `form:"report_id"`
 }

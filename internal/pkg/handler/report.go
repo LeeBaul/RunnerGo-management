@@ -50,7 +50,7 @@ func DeleteReport(ctx *gin.Context) {
 
 // ReportDetail 报告详情
 func ReportDetail(ctx *gin.Context) {
-	var req rao.GetReport
+	var req rao.GetReportReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
@@ -66,25 +66,25 @@ func ReportDetail(ctx *gin.Context) {
 
 // GetReportTaskDetail 获取报告任务详情
 func GetReportTaskDetail(ctx *gin.Context) {
-	var req rao.GetReport
+	var req rao.GetReportReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
 	}
 
-	err, result := report.GetTaskDetail(ctx, req)
+	ret, err := report.GetTaskDetail(ctx, req)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
-	response.SuccessWithData(ctx, result)
+	response.SuccessWithData(ctx, ret)
 	return
 }
 
 // GetDebug 获取debug日志
 func GetDebug(ctx *gin.Context) {
-	var req rao.GetReport
+	var req rao.GetReportReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
