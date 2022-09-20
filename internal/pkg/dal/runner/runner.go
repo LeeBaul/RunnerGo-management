@@ -73,3 +73,21 @@ func RunScene(ctx context.Context, body *rao.SceneFlow) (string, error) {
 
 	return ret.Data, nil
 }
+
+func StopScene(ctx context.Context, req *rao.StopSceneReq) error {
+	var ret RunAPIResp
+	_, err := resty.New().R().
+		SetBody(req).
+		SetResult(&ret).
+		Post(conf.Conf.Clients.Runner.StopScene)
+
+	if err != nil {
+		return err
+	}
+
+	if ret.Code != 200 {
+		return fmt.Errorf("ret code not 200")
+	}
+
+	return nil
+}
