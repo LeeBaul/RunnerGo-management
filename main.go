@@ -13,7 +13,7 @@ import (
 func main() {
 	internal.InitProjects()
 
-	r := gin.New()
+	r := gin.Default()
 	router.RegisterRouter(r)
 
 	if err := r.Run(fmt.Sprintf(":%d", conf.Conf.Http.Port)); err != nil {
