@@ -48,11 +48,29 @@ func StopPlan(ctx *gin.Context) {
 		return
 	}
 
-	_, err := resty.New().R().
-		SetBody(runner.StopRunnerReq{ReportIds: omnibus.Int64sToStrings(req.ReportIds)}).
+	tx := dal.GetQuery().Report
+	reports, err := tx.WithContext(ctx).Where(tx.PlanID.In(req.PlanIDs...)).Find()
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	var reportIDs []int64
+	for _, report := range reports {
+		reportIDs = append(reportIDs, report.ID)
+	}
+	_, err = resty.New().R().
+		SetBody(runner.StopRunnerReq{ReportIds: omnibus.Int64sToStrings(reportIDs)}).
 		Post(conf.Conf.Clients.Runner.StopPlan)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrHttpFailed, err.Error())
+		return
+	}
+
+	px := dal.GetQuery().Plan
+	_, err = px.WithContext(ctx).Where(px.ID.In(req.PlanIDs...)).UpdateColumn(px.Status, consts.PlanStatusNormal)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
