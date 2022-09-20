@@ -3,15 +3,18 @@ package report
 import (
 	"context"
 	"fmt"
-	"github.com/olivere/elastic/v7"
-	"go.mongodb.org/mongo-driver/bson"
-	"kp-management/internal/pkg/biz/consts"
-	"kp-management/internal/pkg/dal/mao"
 	"log"
 	"os"
 	"reflect"
 	"strconv"
 	"time"
+
+	"github.com/go-omnibus/proof"
+	"github.com/olivere/elastic/v7"
+	"go.mongodb.org/mongo-driver/bson"
+
+	"kp-management/internal/pkg/biz/consts"
+	"kp-management/internal/pkg/dal/mao"
 
 	"gorm.io/gen"
 
@@ -138,19 +141,19 @@ func GetTaskDetail(ctx context.Context, report rao.GetReport) (err error, detail
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectStressDebug)
 	err = collection.FindOne(ctx, filter).Decode(&detail)
 	if err != nil {
-		log.Fatal(err)
+		proof.Error("mongo decode err", proof.WithError(err))
 		return
 	}
 	r := query.Use(dal.DB()).Report
 	ru, err := r.WithContext(ctx).Where(r.TeamID.Eq(report.TeamId), r.ID.Eq(report.ReportId)).First()
 	if err != nil {
-		log.Fatal(err)
+		proof.Error("report not found err", proof.WithError(err))
 		return
 	}
 	u := query.Use(dal.DB()).User
 	user, err := u.WithContext(ctx).Where(u.ID.Eq(ru.RunUserID)).First()
 	if err != nil {
-		log.Fatal(err)
+		proof.Error("user not found err", proof.WithError(err))
 		return
 	}
 	detail.UserName = user.Nickname
