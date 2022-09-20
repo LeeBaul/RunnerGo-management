@@ -6,6 +6,7 @@ import (
 	"github.com/olivere/elastic/v7"
 	"go.mongodb.org/mongo-driver/bson"
 	"kp-management/internal/pkg/biz/consts"
+	"kp-management/internal/pkg/conf"
 	"kp-management/internal/pkg/dal/mao"
 	"log"
 	"os"
@@ -184,7 +185,7 @@ func GetReportDebugLog(ctx context.Context, report rao.GetReport) (err error, de
 
 func GetReportDetail(ctx context.Context, report rao.GetReport, host, user, password string) (err error, resultData ResultData) {
 	reportId := strconv.FormatInt(report.ReportId, 10)
-	index := strconv.FormatInt(report.TeamId, 10)
+	index := conf.Conf.ES.Index
 
 	query := elastic.NewBoolQuery()
 	query = query.Must(elastic.NewTermQuery("report_id", reportId))
