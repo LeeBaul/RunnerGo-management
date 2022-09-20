@@ -198,14 +198,17 @@ func GetReportDetail(ctx context.Context, report rao.GetReport, host, user, pass
 	)
 	_, _, err = client.Ping(host).Do(ctx)
 	if err != nil {
+		log.Fatal("获取详情失败", err)
 		return
 	}
 	//res, err := client.Search(index).Query(query).From(0).Size(size).Pretty(true).Do(context.Background())
 	res, err := client.Search(index).Query(query).Sort("time_stamp", true).Pretty(true).Do(context.Background())
 	if err != nil {
+		log.Fatal(err)
 		return
 	}
 	if res == nil {
+		log.Fatal("测试详情null")
 		return
 	}
 	var result SceneTestResultDataMsg // 从es中获取得数据结构
