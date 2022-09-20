@@ -7,6 +7,7 @@ import (
 	"kp-management/internal/pkg/biz/jwt"
 	"kp-management/internal/pkg/biz/response"
 	"kp-management/internal/pkg/dal/rao"
+	"kp-management/internal/pkg/dal/runner"
 	"kp-management/internal/pkg/logic/scene"
 	"kp-management/internal/pkg/logic/target"
 )
@@ -25,6 +26,23 @@ func SendScene(ctx *gin.Context) {
 	}
 
 	response.SuccessWithData(ctx, rao.SendSceneResp{RetID: retID})
+	return
+}
+
+func StopScene(ctx *gin.Context) {
+	var req rao.StopSceneReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	err := runner.StopScene(ctx, &req)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrHttpFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
 	return
 }
 
