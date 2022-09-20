@@ -1,11 +1,15 @@
 package handler
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/gin-gonic/gin"
 
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/response"
 	"kp-management/internal/pkg/conf"
+	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/logic/report"
 )
@@ -91,10 +95,28 @@ func GetDebug(ctx *gin.Context) {
 	}
 	err, result := report.GetReportDebugLog(ctx, req)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 	response.SuccessWithData(ctx, result)
+}
+
+func DebugSetting(ctx *gin.Context) {
+	var req rao.DebugSettingReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	//reportID:debug
+	_, err := dal.GetRDB().Set(ctx, fmt.Sprintf("%d:debug", req.ReportID), req.Setting, 10*time.Minute).Result()
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrRedisFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
 }
 
 // ListMachines 施压机列表

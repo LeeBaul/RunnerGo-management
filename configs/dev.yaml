@@ -42,3 +42,8 @@ clients:
 proof:
   info_log: "./logs/application.log"
   err_log: "./logs/application_err.log"
+
+redis:
+  address: "172.17.101.191:6398"
+  password: "apipost"
+  db: 0

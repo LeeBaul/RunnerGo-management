@@ -21,6 +21,7 @@ type Config struct {
 	ES         ES         `yaml:"es"`
 	Clients    Clients    `yaml:"clients"`
 	Proof      Proof      `yaml:"proof"`
+	Redis      Redis      `yaml:"redis"`
 }
 
 type Base struct {
@@ -87,6 +88,12 @@ type Runner struct {
 type Proof struct {
 	InfoLog string `mapstructure:"info_log"`
 	ErrLog  string `mapstructure:"err_log"`
+}
+
+type Redis struct {
+	Address  string `yaml:"address"`
+	Password string `yaml:"password"`
+	DB       int    `yaml:"db"`
 }
 
 func MustInitConf() {

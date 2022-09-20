@@ -13,4 +13,5 @@ func InitProjects() {
 	dal.MustInitElasticSearch()
 	proof.MustInitProof()
 	dal.MustInitGRPC()
+	dal.MustInitRedis()
 }
