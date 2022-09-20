@@ -69,5 +69,6 @@ type Metric struct {
 }
 
 type GetReport struct {
-	ReportId string `json:"report_id" bson:"report_id"`
+	TeamId   int64 `json:"team_id" bson:"team_id"`
+	ReportId int64 `json:"report_id" bson:"report_id"`
 }

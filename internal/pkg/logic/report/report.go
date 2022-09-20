@@ -4,9 +4,13 @@ import (
 	"context"
 	"fmt"
 	"github.com/olivere/elastic/v7"
+	"go.mongodb.org/mongo-driver/bson"
+	"kp-management/internal/pkg/biz/consts"
+	"kp-management/internal/pkg/dal/mao"
 	"log"
 	"os"
 	"reflect"
+	"strconv"
 	"time"
 
 	"gorm.io/gen"
@@ -119,11 +123,72 @@ func DeleteReport(ctx context.Context, teamID, reportID int64) error {
 	return err
 }
 
-func GetReportDetail(ctx context.Context, index, reportId, host, user, password string) (err error, resultData ResultData) {
-	query := elastic.NewBoolQuery()
-	if reportId != "" {
-		query = query.Must(elastic.NewTermQuery("report_id", reportId))
+type TaskDetail struct {
+	UserId   int64         `json:"user_id" bson:"user_id"`
+	UserName string        `json:"user_name" bson:"user_name"`
+	ReportID int64         `bson:"report_id" bson:"report_id"`
+	TaskType int32         `bson:"task_type" bson:"task_type"`
+	TaskMode int32         `bson:"task_mode" bson:"task_mode"`
+	ModeConf *mao.ModeConf `bson:"mode_conf" bson:"mode_conf"`
+}
+
+func GetTaskDetail(ctx context.Context, report rao.GetReport) (err error, detail TaskDetail) {
+	reportId := report.ReportId
+	filter := bson.D{{"report_id", reportId}}
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectStressDebug)
+	err = collection.FindOne(ctx, filter).Decode(&detail)
+	if err != nil {
+		log.Fatal(err)
+		return
 	}
+	r := query.Use(dal.DB()).Report
+	ru, err := r.WithContext(ctx).Where(r.TeamID.Eq(report.TeamId), r.ID.Eq(report.ReportId)).First()
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	u := query.Use(dal.DB()).User
+	user, err := u.WithContext(ctx).Where(u.ID.Eq(ru.RunUserID)).First()
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	detail.UserName = user.Nickname
+	detail.UserId = user.ID
+	return
+
+}
+
+func GetReportDebugLog(ctx context.Context, report rao.GetReport) (err error, debugMsgList []map[string]interface{}) {
+	//clientOptions := options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:%s@%s/%s", user, password, host, db))
+
+	reportId := report.ReportId
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectStressDebug)
+	filter := bson.D{{"report_id", reportId}}
+	cur, err := collection.Find(ctx, filter)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	for cur.Next(ctx) {
+		debugMsg := make(map[string]interface{})
+		err = cur.Decode(&debugMsg)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+		debugMsgList = append(debugMsgList, debugMsg)
+	}
+	return
+}
+
+func GetReportDetail(ctx context.Context, report rao.GetReport, host, user, password string) (err error, resultData ResultData) {
+	reportId := strconv.FormatInt(report.ReportId, 10)
+	index := strconv.FormatInt(report.TeamId, 10)
+
+	query := elastic.NewBoolQuery()
+	query = query.Must(elastic.NewTermQuery("report_id", reportId))
+
 	client, _ := elastic.NewClient(
 		elastic.SetURL(host),
 		elastic.SetSniff(false),
@@ -191,7 +256,8 @@ func GetReportDetail(ctx context.Context, index, reportId, host, user, password 
 				timeValue.TimeStamp = resultData.TimeStamp
 				timeValue.Value = apiResult.Qps
 				resultData.Results[k].QpsList = append(resultData.Results[k].QpsList, timeValue)
-
+				timeValue.Value = apiResult.ErrorNum
+				resultData.Results[k].ErrorRateList = append(resultData.Results[k].ErrorRateList, timeValue)
 			}
 		}
 	}
@@ -254,6 +320,7 @@ type ResultDataMsg struct {
 	ReceivedBytes              uint64      `json:"received_bytes" bson:"received_bytes"` // 接收字节数
 	Qps                        float64     `json:"qps" bson:"qps"`
 	QpsList                    []TimeValue `json:"qps_list" bson:"qps_list"`
+	ErrorRateList              []TimeValue `json:"error_rate_list" bson:"error_rate_list"`
 }
 
 type ResultData struct {
