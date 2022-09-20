@@ -133,27 +133,29 @@ type TaskDetail struct {
 	ModeConf *mao.ModeConf `bson:"mode_conf" bson:"mode_conf"`
 }
 
-func GetTaskDetail(ctx context.Context, report rao.GetReport) (err error, detail TaskDetail) {
-	reportId := report.ReportId
-	filter := bson.D{{"report_id", reportId}}
-	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectStressDebug)
+func GetTaskDetail(ctx context.Context, req rao.GetReport) (err error, detail TaskDetail) {
+	filter := bson.D{{"report_id", req.ReportId}}
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectReportTask)
 	err = collection.FindOne(ctx, filter).Decode(&detail)
 	if err != nil {
 		proof.Error("mongo decode err", proof.WithError(err))
 		return
 	}
+
 	r := query.Use(dal.DB()).Report
-	ru, err := r.WithContext(ctx).Where(r.TeamID.Eq(report.TeamId), r.ID.Eq(report.ReportId)).First()
+	ru, err := r.WithContext(ctx).Where(r.TeamID.Eq(req.TeamId), r.ID.Eq(req.ReportId)).First()
 	if err != nil {
-		proof.Error("report not found err", proof.WithError(err))
+		proof.Error("req not found err", proof.WithError(err))
 		return
 	}
+
 	u := query.Use(dal.DB()).User
 	user, err := u.WithContext(ctx).Where(u.ID.Eq(ru.RunUserID)).First()
 	if err != nil {
 		proof.Error("user not found err", proof.WithError(err))
 		return
 	}
+
 	detail.UserName = user.Nickname
 	detail.UserId = user.ID
 	return
