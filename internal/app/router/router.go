@@ -4,7 +4,9 @@ import (
 	"time"
 
 	"github.com/gin-contrib/cors"
+	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
+	"github.com/go-omnibus/proof"
 
 	"kp-management/internal/app/middleware"
 	"kp-management/internal/pkg/handler"
@@ -20,6 +22,10 @@ func RegisterRouter(r *gin.Engine) {
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
+
+	r.Use(ginzap.Ginzap(proof.Logger.Z, time.RFC3339, true))
+
+	r.Use(ginzap.RecoveryWithZap(proof.Logger.Z, true))
 
 	// routers
 	api := r.Group("/management/api")
