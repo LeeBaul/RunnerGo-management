@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-omnibus/proof"
 
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/response"
@@ -64,6 +65,8 @@ func ReportDetail(ctx *gin.Context) {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
 	}
+	proof.Info("get report detail", proof.WithStruct(result))
+
 	response.SuccessWithData(ctx, result)
 	return
 }
