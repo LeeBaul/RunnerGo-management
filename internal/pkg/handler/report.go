@@ -48,6 +48,7 @@ func DeleteReport(ctx *gin.Context) {
 	return
 }
 
+// ReportDetail 报告详情
 func ReportDetail(ctx *gin.Context) {
 	var req rao.GetReport
 	if err := ctx.ShouldBindJSON(&req); err != nil {
