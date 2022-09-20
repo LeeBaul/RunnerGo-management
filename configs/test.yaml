@@ -41,3 +41,8 @@ clients:
 proof:
   info_log: "/data/logs/kp-management/info.log"
   err_log: "/data/logs/kp-management/err.log"
+
+redis:
+  address: "172.17.101.191:6398"
+  password: "apipost"
+  db: 0

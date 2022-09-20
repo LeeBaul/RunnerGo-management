@@ -89,3 +89,9 @@ type ReportTask struct {
 	TaskMode       int32     `json:"task_mode"`
 	ModeConf       *ModeConf `json:"mode_conf"`
 }
+
+type DebugSettingReq struct {
+	ReportID int64  `json:"report_id"`
+	TeamID   int64  `json:"team_id"`
+	Setting  string `json:"setting"`
+}
