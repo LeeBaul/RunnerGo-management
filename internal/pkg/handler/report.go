@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/response"
 	"kp-management/internal/pkg/conf"
@@ -69,12 +70,15 @@ func GetReportTaskDetail(ctx *gin.Context) {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
 	}
+
 	err, result := report.GetTaskDetail(ctx, req)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
+
 	response.SuccessWithData(ctx, result)
+	return
 }
 
 func GetDebug(ctx *gin.Context) {
