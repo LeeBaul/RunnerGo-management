@@ -74,6 +74,12 @@ func StopPlan(ctx *gin.Context) {
 		return
 	}
 
+	_, err = tx.WithContext(ctx).Where(tx.PlanID.In(req.PlanIDs...)).UpdateColumn(tx.Status, consts.ReportStatusFinish)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
 	response.Success(ctx)
 	return
 }
