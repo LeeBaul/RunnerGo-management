@@ -177,7 +177,6 @@ func GetReportDebugLog(ctx context.Context, report rao.GetReportReq) (err error,
 	//clientOptions := options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:%s@%s/%s", user, password, host, db))
 
 	reportId := strconv.FormatInt(report.ReportID, 10)
-	proof.Info("reportId", proof.With(reportId, reportId))
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectStressDebug)
 	filter := bson.D{{"report_id", reportId}}
 	cur, err := collection.Find(ctx, filter)
@@ -192,8 +191,9 @@ func GetReportDebugLog(ctx context.Context, report rao.GetReportReq) (err error,
 			proof.Error("debug日志转换失败", proof.WithError(err))
 			return
 		}
-		debugMsgList = append(debugMsgList, debugMsg)
-		proof.Debug("debugMsgList", proof.With("debugMsgList", debugMsgList))
+		if debugMsg["end"] != true {
+			debugMsgList = append(debugMsgList, debugMsg)
+		}
 	}
 	return
 }
@@ -203,8 +203,8 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 	//index := strconv.FormatInt(report.TeamID, 10)
 	index := conf.Conf.ES.Index
 
-	query := elastic.NewBoolQuery()
-	query = query.Must(elastic.NewTermQuery("report_id", reportId))
+	queryEs := elastic.NewBoolQuery()
+	queryEs = queryEs.Must(elastic.NewTermQuery("report_id", reportId))
 
 	client, _ := elastic.NewClient(
 		elastic.SetURL(host),
@@ -219,7 +219,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 		return
 	}
 	//res, err := client.Search(index).Query(query).From(0).Size(size).Pretty(true).Do(context.Background())
-	res, err := client.Search(index).Query(query).Sort("time_stamp", true).Pretty(true).Do(context.Background())
+	res, err := client.Search(index).Query(queryEs).Sort("time_stamp", true).Pretty(true).Do(context.Background())
 	if err != nil {
 		proof.Error("获取报告详情失败", proof.WithError(err))
 		return

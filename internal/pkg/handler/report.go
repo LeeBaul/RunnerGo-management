@@ -6,7 +6,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-omnibus/omnibus"
-	"github.com/go-omnibus/proof"
 	"github.com/go-resty/resty/v2"
 
 	"kp-management/internal/pkg/biz/consts"
@@ -70,8 +69,6 @@ func ReportDetail(ctx *gin.Context) {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
 	}
-	proof.Info("get report detail", proof.WithStruct(result))
-
 	response.SuccessWithData(ctx, result)
 	return
 }
