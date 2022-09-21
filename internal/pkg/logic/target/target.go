@@ -177,15 +177,31 @@ func ListTrashFolderAPI(ctx context.Context, teamID int64, limit, offset int) ([
 func Trash(ctx context.Context, targetID int64) error {
 	t := query.Use(dal.DB()).Target
 	_, err := t.WithContext(ctx).Where(t.ID.Eq(targetID)).UpdateColumn(t.Status, consts.TargetStatusTrash)
+	if err != nil {
+		return err
+	}
 
-	return err
+	_, err = t.WithContext(ctx).Where(t.ParentID.Eq(targetID)).UpdateColumn(t.Status, consts.TargetStatusTrash)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func Recall(ctx context.Context, targetID int64) error {
 	t := query.Use(dal.DB()).Target
 	_, err := t.WithContext(ctx).Where(t.ID.Eq(targetID)).UpdateColumn(t.Status, consts.TargetStatusNormal)
+	if err != nil {
+		return err
+	}
 
-	return err
+	_, err = t.WithContext(ctx).Where(t.ParentID.Eq(targetID)).UpdateColumn(t.Status, consts.TargetStatusNormal)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func Delete(ctx context.Context, targetID int64) error {

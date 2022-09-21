@@ -116,6 +116,7 @@ func RegisterRouter(r *gin.Engine) {
 	plan := api.Group("/v1/plan")
 	plan.POST("/run", handler.RunPlan)
 	plan.POST("/stop", handler.StopPlan)
+	plan.POST("/clone", handler.ClonePlan)
 	plan.GET("/list", handler.ListPlans)
 	plan.POST("/save", handler.SavePlan)
 	plan.GET("/detail", handler.GetPlan)

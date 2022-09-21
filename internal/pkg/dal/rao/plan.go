@@ -61,6 +61,14 @@ type ListUnderwayPlanResp struct {
 	Total int64   `json:"total"`
 }
 
+type ClonePlanReq struct {
+	TeamID int64 `json:"team_id"`
+	PlanID int64 `json:"plan_id"`
+}
+
+type ClonePlanResp struct {
+}
+
 type ListPlansReq struct {
 	TeamID int64 `form:"team_id" binding:"required,gt=0"`
 	Page   int   `form:"page,default=1"`

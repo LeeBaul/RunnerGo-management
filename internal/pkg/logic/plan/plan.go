@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/go-omnibus/proof"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gen"
@@ -200,5 +201,64 @@ func GetPreinstall(ctx context.Context, teamID int64) (*rao.Preinstall, error) {
 	}
 
 	return packer.TransMaoPreinstallToRaoPreinstall(&p), nil
+
+}
+
+func ClonePlan(ctx context.Context, planID int64) error {
+
+	return dal.GetQuery().Transaction(func(tx *query.Query) error {
+		p, err := tx.Plan.WithContext(ctx).Where(tx.Plan.ID.Eq(planID)).First()
+		if err != nil {
+			return err
+		}
+
+		targets, err := tx.Target.WithContext(ctx).Where(tx.Target.PlanID.Eq(planID)).Find()
+		if err != nil {
+			return err
+		}
+
+		var sceneIDs []int64
+		for _, target := range targets {
+			if target.TargetType == consts.TargetTypeScene {
+				sceneIDs = append(sceneIDs, target.ID)
+			}
+		}
+
+		v, err := tx.Variable.WithContext(ctx).Where(tx.Variable.SceneID.In(sceneIDs...)).Find()
+		if err != nil {
+			return err
+		}
+
+		vi, err := tx.VariableImport.WithContext(ctx).Where(tx.VariableImport.SceneID.In(sceneIDs...)).Find()
+		if err != nil {
+			return err
+		}
+
+		var flows []*mao.Flow
+		c1 := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectFlow)
+		cur, err := c1.Find(ctx, bson.D{{"scene_id", bson.D{{"$in", sceneIDs}}}})
+		if err != nil {
+			return err
+		}
+		if err := cur.All(ctx, &flows); err != nil {
+			return err
+		}
+
+		var task mao.Task
+		c2 := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectTask)
+		err = c2.FindOne(ctx, bson.D{{"plan_id", planID}}).Decode(&task)
+		if err != nil {
+			return err
+		}
+
+		proof.Info("test", proof.WithStruct(p), proof.WithStruct(v), proof.WithStruct(vi))
+
+		return nil
+
+	})
+
+	//	flow
+
+	//	task
 
 }
