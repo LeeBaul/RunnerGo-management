@@ -176,7 +176,8 @@ func GetTaskDetail(ctx context.Context, req rao.GetReportReq) (*rao.ReportTask, 
 func GetReportDebugLog(ctx context.Context, report rao.GetReportReq) (err error, debugMsgList []map[string]interface{}) {
 	//clientOptions := options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:%s@%s/%s", user, password, host, db))
 
-	reportId := report.ReportID
+	reportId := strconv.FormatInt(report.ReportID, 10)
+	proof.Info("reportId", proof.With(reportId, reportId))
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectStressDebug)
 	filter := bson.D{{"report_id", reportId}}
 	cur, err := collection.Find(ctx, filter)
@@ -192,6 +193,7 @@ func GetReportDebugLog(ctx context.Context, report rao.GetReportReq) (err error,
 			return
 		}
 		debugMsgList = append(debugMsgList, debugMsg)
+		proof.Debug("debugMsgList", proof.With("debugMsgList", debugMsgList))
 	}
 	return
 }
