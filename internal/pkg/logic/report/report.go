@@ -268,7 +268,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 				resultData.Results[k].NinetyNineRequestTimeLine = apiResult.NinetyNineRequestTimeLine
 				resultData.Results[k].SendBytes = apiResult.SendBytes
 				resultData.Results[k].ReceivedBytes = apiResult.ReceivedBytes
-				resultData.Results[k].Qps = apiResult.Qps
+				resultData.Results[k].Qps, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", apiResult.Qps), 64)
 				if resultData.Results[k].QpsList == nil {
 					resultData.Results[k].QpsList = []TimeValue{}
 				}
