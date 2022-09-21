@@ -5,13 +5,18 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-omnibus/omnibus"
 	"github.com/go-omnibus/proof"
+	"github.com/go-resty/resty/v2"
 
+	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/response"
 	"kp-management/internal/pkg/conf"
 	"kp-management/internal/pkg/dal"
+	"kp-management/internal/pkg/dal/query"
 	"kp-management/internal/pkg/dal/rao"
+	"kp-management/internal/pkg/dal/runner"
 	"kp-management/internal/pkg/logic/report"
 )
 
@@ -137,5 +142,56 @@ func ListMachines(ctx *gin.Context) {
 	}
 
 	response.SuccessWithData(ctx, resp)
+	return
+}
+
+func StopReport(ctx *gin.Context) {
+	var req rao.StopReportReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	_, err := resty.New().R().
+		SetBody(runner.StopRunnerReq{ReportIds: omnibus.Int64sToStrings(req.ReportIDs)}).
+		Post(conf.Conf.Clients.Runner.StopPlan)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrHttpFailed, err.Error())
+		return
+	}
+
+	tx := dal.GetQuery().Report
+	r, err := tx.WithContext(ctx).Where(tx.ID.In(req.ReportIDs...)).First()
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	_, err = tx.WithContext(ctx).Where(tx.ID.In(req.ReportIDs...)).UpdateColumn(tx.Status, consts.ReportStatusFinish)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	reportCnt, err := tx.WithContext(ctx).Where(tx.PlanID.Eq(r.PlanID)).Count()
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+	finishReportCnt, err := tx.WithContext(ctx).Where(tx.PlanID.Eq(r.PlanID), tx.Status.Eq(consts.ReportStatusFinish)).Count()
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+	if finishReportCnt >= reportCnt {
+		px := query.Use(dal.DB()).Plan
+		_, err := px.WithContext(ctx).Where(px.ID.Eq(r.PlanID)).UpdateColumn(px.Status, consts.PlanStatusUnderway)
+		if err != nil {
+			response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+			return
+		}
+	}
+
+	response.Success(ctx)
 	return
 }

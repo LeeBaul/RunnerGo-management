@@ -50,6 +50,13 @@ type DeleteReportReq struct {
 type DeleteReportResp struct {
 }
 
+type StopReportReq struct {
+	ReportIDs []int64 `json:"report_ids"`
+}
+
+type StopReportResp struct {
+}
+
 type ListMachineReq struct {
 	ReportID int64 `form:"report_id" binding:"required,gt=0"`
 }
