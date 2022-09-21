@@ -3,7 +3,6 @@ package consts
 const (
 	PlanStatusNormal   = 1 // 未开始
 	PlanStatusUnderway = 2 // 进行中
-	PlanStatusFinish   = 3 // 已完成
 
 	PlanTaskTypeNormal  = 1 // 普通任务
 	PlanTaskTypeCronjob = 2 // 定时任务

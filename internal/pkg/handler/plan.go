@@ -84,6 +84,17 @@ func StopPlan(ctx *gin.Context) {
 	return
 }
 
+// ClonePlan 克隆计划
+func ClonePlan(ctx *gin.Context) {
+	var req rao.ClonePlanReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	plan.ClonePlan(ctx, req.PlanID)
+}
+
 // ListUnderwayPlan 运行中的计划
 func ListUnderwayPlan(ctx *gin.Context) {
 	var req rao.ListUnderwayPlanReq

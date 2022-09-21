@@ -94,6 +94,7 @@ type ReportTask struct {
 	CreatedTimeSec int64     `json:"created_time_sec"`
 	TaskType       int32     `json:"task_type"`
 	TaskMode       int32     `json:"task_mode"`
+	TaskStatus     int32     `json:"task_status"`
 	ModeConf       *ModeConf `json:"mode_conf"`
 }
 

@@ -26,6 +26,9 @@ func MustInitGRPC() {
 		RootCAs: systemRoots,
 	})
 
+	//ctx, cancel := context.WithTimeout(context.TODO(), time.Second*5)
+	//defer cancel()
+	//conn, err = grpc.DialContext(ctx, "kpcontroller.apipost.cn:443", grpc.WithTransportCredentials(creds))
 	conn, err = grpc.Dial("kpcontroller.apipost.cn:443", grpc.WithTransportCredentials(creds))
 
 	//var err error

@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"kp-management/internal/pkg/conf"
 	"log"
 	"os"
 	"strconv"
 	"time"
+
+	"kp-management/internal/pkg/conf"
 
 	"github.com/go-omnibus/proof"
 	"github.com/olivere/elastic/v7"
@@ -159,6 +160,7 @@ func GetTaskDetail(ctx context.Context, req rao.GetReportReq) (*rao.ReportTask, 
 		CreatedTimeSec: ru.CreatedAt.Unix(),
 		TaskType:       detail.TaskType,
 		TaskMode:       detail.TaskMode,
+		TaskStatus:     ru.Status,
 		ModeConf: &rao.ModeConf{
 			ReheatTime:       detail.ModeConf.ReheatTime,
 			RoundNum:         detail.ModeConf.RoundNum,
