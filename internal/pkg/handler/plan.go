@@ -67,18 +67,18 @@ func StopPlan(ctx *gin.Context) {
 		return
 	}
 
-	px := dal.GetQuery().Plan
-	_, err = px.WithContext(ctx).Where(px.ID.In(req.PlanIDs...)).UpdateColumn(px.Status, consts.PlanStatusNormal)
-	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
-		return
-	}
-
-	_, err = tx.WithContext(ctx).Where(tx.PlanID.In(req.PlanIDs...)).UpdateColumn(tx.Status, consts.ReportStatusFinish)
-	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
-		return
-	}
+	//px := dal.GetQuery().Plan
+	//_, err = px.WithContext(ctx).Where(px.ID.In(req.PlanIDs...)).UpdateColumn(px.Status, consts.PlanStatusNormal)
+	//if err != nil {
+	//	response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+	//	return
+	//}
+	//
+	//_, err = tx.WithContext(ctx).Where(tx.PlanID.In(req.PlanIDs...)).UpdateColumn(tx.Status, consts.ReportStatusFinish)
+	//if err != nil {
+	//	response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+	//	return
+	//}
 
 	response.Success(ctx)
 	return
