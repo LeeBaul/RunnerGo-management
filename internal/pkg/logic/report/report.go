@@ -2,11 +2,11 @@ package report
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"kp-management/internal/pkg/conf"
 	"log"
 	"os"
-	"reflect"
 	"strconv"
 	"time"
 
@@ -204,7 +204,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 	index := conf.Conf.ES.Index
 
 	queryEs := elastic.NewBoolQuery()
-	queryEs = queryEs.Must(elastic.NewMatchQuery("report_id", reportId).Lenient(true))
+	queryEs = queryEs.Must(elastic.NewMatchQuery("report_id", reportId))
 
 	client, _ := elastic.NewClient(
 		elastic.SetURL(host),
@@ -219,8 +219,9 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 		return
 	}
 	//res, err := client.Search(index).Query(query).From(0).Size(size).Pretty(true).Do(context.Background())
-	res, err := client.Search(index).Query(queryEs).Sort("time_stamp", true).Pretty(true).Do(ctx)
+	res, err := client.Search(index).Query(queryEs).Sort("time_stamp", true).Size(conf.Conf.ES.Size).Pretty(true).Do(ctx)
 	if err != nil {
+		fmt.Println(err)
 		proof.Error("获取报告详情失败", proof.WithError(err))
 		return
 	}
@@ -228,10 +229,11 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 		proof.Error("报告详情为空")
 		return
 	}
-	var result SceneTestResultDataMsg // 从es中获取得数据结构
 
-	for _, item := range res.Each(reflect.TypeOf(result)) {
-		resultMsg := item.(SceneTestResultDataMsg)
+	var resultMsg SceneTestResultDataMsg // 从es中获取得数据结构
+
+	for _, item := range res.Hits.Hits {
+		err = json.Unmarshal(item.Source, &resultMsg)
 		if resultData.Results == nil {
 			resultData.Results = make(map[string]*ResultDataMsg)
 		}
@@ -274,9 +276,9 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 				}
 				var timeValue = TimeValue{}
 				timeValue.TimeStamp = resultData.TimeStamp
-				timeValue.Value = apiResult.Qps
+				timeValue.Value = resultData.Results[k].Qps
 				resultData.Results[k].QpsList = append(resultData.Results[k].QpsList, timeValue)
-				timeValue.Value = apiResult.ErrorNum
+				timeValue.Value = resultData.Results[k].ErrorNum
 				resultData.Results[k].ErrorRateList = append(resultData.Results[k].ErrorRateList, timeValue)
 			}
 		}

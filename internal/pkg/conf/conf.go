@@ -71,6 +71,7 @@ type ES struct {
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
 	Index    string `yaml:"index"`
+	Size     int    `yaml:"size"`
 }
 
 type Clients struct {

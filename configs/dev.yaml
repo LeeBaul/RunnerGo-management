@@ -30,6 +30,7 @@ es:
   username: "elastic"
   password: "ZSrfx4R6ICa3skGBpCdf"
   index: "report"
+  size: 10000
 
 clients:
   runner:
