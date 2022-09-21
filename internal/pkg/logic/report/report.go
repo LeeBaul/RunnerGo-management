@@ -204,7 +204,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 	index := conf.Conf.ES.Index
 
 	queryEs := elastic.NewBoolQuery()
-	queryEs = queryEs.Must(elastic.NewTermQuery("report_id", reportId))
+	queryEs = queryEs.Must(elastic.NewMatchQuery("report_id", reportId).Lenient(true))
 
 	client, _ := elastic.NewClient(
 		elastic.SetURL(host),
@@ -219,7 +219,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 		return
 	}
 	//res, err := client.Search(index).Query(query).From(0).Size(size).Pretty(true).Do(context.Background())
-	res, err := client.Search(index).Query(queryEs).Sort("time_stamp", true).Pretty(true).Do(context.Background())
+	res, err := client.Search(index).Query(queryEs).Sort("time_stamp", true).Pretty(true).Do(ctx)
 	if err != nil {
 		proof.Error("获取报告详情失败", proof.WithError(err))
 		return
