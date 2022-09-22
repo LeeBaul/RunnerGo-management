@@ -84,6 +84,7 @@ func RegisterRouter(r *gin.Engine) {
 	target.GET("/result", handler.GetSendTargetResult)
 	// 接口保存
 	target.POST("/save", handler.SaveTarget)
+	target.POST("/sort", handler.SortTarget)
 	target.GET("/list", handler.ListFolderAPI)
 	target.GET("/detail", handler.BatchGetTarget)
 	// 接口回收站

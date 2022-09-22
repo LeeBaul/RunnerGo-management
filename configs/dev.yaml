@@ -13,7 +13,7 @@ mysql:
   charset: "utf8mb4"
 
 mongodb:
-  dsn: "mongodb://kunpeng:172.17.18.255:27017/kunpeng?replicaSet=mgset-509843895"
+  dsn: "mongodb://kunpeng:kYjJpU8BYvb4EJ9x@172.17.18.255:27017/kunpeng"
   database: "kunpeng"
   pool_size: 5
 

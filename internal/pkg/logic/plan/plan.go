@@ -167,10 +167,19 @@ func GetByPlanID(ctx context.Context, teamID, planID int64) (*rao.Plan, error) {
 }
 
 func DeleteByPlanID(ctx context.Context, teamID, planID int64) error {
-	tx := query.Use(dal.DB()).Plan
-	_, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID), tx.ID.Eq(planID)).Delete()
+	return dal.GetQuery().Transaction(func(tx *query.Query) error {
+		_, err := tx.Plan.WithContext(ctx).Where(tx.Plan.TeamID.Eq(teamID), tx.Plan.ID.Eq(planID)).Delete()
+		if err != nil {
+			return err
+		}
 
-	return err
+		_, err = tx.Target.WithContext(ctx).Where(tx.Target.TeamID.Eq(teamID), tx.Target.PlanID.Eq(planID)).Delete()
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
 }
 
 func SetPreinstall(ctx context.Context, req *rao.SetPreinstallReq) error {
@@ -203,7 +212,7 @@ func GetPreinstall(ctx context.Context, teamID int64) (*rao.Preinstall, error) {
 
 }
 
-func ClonePlan(ctx context.Context, planID int64) error {
+func ClonePlan(ctx context.Context, planID, userID int64) error {
 
 	return dal.GetQuery().Transaction(func(tx *query.Query) error {
 		//克隆计划
@@ -213,9 +222,12 @@ func ClonePlan(ctx context.Context, planID int64) error {
 		}
 
 		p.ID = 0
+		p.Name = fmt.Sprintf("%s - copy", p.Name)
 		p.CreatedAt = time.Now()
 		p.UpdatedAt = time.Now()
 		p.Status = consts.PlanStatusNormal
+		p.CreateUserID = userID
+		p.RunUserID = userID
 		if err := tx.Plan.WithContext(ctx).Create(p); err != nil {
 			return err
 		}
@@ -309,8 +321,7 @@ func ClonePlan(ctx context.Context, planID int64) error {
 			return err
 		}
 
-		return nil
-
+		return record.InsertCreate(ctx, p.TeamID, userID, fmt.Sprintf("克隆计划 - %s", p.Name))
 	})
 
 }
