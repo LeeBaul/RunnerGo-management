@@ -222,6 +222,7 @@ func ClonePlan(ctx context.Context, planID, userID int64) error {
 		}
 
 		p.ID = 0
+		p.Name = fmt.Sprintf("%s - copy", p.Name)
 		p.CreatedAt = time.Now()
 		p.UpdatedAt = time.Now()
 		p.Status = consts.PlanStatusNormal
