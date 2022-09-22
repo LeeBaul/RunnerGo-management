@@ -223,7 +223,6 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 	//res, err := client.Search(index).Query(query).From(0).Size(size).Pretty(true).Do(context.Background())
 	res, err := client.Search(index).Query(queryEs).Sort("time_stamp", true).Size(conf.Conf.ES.Size).Pretty(true).Do(ctx)
 	if err != nil {
-		fmt.Println(err)
 		proof.Error("获取报告详情失败", proof.WithError(err))
 		return
 	}
@@ -239,6 +238,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 		if resultData.Results == nil {
 			resultData.Results = make(map[string]*ResultDataMsg)
 		}
+		fmt.Println(resultData)
 		resultData.ReportId = resultMsg.ReportId
 		resultData.End = resultMsg.End
 		resultData.ReportName = resultMsg.ReportName

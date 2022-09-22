@@ -22,7 +22,7 @@ func TestGetReportDetail(t *testing.T) {
 	//	panic(fmt.Sprintf("es连接失败: %s", err))
 	//}
 	var report rao.GetReportReq
-	report.ReportID = 662
+	report.ReportID = 762
 	err, result := GetReportDetail(context.Background(), report, "http://172.17.101.191:9200", "elastic", "ZSrfx4R6ICa3skGBpCdf")
 	if err != nil {
 		fmt.Println(err)
