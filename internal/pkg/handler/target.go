@@ -63,6 +63,23 @@ func SaveTarget(ctx *gin.Context) {
 	return
 }
 
+// SortTarget 排序
+func SortTarget(ctx *gin.Context) {
+	var req rao.SortTargetReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	if err := target.SortTarget(ctx, &req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
+}
+
 // TrashTargetList 文件夹/接口回收站列表
 func TrashTargetList(ctx *gin.Context) {
 	var req rao.ListTrashTargetReq

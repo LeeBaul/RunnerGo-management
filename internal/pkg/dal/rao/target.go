@@ -37,6 +37,16 @@ type SaveTargetResp struct {
 	TargetID int64 `json:"target_id"`
 }
 
+type SortTargetReq struct {
+	TeamID   int64 `json:"team_id"`
+	TargetID int64 `json:"target_id"`
+	Sort     int32 `json:"sort"`
+	ParentID int64 `json:"parent_id"`
+}
+
+type SortTargetResp struct {
+}
+
 type TrashTargetReq struct {
 	TargetID int64 `json:"target_id" binding:"required,gt=0"`
 }

@@ -127,13 +127,24 @@ func ListFolderAPI(ctx context.Context, teamID int64, limit, offset int) ([]*rao
 		tx.TargetType.In(consts.TargetTypeFolder, consts.TargetTypeAPI),
 		tx.Status.Eq(consts.TargetStatusNormal),
 		tx.Source.Eq(consts.TargetSourceNormal),
-	).Order(tx.Sort.Desc(), tx.CreatedAt.Desc()).FindByPage(offset, limit)
+	).Order(tx.Sort, tx.CreatedAt.Desc()).FindByPage(offset, limit)
 
 	if err != nil {
 		return nil, 0, err
 	}
 
 	return packer.TransTargetToRaoFolderAPIList(targets), cnt, nil
+}
+
+func SortTarget(ctx context.Context, req *rao.SortTargetReq) error {
+	tx := dal.GetQuery().Target
+
+	_, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(req.TeamID), tx.ID.Eq(req.TargetID)).UpdateSimple(tx.Sort.Value(req.Sort), tx.ParentID.Value(req.ParentID))
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func ListGroupScene(ctx context.Context, teamID int64, source int32, limit, offset int, planID int64) ([]*rao.GroupScene, int64, error) {
