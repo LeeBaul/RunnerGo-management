@@ -496,7 +496,7 @@ type ResultDataMsg struct {
 	ReceivedBytes              uint64      `json:"received_bytes" bson:"received_bytes"` // 接收字节数
 	Qps                        float64     `json:"qps" bson:"qps"`
 	QpsList                    []TimeValue `json:"qps_list" bson:"qps_list"`
-	ErrorNumList               []TimeValue `json:"error_rate_list" bson:"error_rate_list"`
+	ErrorNumList               []TimeValue `json:"error_num_list" bson:"error_num_list"`
 }
 
 type ResultData struct {
