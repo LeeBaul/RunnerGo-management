@@ -320,8 +320,7 @@ func ClonePlan(ctx context.Context, planID, userID int64) error {
 			return err
 		}
 
-		return nil
-
+		return record.InsertCreate(ctx, p.TeamID, userID, fmt.Sprintf("克隆计划 - %s", p.Name))
 	})
 
 }
