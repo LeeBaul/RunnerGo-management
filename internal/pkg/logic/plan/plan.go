@@ -215,12 +215,13 @@ func ClonePlan(ctx context.Context, planID int64) error {
 		p.ID = 0
 		p.CreatedAt = time.Now()
 		p.UpdatedAt = time.Now()
+		p.Status = consts.PlanStatusNormal
 		if err := tx.Plan.WithContext(ctx).Create(p); err != nil {
 			return err
 		}
 
 		// 克隆场景，分组
-		targets, err := tx.Target.WithContext(ctx).Where(tx.Target.PlanID.Eq(planID)).Order(tx.Target.ParentID).Find()
+		targets, err := tx.Target.WithContext(ctx).Where(tx.Target.PlanID.Eq(planID), tx.Target.Status.Eq(consts.TargetStatusNormal)).Order(tx.Target.ParentID).Find()
 		if err != nil {
 			return err
 		}
@@ -245,6 +246,7 @@ func ClonePlan(ctx context.Context, planID int64) error {
 			targetMemo[oldTargetID] = target.ID
 		}
 
+		// 克隆场景变量
 		v, err := tx.Variable.WithContext(ctx).Where(tx.Variable.SceneID.In(sceneIDs...)).Find()
 		if err != nil {
 			return err
@@ -260,6 +262,7 @@ func ClonePlan(ctx context.Context, planID int64) error {
 			}
 		}
 
+		// 克隆导入变量
 		vi, err := tx.VariableImport.WithContext(ctx).Where(tx.VariableImport.SceneID.In(sceneIDs...)).Find()
 		if err != nil {
 			return err
@@ -275,6 +278,7 @@ func ClonePlan(ctx context.Context, planID int64) error {
 			}
 		}
 
+		// 克隆流程
 		var flows []*mao.Flow
 		c1 := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectFlow)
 		cur, err := c1.Find(ctx, bson.D{{"scene_id", bson.D{{"$in", sceneIDs}}}})
@@ -292,6 +296,7 @@ func ClonePlan(ctx context.Context, planID int64) error {
 			}
 		}
 
+		// 克隆任务配置
 		var task mao.Task
 		c2 := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectTask)
 		err = c2.FindOne(ctx, bson.D{{"plan_id", planID}}).Decode(&task)

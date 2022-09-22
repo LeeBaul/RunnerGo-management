@@ -13,7 +13,7 @@ mysql:
   charset: "utf8mb4"
 
 mongodb:
-  dsn: "mongodb://kunpeng:kYjJpU8BYvb4EJ9x@dds-8vb14448e6c8d6241844-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/kunpeng?replicaSet=mgset-509843895"
+  dsn: "mongodb://kunpeng:kYjJpU8BYvb4EJ9x@172.17.18.255:27017/kunpeng?replicaSet=mgset-509843895"
   database: "kunpeng"
   pool_size: 20
 
@@ -29,6 +29,8 @@ es:
   host: "http://172.17.101.191:9200"
   username: "elastic"
   password: "ZSrfx4R6ICa3skGBpCdf"
+  index: "report"
+  size: 10000000
 
 clients:
   runner:
