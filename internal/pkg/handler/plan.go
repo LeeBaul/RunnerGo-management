@@ -92,7 +92,13 @@ func ClonePlan(ctx *gin.Context) {
 		return
 	}
 
-	plan.ClonePlan(ctx, req.PlanID)
+	if err := plan.ClonePlan(ctx, req.PlanID); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
 }
 
 // ListUnderwayPlan 运行中的计划

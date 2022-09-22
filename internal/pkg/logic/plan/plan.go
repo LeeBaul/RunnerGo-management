@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/go-omnibus/proof"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gen"
@@ -207,33 +206,79 @@ func GetPreinstall(ctx context.Context, teamID int64) (*rao.Preinstall, error) {
 func ClonePlan(ctx context.Context, planID int64) error {
 
 	return dal.GetQuery().Transaction(func(tx *query.Query) error {
+		//克隆计划
 		p, err := tx.Plan.WithContext(ctx).Where(tx.Plan.ID.Eq(planID)).First()
 		if err != nil {
 			return err
 		}
 
-		targets, err := tx.Target.WithContext(ctx).Where(tx.Target.PlanID.Eq(planID)).Find()
+		p.ID = 0
+		p.CreatedAt = time.Now()
+		p.UpdatedAt = time.Now()
+		p.Status = consts.PlanStatusNormal
+		if err := tx.Plan.WithContext(ctx).Create(p); err != nil {
+			return err
+		}
+
+		// 克隆场景，分组
+		targets, err := tx.Target.WithContext(ctx).Where(tx.Target.PlanID.Eq(planID), tx.Target.Status.Eq(consts.TargetStatusNormal)).Order(tx.Target.ParentID).Find()
 		if err != nil {
 			return err
 		}
 
 		var sceneIDs []int64
+		targetMemo := make(map[int64]int64)
 		for _, target := range targets {
 			if target.TargetType == consts.TargetTypeScene {
 				sceneIDs = append(sceneIDs, target.ID)
 			}
+
+			oldTargetID := target.ID
+			target.ID = 0
+			target.ParentID = targetMemo[target.ParentID]
+			target.PlanID = p.ID
+			target.CreatedAt = time.Now()
+			target.UpdatedAt = time.Now()
+			if err := tx.Target.WithContext(ctx).Create(target); err != nil {
+				return err
+			}
+
+			targetMemo[oldTargetID] = target.ID
 		}
 
+		// 克隆场景变量
 		v, err := tx.Variable.WithContext(ctx).Where(tx.Variable.SceneID.In(sceneIDs...)).Find()
 		if err != nil {
 			return err
 		}
 
+		for _, variable := range v {
+			variable.ID = 0
+			variable.SceneID = targetMemo[variable.SceneID]
+			variable.CreatedAt = time.Now()
+			variable.UpdatedAt = time.Now()
+			if err := tx.Variable.WithContext(ctx).Create(variable); err != nil {
+				return err
+			}
+		}
+
+		// 克隆导入变量
 		vi, err := tx.VariableImport.WithContext(ctx).Where(tx.VariableImport.SceneID.In(sceneIDs...)).Find()
 		if err != nil {
 			return err
 		}
 
+		for _, variableImport := range vi {
+			variableImport.ID = 0
+			variableImport.SceneID = targetMemo[variableImport.SceneID]
+			variableImport.CreatedAt = time.Now()
+			variableImport.UpdatedAt = time.Now()
+			if err := tx.VariableImport.WithContext(ctx).Create(variableImport); err != nil {
+				return err
+			}
+		}
+
+		// 克隆流程
 		var flows []*mao.Flow
 		c1 := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectFlow)
 		cur, err := c1.Find(ctx, bson.D{{"scene_id", bson.D{{"$in", sceneIDs}}}})
@@ -244,6 +289,14 @@ func ClonePlan(ctx context.Context, planID int64) error {
 			return err
 		}
 
+		for _, flow := range flows {
+			flow.SceneID = targetMemo[flow.SceneID]
+			if _, err := c1.InsertOne(ctx, flow); err != nil {
+				return err
+			}
+		}
+
+		// 克隆任务配置
 		var task mao.Task
 		c2 := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectTask)
 		err = c2.FindOne(ctx, bson.D{{"plan_id", planID}}).Decode(&task)
@@ -251,14 +304,13 @@ func ClonePlan(ctx context.Context, planID int64) error {
 			return err
 		}
 
-		proof.Info("test", proof.WithStruct(p), proof.WithStruct(v), proof.WithStruct(vi))
+		task.PlanID = p.ID
+		if _, err := c2.InsertOne(ctx, task); err != nil {
+			return err
+		}
 
 		return nil
 
 	})
-
-	//	flow
-
-	//	task
 
 }
