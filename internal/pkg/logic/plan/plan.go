@@ -167,10 +167,19 @@ func GetByPlanID(ctx context.Context, teamID, planID int64) (*rao.Plan, error) {
 }
 
 func DeleteByPlanID(ctx context.Context, teamID, planID int64) error {
-	tx := query.Use(dal.DB()).Plan
-	_, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID), tx.ID.Eq(planID)).Delete()
+	return dal.GetQuery().Transaction(func(tx *query.Query) error {
+		_, err := tx.Plan.WithContext(ctx).Where(tx.Plan.TeamID.Eq(teamID), tx.Plan.ID.Eq(planID)).Delete()
+		if err != nil {
+			return err
+		}
 
-	return err
+		_, err = tx.Target.WithContext(ctx).Where(tx.Target.TeamID.Eq(teamID), tx.Target.PlanID.Eq(planID)).Delete()
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
 }
 
 func SetPreinstall(ctx context.Context, req *rao.SetPreinstallReq) error {
