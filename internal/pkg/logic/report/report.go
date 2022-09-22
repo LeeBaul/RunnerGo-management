@@ -389,7 +389,6 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 		if resultData.Results == nil {
 			resultData.Results = make(map[string]*ResultDataMsg)
 		}
-		fmt.Println(resultData)
 		resultData.ReportId = resultMsg.ReportId
 		resultData.End = resultMsg.End
 		resultData.ReportName = resultMsg.ReportName
@@ -403,7 +402,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 				if resultData.Results[k] == nil {
 					resultData.Results[k] = new(ResultDataMsg)
 				}
-				resultData.Results[k].ApiName = apiResult.ApiName
+				resultData.Results[k].ApiName = apiResult.Name
 				resultData.Results[k].Concurrency = apiResult.Concurrency
 				resultData.Results[k].TotalRequestNum = apiResult.TotalRequestNum
 				resultData.Results[k].TotalRequestTime = apiResult.TotalRequestTime
@@ -455,7 +454,7 @@ type SceneTestResultDataMsg struct {
 
 // ApiTestResultDataMsg 接口测试数据经过计算后的测试结果
 type ApiTestResultDataMsg struct {
-	ApiName                    string  `json:"api_name" bson:"api_name"`
+	Name                       string  `json:"name" bson:"name"`
 	Concurrency                int64   `json:"concurrency" bson:"concurrency"`
 	TotalRequestNum            uint64  `json:"total_request_num" bson:"total_request_num"`   // 总请求数
 	TotalRequestTime           uint64  `json:"total_request_time" bson:"total_request_time"` // 总响应时间
