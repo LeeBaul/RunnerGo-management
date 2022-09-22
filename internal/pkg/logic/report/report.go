@@ -30,6 +30,157 @@ func CountByTeamID(ctx context.Context, teamID int64) (int64, error) {
 	return tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID)).Count()
 }
 
+func ListByTeamID2(ctx context.Context, teamID int64, limit, offset int, keyword string, startTimeSec, endTimeSec int64) ([]*rao.Report, int64, error) {
+
+	tx := query.Use(dal.DB()).Report
+
+	conditions := make([]gen.Condition, 0)
+	conditions = append(conditions, tx.TeamID.Eq(teamID))
+
+	if keyword != "" {
+		var reportIDs []int64
+
+		planReportIDs, err := KeywordFindPlan(ctx, teamID, keyword)
+		if err != nil {
+			return nil, 0, err
+		}
+		reportIDs = append(reportIDs, planReportIDs...)
+
+		sceneReportIDs, err := KeywordFindScene(ctx, teamID, keyword)
+		if err != nil {
+			return nil, 0, err
+		}
+		reportIDs = append(reportIDs, sceneReportIDs...)
+
+		userReportIDs, err := KeywordFindUser(ctx, keyword)
+		if err != nil {
+			return nil, 0, err
+		}
+		reportIDs = append(reportIDs, userReportIDs...)
+
+		if len(reportIDs) > 0 {
+			conditions = append(conditions, tx.ID.In(reportIDs...))
+		} else {
+			conditions = append(conditions, tx.ID.In(0))
+		}
+	}
+
+	if startTimeSec > 0 && endTimeSec > 0 {
+		startTime := time.Unix(startTimeSec, 0)
+		endTime := time.Unix(endTimeSec, 0)
+		conditions = append(conditions, tx.CreatedAt.Between(startTime, endTime))
+	}
+
+	reports, cnt, err := tx.WithContext(ctx).Where(conditions...).
+		Order(tx.ID.Desc()).
+		FindByPage(offset, limit)
+
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var userIDs []int64
+	for _, r := range reports {
+		userIDs = append(userIDs, r.RunUserID)
+	}
+
+	u := query.Use(dal.DB()).User
+	users, err := u.WithContext(ctx).Where(u.ID.In(userIDs...)).Find()
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var planIDs []int64
+	var sceneIDs []int64
+	for _, report := range reports {
+		planIDs = append(planIDs, report.PlanID)
+		sceneIDs = append(sceneIDs, report.SceneID)
+	}
+
+	p := dal.GetQuery().Plan
+	plans, err := p.WithContext(ctx).Where(p.ID.In(planIDs...)).Find()
+	if err != nil {
+		return nil, 0, err
+	}
+
+	s := dal.GetQuery().Target
+	scenes, err := s.WithContext(ctx).Where(s.ID.In(sceneIDs...)).Find()
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return packer.TransReportModelToRaoReportList(reports, users, plans, scenes), cnt, nil
+}
+
+func KeywordFindPlan(ctx context.Context, teamID int64, keyword string) ([]int64, error) {
+	var planIDs []int64
+
+	p := dal.GetQuery().Plan
+	err := p.WithContext(ctx).Where(p.TeamID.Eq(teamID), p.Name.Like(fmt.Sprintf("%%%s%%", keyword))).Pluck(p.ID, &planIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(planIDs) == 0 {
+		return nil, nil
+	}
+
+	var reportIDs []int64
+	r := dal.GetQuery().Report
+	err = r.WithContext(ctx).Where(r.PlanID.In(planIDs...)).Pluck(r.ID, &reportIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	return reportIDs, nil
+}
+
+func KeywordFindScene(ctx context.Context, teamID int64, keyword string) ([]int64, error) {
+	var sceneIDs []int64
+
+	s := dal.GetQuery().Target
+	err := s.WithContext(ctx).Where(s.TeamID.Eq(teamID), s.Name.Like(fmt.Sprintf("%%%s%%", keyword))).Pluck(s.ID, &sceneIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(sceneIDs) == 0 {
+		return nil, nil
+	}
+
+	var reportIDs []int64
+	r := dal.GetQuery().Report
+	err = r.WithContext(ctx).Where(r.SceneID.In(sceneIDs...)).Pluck(r.ID, &reportIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	return reportIDs, nil
+}
+
+func KeywordFindUser(ctx context.Context, keyword string) ([]int64, error) {
+	var userIDs []int64
+
+	u := query.Use(dal.DB()).User
+	err := u.WithContext(ctx).Where(u.Nickname.Like(fmt.Sprintf("%%%s%%", keyword))).Pluck(u.ID, &userIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(userIDs) == 0 {
+		return nil, nil
+	}
+
+	var reportIDs []int64
+	r := dal.GetQuery().Report
+	err = r.WithContext(ctx).Where(r.RunUserID.In(userIDs...)).Pluck(r.ID, &reportIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	return reportIDs, nil
+}
+
 func ListByTeamID(ctx context.Context, teamID int64, limit, offset int, keyword string, startTimeSec, endTimeSec int64) ([]*rao.Report, int64, error) {
 	tx := query.Use(dal.DB()).Report
 
