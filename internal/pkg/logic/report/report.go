@@ -431,7 +431,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 				timeValue.Value = resultData.Results[k].Qps
 				resultData.Results[k].QpsList = append(resultData.Results[k].QpsList, timeValue)
 				timeValue.Value = resultData.Results[k].ErrorNum
-				resultData.Results[k].ErrorRateList = append(resultData.Results[k].ErrorRateList, timeValue)
+				resultData.Results[k].ErrorNumList = append(resultData.Results[k].ErrorNumList, timeValue)
 			}
 		}
 	}
@@ -494,7 +494,7 @@ type ResultDataMsg struct {
 	ReceivedBytes              uint64      `json:"received_bytes" bson:"received_bytes"` // 接收字节数
 	Qps                        float64     `json:"qps" bson:"qps"`
 	QpsList                    []TimeValue `json:"qps_list" bson:"qps_list"`
-	ErrorRateList              []TimeValue `json:"error_rate_list" bson:"error_rate_list"`
+	ErrorNumList               []TimeValue `json:"error_rate_list" bson:"error_rate_list"`
 }
 
 type ResultData struct {
