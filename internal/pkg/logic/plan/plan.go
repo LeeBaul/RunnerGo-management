@@ -203,7 +203,7 @@ func GetPreinstall(ctx context.Context, teamID int64) (*rao.Preinstall, error) {
 
 }
 
-func ClonePlan(ctx context.Context, planID int64) error {
+func ClonePlan(ctx context.Context, planID, userID int64) error {
 
 	return dal.GetQuery().Transaction(func(tx *query.Query) error {
 		//克隆计划
@@ -216,6 +216,7 @@ func ClonePlan(ctx context.Context, planID int64) error {
 		p.CreatedAt = time.Now()
 		p.UpdatedAt = time.Now()
 		p.Status = consts.PlanStatusNormal
+		p.RunUserID = userID
 		if err := tx.Plan.WithContext(ctx).Create(p); err != nil {
 			return err
 		}
