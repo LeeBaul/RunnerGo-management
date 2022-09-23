@@ -204,7 +204,12 @@ func GetPreinstall(ctx context.Context, teamID int64) (*rao.Preinstall, error) {
 
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectPreinstall)
 	var p mao.Preinstall
-	if err := collection.FindOne(ctx, bson.D{{"team_id", teamID}}).Decode(&p); err != nil {
+	err := collection.FindOne(ctx, bson.D{{"team_id", teamID}}).Decode(&p)
+	if err == mongo.ErrNoDocuments {
+		return nil, nil
+	}
+
+	if err != nil && err != mongo.ErrNoDocuments {
 		return nil, err
 	}
 
