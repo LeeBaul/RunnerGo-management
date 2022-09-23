@@ -13,6 +13,7 @@ import (
 	"kp-management/internal/pkg/biz/record"
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/mao"
+	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/query"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/packer"
@@ -100,14 +101,26 @@ func Save(ctx context.Context, req *rao.SavePlanReq, userID int64) (int64, error
 		return 0, err
 	}
 
-	p, err := tx.WithContext(ctx).Where(tx.ID.Eq(req.PlanID)).Assign(
-		tx.Rank.Value(cnt+1),
-		tx.TeamID.Value(req.TeamID),
-		tx.Name.Value(req.Name),
-		tx.Status.Value(consts.PlanStatusNormal),
-		tx.CreateUserID.Value(userID),
-		tx.Remark.Value(req.Remark),
-	).FirstOrCreate()
+	p := model.Plan{
+		ID:           req.PlanID,
+		TeamID:       req.TeamID,
+		Name:         req.Name,
+		Status:       consts.PlanStatusNormal,
+		CreateUserID: userID,
+		Remark:       req.Remark,
+		Rank:         cnt + 1,
+	}
+
+	if req.PlanID == 0 {
+		err := tx.WithContext(ctx).Create(&p)
+		if err != nil {
+			return 0, err
+		}
+	}
+
+	if err := tx.WithContext(ctx).Where(tx.ID.Eq(p.ID)).Omit(tx.Rank, tx.CreateUserID, tx.Status).Save(&p); err != nil {
+		return 0, err
+	}
 
 	return p.ID, err
 }
