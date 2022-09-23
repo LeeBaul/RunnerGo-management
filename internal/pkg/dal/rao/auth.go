@@ -4,7 +4,7 @@ type AuthSignupReq struct {
 	Email          string `json:"email" binding:"required,email"`
 	Password       string `json:"password" binding:"required,min=6,max=32,eqfield=RepeatPassword"`
 	RepeatPassword string `json:"repeat_password" binding:"required,min=6,max=32"`
-	Nickname       string `json:"nickname" binding:"required,min=6,max=32"`
+	Nickname       string `json:"nickname" binding:"required,max=32"`
 }
 
 type AuthSignupResp struct {
