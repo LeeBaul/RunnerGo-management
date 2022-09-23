@@ -14,6 +14,7 @@ func TransPlansToRaoPlanList(plans []*model.Plan, users []*model.User) []*rao.Pl
 			if p.CreateUserID == u.ID {
 				ret = append(ret, &rao.Plan{
 					PlanID:            p.ID,
+					Rank:              p.Rank,
 					TeamID:            p.TeamID,
 					Name:              p.Name,
 					TaskType:          p.TaskType,

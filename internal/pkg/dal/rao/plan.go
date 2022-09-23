@@ -2,6 +2,7 @@ package rao
 
 type Plan struct {
 	PlanID   int64  `json:"plan_id"`
+	Rank     int64  `json:"rank"`
 	TeamID   int64  `json:"team_id"`
 	Name     string `json:"name"`
 	TaskType int32  `json:"task_type"`

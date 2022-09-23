@@ -15,6 +15,7 @@ func TransReportModelToRaoReportList(reports []*model.Report, users []*model.Use
 					if u.ID == r.RunUserID && p.ID == r.PlanID && s.ID == r.SceneID {
 						ret = append(ret, &rao.Report{
 							ReportID:    r.ID,
+							Rank:        r.Rank,
 							TaskType:    r.TaskType,
 							TaskMode:    r.TaskMode,
 							Status:      r.Status,

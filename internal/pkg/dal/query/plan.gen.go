@@ -40,6 +40,7 @@ func newPlan(db *gorm.DB) plan {
 	_plan.CreatedAt = field.NewTime(tableName, "created_at")
 	_plan.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_plan.DeletedAt = field.NewField(tableName, "deleted_at")
+	_plan.Rank = field.NewInt64(tableName, "rank")
 
 	_plan.fillFieldMap()
 
@@ -63,6 +64,7 @@ type plan struct {
 	CreatedAt    field.Time
 	UpdatedAt    field.Time
 	DeletedAt    field.Field
+	Rank         field.Int64
 
 	fieldMap map[string]field.Expr
 }
@@ -92,6 +94,7 @@ func (p *plan) updateTableName(table string) *plan {
 	p.CreatedAt = field.NewTime(table, "created_at")
 	p.UpdatedAt = field.NewTime(table, "updated_at")
 	p.DeletedAt = field.NewField(table, "deleted_at")
+	p.Rank = field.NewInt64(table, "rank")
 
 	p.fillFieldMap()
 
@@ -114,7 +117,7 @@ func (p *plan) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (p *plan) fillFieldMap() {
-	p.fieldMap = make(map[string]field.Expr, 13)
+	p.fieldMap = make(map[string]field.Expr, 14)
 	p.fieldMap["id"] = p.ID
 	p.fieldMap["team_id"] = p.TeamID
 	p.fieldMap["name"] = p.Name
@@ -128,6 +131,7 @@ func (p *plan) fillFieldMap() {
 	p.fieldMap["created_at"] = p.CreatedAt
 	p.fieldMap["updated_at"] = p.UpdatedAt
 	p.fieldMap["deleted_at"] = p.DeletedAt
+	p.fieldMap["rank"] = p.Rank
 }
 
 func (p plan) clone(db *gorm.DB) plan {
