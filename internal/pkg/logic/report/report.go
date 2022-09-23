@@ -389,7 +389,6 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 		if resultData.Results == nil {
 			resultData.Results = make(map[string]*ResultDataMsg)
 		}
-		fmt.Println(resultData)
 		resultData.ReportId = resultMsg.ReportId
 		resultData.End = resultMsg.End
 		resultData.ReportName = resultMsg.ReportName
@@ -403,7 +402,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 				if resultData.Results[k] == nil {
 					resultData.Results[k] = new(ResultDataMsg)
 				}
-				resultData.Results[k].ApiName = apiResult.ApiName
+				resultData.Results[k].ApiName = apiResult.Name
 				resultData.Results[k].Concurrency = apiResult.Concurrency
 				resultData.Results[k].TotalRequestNum = apiResult.TotalRequestNum
 				resultData.Results[k].TotalRequestTime = apiResult.TotalRequestTime
@@ -423,16 +422,18 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 				resultData.Results[k].NinetyNineRequestTimeLine = apiResult.NinetyNineRequestTimeLine
 				resultData.Results[k].SendBytes = apiResult.SendBytes
 				resultData.Results[k].ReceivedBytes = apiResult.ReceivedBytes
-				resultData.Results[k].Qps, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", apiResult.Qps), 64)
+
 				if resultData.Results[k].QpsList == nil {
 					resultData.Results[k].QpsList = []TimeValue{}
 				}
 				var timeValue = TimeValue{}
 				timeValue.TimeStamp = resultData.TimeStamp
-				timeValue.Value = resultData.Results[k].Qps
+				timeValue.Value, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", apiResult.Qps), 64)
+				qps := float64(resultData.Results[k].TotalRequestNum) / float64(resultData.Results[k].TotalRequestTime)
+				resultData.Results[k].Qps, _ = strconv.ParseFloat(fmt.Sprintf("%0.2f", qps), 64)
 				resultData.Results[k].QpsList = append(resultData.Results[k].QpsList, timeValue)
 				timeValue.Value = resultData.Results[k].ErrorNum
-				resultData.Results[k].ErrorRateList = append(resultData.Results[k].ErrorRateList, timeValue)
+				resultData.Results[k].ErrorNumList = append(resultData.Results[k].ErrorNumList, timeValue)
 			}
 		}
 	}
@@ -455,7 +456,7 @@ type SceneTestResultDataMsg struct {
 
 // ApiTestResultDataMsg 接口测试数据经过计算后的测试结果
 type ApiTestResultDataMsg struct {
-	ApiName                    string  `json:"api_name" bson:"api_name"`
+	Name                       string  `json:"name" bson:"name"`
 	Concurrency                int64   `json:"concurrency" bson:"concurrency"`
 	TotalRequestNum            uint64  `json:"total_request_num" bson:"total_request_num"`   // 总请求数
 	TotalRequestTime           uint64  `json:"total_request_time" bson:"total_request_time"` // 总响应时间
@@ -495,7 +496,7 @@ type ResultDataMsg struct {
 	ReceivedBytes              uint64      `json:"received_bytes" bson:"received_bytes"` // 接收字节数
 	Qps                        float64     `json:"qps" bson:"qps"`
 	QpsList                    []TimeValue `json:"qps_list" bson:"qps_list"`
-	ErrorRateList              []TimeValue `json:"error_rate_list" bson:"error_rate_list"`
+	ErrorNumList               []TimeValue `json:"error_num_list" bson:"error_num_list"`
 }
 
 type ResultData struct {
