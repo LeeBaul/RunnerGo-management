@@ -359,19 +359,24 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 	queryEs := elastic.NewBoolQuery()
 	queryEs = queryEs.Must(elastic.NewMatchQuery("report_id", reportId))
 
-	client, _ := elastic.NewClient(
+	client, err := elastic.NewClient(
 		elastic.SetURL(host),
 		elastic.SetSniff(false),
 		elastic.SetBasicAuth(user, password),
 		elastic.SetErrorLog(log.New(os.Stdout, "APP", log.Lshortfile)),
 		elastic.SetHealthcheckInterval(30*time.Second),
 	)
+	if err != nil {
+		if err != nil {
+			proof.Error("创建es客户端失败", proof.WithError(err))
+			return
+		}
+	}
 	_, _, err = client.Ping(host).Do(ctx)
 	if err != nil {
 		proof.Error("es连接失败", proof.WithError(err))
 		return
 	}
-	//res, err := client.Search(index).Query(query).From(0).Size(size).Pretty(true).Do(context.Background())
 	res, err := client.Search(index).Query(queryEs).Sort("time_stamp", true).Size(conf.Conf.ES.Size).Pretty(true).Do(ctx)
 	if err != nil {
 		proof.Error("获取报告详情失败", proof.WithError(err))
@@ -386,6 +391,9 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 
 	for _, item := range res.Hits.Hits {
 		err = json.Unmarshal(item.Source, &resultMsg)
+		if err != nil {
+			proof.Error("json转换格式错误：", proof.WithError(err))
+		}
 		if resultData.Results == nil {
 			resultData.Results = make(map[string]*ResultDataMsg)
 		}
@@ -408,7 +416,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 				resultData.Results[k].TotalRequestTime = apiResult.TotalRequestTime
 				resultData.Results[k].SuccessNum = apiResult.SuccessNum
 				resultData.Results[k].ErrorNum = apiResult.ErrorNum
-				if resultData.Results[k].ErrorNum != 0 {
+				if resultData.Results[k].ErrorNum != 0 && apiResult.TotalRequestNum != 0 {
 					resultData.Results[k].ErrorRate = float64(apiResult.ErrorNum) / float64(apiResult.TotalRequestNum)
 				}
 
@@ -422,17 +430,18 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 				resultData.Results[k].NinetyNineRequestTimeLine = apiResult.NinetyNineRequestTimeLine
 				resultData.Results[k].SendBytes = apiResult.SendBytes
 				resultData.Results[k].ReceivedBytes = apiResult.ReceivedBytes
-
+				resultData.Results[k].Qps = apiResult.Qps
 				if resultData.Results[k].QpsList == nil {
 					resultData.Results[k].QpsList = []TimeValue{}
 				}
 				var timeValue = TimeValue{}
 				timeValue.TimeStamp = resultData.TimeStamp
-				timeValue.Value, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", apiResult.Qps), 64)
-				qps := float64(resultData.Results[k].TotalRequestNum) / float64(resultData.Results[k].TotalRequestTime)
-				resultData.Results[k].Qps, _ = strconv.ParseFloat(fmt.Sprintf("%0.2f", qps), 64)
+				timeValue.Value = resultData.Results[k].Qps
 				resultData.Results[k].QpsList = append(resultData.Results[k].QpsList, timeValue)
 				timeValue.Value = resultData.Results[k].ErrorNum
+				if resultData.Results[k].ErrorNumList == nil {
+					resultData.Results[k].ErrorNumList = []TimeValue{}
+				}
 				resultData.Results[k].ErrorNumList = append(resultData.Results[k].ErrorNumList, timeValue)
 			}
 		}
@@ -500,17 +509,17 @@ type ResultDataMsg struct {
 }
 
 type ResultData struct {
-	End             bool                      `json:"end" bson:"end"`
-	ReportId        string                    `json:"report_id" bson:"report_id"`
-	ReportName      string                    `json:"report_name" bson:"report_name"`
-	PlanId          int64                     `json:"plan_id" bson:"plan_id"`     // 任务ID
-	PlanName        string                    `json:"plan_name" bson:"plan_name"` //
-	SceneId         int64                     `json:"scene_id" bson:"scene_id"`   // 场景
-	SceneName       string                    `json:"scene_name" bson:"scene_name"`
-	Results         map[string]*ResultDataMsg `json:"results" bson:"results"`
-	Machine         map[string]int64          `json:"machine" bson:"machine"`
-	ConcurrencyList []TimeValue               `json:"concurrency_list" bson:"concurrency_list"`
-	TimeStamp       int64                     `json:"time_stamp" bson:"time_stamp"`
+	End             bool                      `json:"end"`
+	ReportId        string                    `json:"report_id"`
+	ReportName      string                    `json:"report_name"`
+	PlanId          int64                     `json:"plan_id"`   // 任务ID
+	PlanName        string                    `json:"plan_name"` //
+	SceneId         int64                     `json:"scene_id"`  // 场景
+	SceneName       string                    `json:"scene_name"`
+	Results         map[string]*ResultDataMsg `json:"results"`
+	Machine         map[string]int64          `json:"machine"`
+	ConcurrencyList []TimeValue               `json:"concurrency_list"`
+	TimeStamp       int64                     `json:"time_stamp"`
 }
 
 type TimeValue struct {
