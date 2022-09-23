@@ -38,6 +38,10 @@ type SaveTargetResp struct {
 }
 
 type SortTargetReq struct {
+	Targets []*SortTarget `json:"targets"`
+}
+
+type SortTarget struct {
 	TeamID   int64 `json:"team_id"`
 	TargetID int64 `json:"target_id"`
 	Sort     int32 `json:"sort"`

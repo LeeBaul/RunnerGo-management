@@ -139,9 +139,11 @@ func ListFolderAPI(ctx context.Context, teamID int64, limit, offset int) ([]*rao
 func SortTarget(ctx context.Context, req *rao.SortTargetReq) error {
 	tx := dal.GetQuery().Target
 
-	_, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(req.TeamID), tx.ID.Eq(req.TargetID)).UpdateSimple(tx.Sort.Value(req.Sort), tx.ParentID.Value(req.ParentID))
-	if err != nil {
-		return err
+	for _, target := range req.Targets {
+		_, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(target.TeamID), tx.ID.Eq(target.TargetID)).UpdateSimple(tx.Sort.Value(target.Sort), tx.ParentID.Value(target.ParentID))
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
