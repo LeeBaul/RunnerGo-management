@@ -95,7 +95,7 @@ func ListByTeamID(ctx context.Context, teamID int64, limit, offset int, keyword 
 
 func Save(ctx context.Context, req *rao.SavePlanReq, userID int64) (int64, error) {
 	tx := query.Use(dal.DB()).Plan
-	cnt, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(req.TeamID)).Count()
+	cnt, err := tx.WithContext(ctx).Unscoped().Where(tx.TeamID.Eq(req.TeamID)).Count()
 	if err != nil {
 		return 0, err
 	}
