@@ -88,14 +88,14 @@ type ListPlansResp struct {
 type SavePlanReq struct {
 	PlanID int64  `json:"plan_id"`
 	TeamID int64  `json:"team_id" binding:"required,gt=0"`
-	Name   string `json:"name" binding:"required,max=32"`
+	Name   string `json:"name" binding:"required"`
 	Remark string `json:"remark"`
 }
 
 type SavePlanConfReq struct {
 	PlanID   int64     `json:"plan_id"`
 	TeamID   int64     `json:"team_id" binding:"required,gt=0"`
-	Name     string    `json:"name" binding:"required,min=4,max=32"`
+	Name     string    `json:"name" binding:"required"`
 	TaskType int32     `json:"task_type" binding:"required,gt=0"`
 	Mode     int32     `json:"mode" binding:"required,gt=0"`
 	Remark   string    `json:"remark"`
