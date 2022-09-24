@@ -28,6 +28,7 @@ type ListReportsResp struct {
 
 type Report struct {
 	ReportID    int64  `json:"report_id"`
+	Rank        int64  `json:"rank"`
 	TeamID      int64  `json:"team_id"`
 	TaskMode    int32  `json:"task_mode"`
 	TaskType    int32  `json:"task_type"`

@@ -39,6 +39,7 @@ func newReport(db *gorm.DB) report {
 	_report.CreatedAt = field.NewTime(tableName, "created_at")
 	_report.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_report.DeletedAt = field.NewField(tableName, "deleted_at")
+	_report.Rank = field.NewInt64(tableName, "rank")
 
 	_report.fillFieldMap()
 
@@ -61,6 +62,7 @@ type report struct {
 	CreatedAt field.Time
 	UpdatedAt field.Time
 	DeletedAt field.Field
+	Rank      field.Int64
 
 	fieldMap map[string]field.Expr
 }
@@ -89,6 +91,7 @@ func (r *report) updateTableName(table string) *report {
 	r.CreatedAt = field.NewTime(table, "created_at")
 	r.UpdatedAt = field.NewTime(table, "updated_at")
 	r.DeletedAt = field.NewField(table, "deleted_at")
+	r.Rank = field.NewInt64(table, "rank")
 
 	r.fillFieldMap()
 
@@ -111,7 +114,7 @@ func (r *report) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (r *report) fillFieldMap() {
-	r.fieldMap = make(map[string]field.Expr, 12)
+	r.fieldMap = make(map[string]field.Expr, 13)
 	r.fieldMap["id"] = r.ID
 	r.fieldMap["team_id"] = r.TeamID
 	r.fieldMap["plan_id"] = r.PlanID
@@ -124,6 +127,7 @@ func (r *report) fillFieldMap() {
 	r.fieldMap["created_at"] = r.CreatedAt
 	r.fieldMap["updated_at"] = r.UpdatedAt
 	r.fieldMap["deleted_at"] = r.DeletedAt
+	r.fieldMap["rank"] = r.Rank
 }
 
 func (r report) clone(db *gorm.DB) report {

@@ -13,6 +13,7 @@ import (
 	"kp-management/internal/pkg/biz/record"
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/mao"
+	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/query"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/packer"
@@ -74,7 +75,7 @@ func ListByTeamID(ctx context.Context, teamID int64, limit, offset int, keyword 
 	}
 
 	conditions = append(conditions, tx.Status.In(consts.PlanStatusNormal, consts.PlanStatusUnderway))
-	ret, cnt, err := tx.WithContext(ctx).Where(conditions...).Order(tx.UpdatedAt.Desc()).FindByPage(offset, limit)
+	ret, cnt, err := tx.WithContext(ctx).Where(conditions...).Order(tx.Rank.Desc(), tx.ID.Desc()).FindByPage(offset, limit)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -94,15 +95,32 @@ func ListByTeamID(ctx context.Context, teamID int64, limit, offset int, keyword 
 }
 
 func Save(ctx context.Context, req *rao.SavePlanReq, userID int64) (int64, error) {
-
 	tx := query.Use(dal.DB()).Plan
-	p, err := tx.WithContext(ctx).Where(tx.ID.Eq(req.PlanID)).Assign(
-		tx.TeamID.Value(req.TeamID),
-		tx.Name.Value(req.Name),
-		tx.Status.Value(consts.PlanStatusNormal),
-		tx.CreateUserID.Value(userID),
-		tx.Remark.Value(req.Remark),
-	).FirstOrCreate()
+	cnt, err := tx.WithContext(ctx).Unscoped().Where(tx.TeamID.Eq(req.TeamID)).Count()
+	if err != nil {
+		return 0, err
+	}
+
+	p := model.Plan{
+		ID:           req.PlanID,
+		TeamID:       req.TeamID,
+		Name:         req.Name,
+		Status:       consts.PlanStatusNormal,
+		CreateUserID: userID,
+		Remark:       req.Remark,
+		Rank:         cnt + 1,
+	}
+
+	if req.PlanID == 0 {
+		err := tx.WithContext(ctx).Create(&p)
+		if err != nil {
+			return 0, err
+		}
+	}
+
+	if err := tx.WithContext(ctx).Where(tx.ID.Eq(p.ID)).Omit(tx.Rank, tx.CreateUserID, tx.Status).Save(&p); err != nil {
+		return 0, err
+	}
 
 	return p.ID, err
 }
@@ -204,7 +222,12 @@ func GetPreinstall(ctx context.Context, teamID int64) (*rao.Preinstall, error) {
 
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectPreinstall)
 	var p mao.Preinstall
-	if err := collection.FindOne(ctx, bson.D{{"team_id", teamID}}).Decode(&p); err != nil {
+	err := collection.FindOne(ctx, bson.D{{"team_id", teamID}}).Decode(&p)
+	if err == mongo.ErrNoDocuments {
+		return nil, nil
+	}
+
+	if err != nil && err != mongo.ErrNoDocuments {
 		return nil, err
 	}
 
