@@ -16,6 +16,7 @@ const TableNamePlan = "plan"
 type Plan struct {
 	ID           int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
 	TeamID       int64          `gorm:"column:team_id;not null" json:"team_id"`
+	Rank         int64          `gorm:"column:rank;not null" json:"rank"`
 	Name         string         `gorm:"column:name;not null" json:"name"`
 	TaskType     int32          `gorm:"column:task_type" json:"task_type"`
 	Mode         int32          `gorm:"column:mode" json:"mode"`
@@ -27,7 +28,6 @@ type Plan struct {
 	CreatedAt    time.Time      `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt    time.Time      `gorm:"column:updated_at;not null;default:CURRENT_TIMESTAMP" json:"updated_at"`
 	DeletedAt    gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`
-	Rank         int64          `gorm:"column:rank;not null" json:"rank"`
 }
 
 // TableName Plan's table name

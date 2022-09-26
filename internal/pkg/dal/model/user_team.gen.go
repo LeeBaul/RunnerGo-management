@@ -14,14 +14,15 @@ const TableNameUserTeam = "user_team"
 
 // UserTeam mapped from table <user_team>
 type UserTeam struct {
-	ID        int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	UserID    int64          `gorm:"column:user_id;not null" json:"user_id"`
-	TeamID    int64          `gorm:"column:team_id;not null" json:"team_id"`
-	RoleID    int64          `gorm:"column:role_id;not null" json:"role_id"`
-	Sort      int32          `gorm:"column:sort;not null" json:"sort"`
-	CreatedAt time.Time      `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"`
-	UpdatedAt time.Time      `gorm:"column:updated_at;not null;default:CURRENT_TIMESTAMP" json:"updated_at"`
-	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`
+	ID           int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
+	UserID       int64          `gorm:"column:user_id;not null" json:"user_id"`
+	TeamID       int64          `gorm:"column:team_id;not null" json:"team_id"`
+	RoleID       int64          `gorm:"column:role_id;not null" json:"role_id"`
+	InviteUserID int64          `gorm:"column:invite_user_id;not null" json:"invite_user_id"`
+	Sort         int32          `gorm:"column:sort;not null" json:"sort"`
+	CreatedAt    time.Time      `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"`
+	UpdatedAt    time.Time      `gorm:"column:updated_at;not null;default:CURRENT_TIMESTAMP" json:"updated_at"`
+	DeletedAt    gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`
 }
 
 // TableName UserTeam's table name
