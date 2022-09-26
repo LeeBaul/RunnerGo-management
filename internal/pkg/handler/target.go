@@ -18,7 +18,7 @@ func SendTarget(ctx *gin.Context) {
 		return
 	}
 
-	retID, err := target.SendAPI(ctx, req.TargetID)
+	retID, err := target.SendAPI(ctx, req.TeamID, req.TargetID)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return

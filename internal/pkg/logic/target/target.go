@@ -88,7 +88,7 @@ func GetSendSceneResult(ctx context.Context, retID string) ([]*rao.SceneDebug, e
 
 }
 
-func SendAPI(ctx context.Context, targetID int64) (string, error) {
+func SendAPI(ctx context.Context, teamID, targetID int64) (string, error) {
 	tx := dal.GetQuery().Target
 	t, err := tx.WithContext(ctx).Where(tx.ID.Eq(targetID)).First()
 	if err != nil {
@@ -102,7 +102,13 @@ func SendAPI(ctx context.Context, targetID int64) (string, error) {
 		return "", err
 	}
 
-	return runner.RunAPI(ctx, packer.TransTargetToRaoAPIDetail(t, &a))
+	v := dal.GetQuery().Variable
+	variables, err := v.WithContext(ctx).Where(tx.TeamID.Eq(teamID)).Find()
+	if err != nil {
+		return "", err
+	}
+
+	return runner.RunAPI(ctx, packer.TransTargetToRaoAPIDetail(t, &a, variables))
 }
 
 func GetSendAPIResult(ctx context.Context, retID string) (*rao.APIDebug, error) {
