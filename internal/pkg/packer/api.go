@@ -58,7 +58,7 @@ func TransSaveTargetReqToMaoAPI(target *rao.SaveTargetReq) *mao.API {
 	}
 }
 
-func TransTargetToRaoAPIDetail(target *model.Target, api *mao.API) *rao.APIDetail {
+func TransTargetToRaoAPIDetail(target *model.Target, api *mao.API, vs []*model.Variable) *rao.APIDetail {
 	var auth rao.Auth
 	if err := bson.Unmarshal(api.Auth, &auth); err != nil {
 		proof.Errorf("api.auth bson Unmarshal err", proof.WithError(err))
@@ -84,6 +84,14 @@ func TransTargetToRaoAPIDetail(target *model.Target, api *mao.API) *rao.APIDetai
 	var regex mao.Regex
 	if err := bson.Unmarshal(api.Regex, &regex); err != nil {
 		proof.Errorf("api.regex bson Unmarshal err", proof.WithError(err))
+	}
+
+	var variables []*rao.KVVariable
+	for _, v := range vs {
+		variables = append(variables, &rao.KVVariable{
+			Key:   v.Var,
+			Value: v.Val,
+		})
 	}
 
 	return &rao.APIDetail{
@@ -114,6 +122,7 @@ func TransTargetToRaoAPIDetail(target *model.Target, api *mao.API) *rao.APIDetai
 		UpdatedTimeSec: target.UpdatedAt.Unix(),
 		Assert:         assert.Assert,
 		Regex:          regex.Regex,
+		Variable:       variables,
 	}
 }
 
@@ -123,7 +132,7 @@ func TransTargetsToRaoAPIDetails(targets []*model.Target, apis []*mao.API) []*ra
 	for _, target := range targets {
 		for _, api := range apis {
 			if api.TargetID == target.ID {
-				ret = append(ret, TransTargetToRaoAPIDetail(target, api))
+				ret = append(ret, TransTargetToRaoAPIDetail(target, api, nil))
 			}
 		}
 	}
