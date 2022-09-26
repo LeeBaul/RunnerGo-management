@@ -140,6 +140,7 @@ type Edge struct {
 	SourceHandle string `json:"sourceHandle"`
 	Target       string `json:"target"`
 	TargetHandle string `json:"targetHandle"`
+	Type         string `json:"type"`
 }
 
 // API 接口详情
