@@ -109,6 +109,8 @@ github.com/go-omnibus/omnibus v0.0.0-20220916064730-73f307617fbc h1:oILp8f7GUyLe
 github.com/go-omnibus/omnibus v0.0.0-20220916064730-73f307617fbc/go.mod h1:vKhaItawR01k478zZl2zMIhlH9gUvVHtRqGYglbmAho=
 github.com/go-omnibus/omnibus v0.0.0-20220926022645-0ab40df65fb6 h1:Qas7AjYitKKD4P26nQ3oDMXc/4W86BTDKzKmDnXRkCs=
 github.com/go-omnibus/omnibus v0.0.0-20220926022645-0ab40df65fb6/go.mod h1:vKhaItawR01k478zZl2zMIhlH9gUvVHtRqGYglbmAho=
+github.com/go-omnibus/omnibus v0.0.0-20220926100401-d11913aae456 h1:BhuleL1foogrxtiZcxmx2moV6BlU7HAVgGR+vMPEwG4=
+github.com/go-omnibus/omnibus v0.0.0-20220926100401-d11913aae456/go.mod h1:vKhaItawR01k478zZl2zMIhlH9gUvVHtRqGYglbmAho=
 github.com/go-omnibus/proof v0.0.0-20220920035050-20c928df67bd h1:lv48l1OfVRDEJqWDQElicl3uUM0iv+Xi4AKsVa5ZU4s=
 github.com/go-omnibus/proof v0.0.0-20220920035050-20c928df67bd/go.mod h1:JhJtolU+QVI1LtpqiWGnrhqb0JUAACRJ4pmGfZRzzM0=
 github.com/go-playground/assert/v2 v2.0.1 h1:MsBgLAaY856+nPRTKrp3/OZK38U/wa0CcBYNjji3q3A=

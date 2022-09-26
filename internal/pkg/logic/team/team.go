@@ -2,6 +2,7 @@ package team
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/go-omnibus/omnibus"
 
@@ -104,10 +105,37 @@ func InviteMember(ctx context.Context, inviteUserID, teamID int64, email []strin
 	return query.Use(dal.DB()).UserTeam.WithContext(ctx).CreateInBatches(ut, 5)
 }
 
-func RemoveMember(ctx context.Context, teamID, memberID int64) error {
-	tx := query.Use(dal.DB()).UserTeam
-	_, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID), tx.UserID.Eq(memberID)).Delete()
-	return err
+func RemoveMember(ctx context.Context, teamID, userID, memberID int64) error {
+
+	return dal.GetQuery().Transaction(func(tx *query.Query) error {
+		admin, err := tx.UserTeam.WithContext(ctx).Where(tx.UserTeam.TeamID.Eq(teamID), tx.UserTeam.UserID.Eq(userID)).First()
+		if err != nil {
+			return err
+		}
+
+		if !omnibus.InArray(admin.RoleID, []int64{consts.RoleTypeAdmin, consts.RoleTypeOwner}) {
+			return fmt.Errorf("user no permissions")
+		}
+
+		user, err := tx.UserTeam.WithContext(ctx).Where(tx.UserTeam.TeamID.Eq(teamID), tx.UserTeam.UserID.Eq(memberID)).First()
+		if err != nil {
+			return err
+		}
+
+		if user.RoleID == consts.RoleTypeOwner {
+			return fmt.Errorf("user no permissions")
+		}
+
+		if user.RoleID == consts.RoleTypeAdmin {
+			if admin.RoleID != consts.RoleTypeOwner {
+				return fmt.Errorf("user no permissions")
+			}
+		}
+
+		_, err = tx.UserTeam.WithContext(ctx).Where(tx.UserTeam.TeamID.Eq(teamID), tx.UserTeam.UserID.Eq(memberID)).Delete()
+
+		return err
+	})
 }
 
 func QuitTeam(ctx context.Context, teamID, userID int64) error {

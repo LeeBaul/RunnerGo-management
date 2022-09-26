@@ -83,7 +83,7 @@ func RemoveMember(ctx *gin.Context) {
 		return
 	}
 
-	if err := team.RemoveMember(ctx, req.TeamID, req.MemberID); err != nil {
+	if err := team.RemoveMember(ctx, req.TeamID, jwt.GetUserIDByCtx(ctx), req.MemberID); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
