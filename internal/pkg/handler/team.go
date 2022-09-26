@@ -91,3 +91,19 @@ func RemoveMember(ctx *gin.Context) {
 	response.Success(ctx)
 	return
 }
+
+func QuitTeam(ctx *gin.Context) {
+	var req rao.QuitTeamReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	if err := team.QuitTeam(ctx, req.TeamID, jwt.GetUserIDByCtx(ctx)); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
+}

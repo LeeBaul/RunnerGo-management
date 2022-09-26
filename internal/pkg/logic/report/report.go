@@ -90,26 +90,7 @@ func ListByTeamID2(ctx context.Context, teamID int64, limit, offset int, keyword
 		return nil, 0, err
 	}
 
-	var planIDs []int64
-	var sceneIDs []int64
-	for _, report := range reports {
-		planIDs = append(planIDs, report.PlanID)
-		sceneIDs = append(sceneIDs, report.SceneID)
-	}
-
-	p := dal.GetQuery().Plan
-	plans, err := p.WithContext(ctx).Where(p.ID.In(planIDs...)).Find()
-	if err != nil {
-		return nil, 0, err
-	}
-
-	s := dal.GetQuery().Target
-	scenes, err := s.WithContext(ctx).Where(s.ID.In(sceneIDs...)).Find()
-	if err != nil {
-		return nil, 0, err
-	}
-
-	return packer.TransReportModelToRaoReportList(reports, users, plans, scenes), cnt, nil
+	return packer.TransReportModelToRaoReportList(reports, users), cnt, nil
 }
 
 func KeywordFindPlan(ctx context.Context, teamID int64, keyword string) ([]int64, error) {
@@ -179,95 +160,6 @@ func KeywordFindUser(ctx context.Context, keyword string) ([]int64, error) {
 	}
 
 	return reportIDs, nil
-}
-
-func ListByTeamID(ctx context.Context, teamID int64, limit, offset int, keyword string, startTimeSec, endTimeSec int64) ([]*rao.Report, int64, error) {
-	tx := query.Use(dal.DB()).Report
-
-	conditions := make([]gen.Condition, 0)
-	conditions = append(conditions, tx.TeamID.Eq(teamID))
-
-	if keyword != "" {
-		p := dal.GetQuery().Plan
-		plans, err := p.WithContext(ctx).Where(p.Name.Like(fmt.Sprintf("%%%s%%", keyword))).Find()
-		if err != nil {
-			return nil, 0, err
-		}
-		var planIDs []int64
-		for _, plan := range plans {
-			planIDs = append(planIDs, plan.ID)
-		}
-		conditions = append(conditions, tx.PlanID.In(planIDs...))
-
-		//s := dal.GetQuery().Target
-		//scenes, err := s.WithContext(ctx).Where(s.Name.Like(fmt.Sprintf("%%%s%%", keyword))).Find()
-		//if err != nil {
-		//	return nil, 0, err
-		//}
-		//var sceneIDs []int64
-		//for _, scene := range scenes {
-		//	sceneIDs = append(sceneIDs, scene.ID)
-		//}
-		//if len(sceneIDs) > 0 {
-		//	conditions[1] = tx.SceneID.In(sceneIDs...)
-		//}
-
-		u := query.Use(dal.DB()).User
-		users, err := u.WithContext(ctx).Where(u.Nickname.Like(fmt.Sprintf("%%%s%%", keyword))).Find()
-		if err != nil {
-			return nil, 0, err
-		}
-
-		if len(users) > 0 {
-			conditions[1] = tx.RunUserID.Eq(users[0].ID)
-		}
-	}
-
-	if startTimeSec > 0 && endTimeSec > 0 {
-		startTime := time.Unix(startTimeSec, 0)
-		endTime := time.Unix(endTimeSec, 0)
-		conditions = append(conditions, tx.CreatedAt.Between(startTime, endTime))
-	}
-
-	reports, cnt, err := tx.WithContext(ctx).Where(conditions...).
-		Order(tx.ID.Desc()).
-		FindByPage(offset, limit)
-
-	if err != nil {
-		return nil, 0, err
-	}
-
-	var userIDs []int64
-	for _, r := range reports {
-		userIDs = append(userIDs, r.RunUserID)
-	}
-
-	u := query.Use(dal.DB()).User
-	users, err := u.WithContext(ctx).Where(u.ID.In(userIDs...)).Find()
-	if err != nil {
-		return nil, 0, err
-	}
-
-	var planIDs []int64
-	var sceneIDs []int64
-	for _, report := range reports {
-		planIDs = append(planIDs, report.PlanID)
-		sceneIDs = append(sceneIDs, report.SceneID)
-	}
-
-	p := dal.GetQuery().Plan
-	plans, err := p.WithContext(ctx).Where(p.ID.In(planIDs...)).Find()
-	if err != nil {
-		return nil, 0, err
-	}
-
-	s := dal.GetQuery().Target
-	scenes, err := s.WithContext(ctx).Where(s.ID.In(sceneIDs...)).Find()
-	if err != nil {
-		return nil, 0, err
-	}
-
-	return packer.TransReportModelToRaoReportList(reports, users, plans, scenes), cnt, nil
 }
 
 func DeleteReport(ctx context.Context, teamID, reportID int64) error {
