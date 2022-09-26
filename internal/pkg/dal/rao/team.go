@@ -1,5 +1,13 @@
 package rao
 
+type SaveTeamReq struct {
+	TeamID int64  `json:"team_id"`
+	Name   string `json:"name"`
+}
+
+type SaveTeamResp struct {
+}
+
 type ListTeamReq struct {
 }
 
@@ -24,12 +32,14 @@ type ListMembersResp struct {
 }
 
 type Member struct {
-	UserID      int64  `json:"user_id"`
-	Avatar      string `json:"avatar"`
-	Email       string `json:"email"`
-	Nickname    string `json:"nickname"`
-	RoleID      int64  `json:"role_id"`
-	JoinTimeSec int64  `json:"join_time_sec,omitempty"`
+	UserID         int64  `json:"user_id"`
+	Avatar         string `json:"avatar"`
+	Email          string `json:"email"`
+	Nickname       string `json:"nickname"`
+	RoleID         int64  `json:"role_id"`
+	InviteUserID   int64  `json:"invite_user_id"`
+	InviteUserName string `json:"invite_user_name"`
+	JoinTimeSec    int64  `json:"join_time_sec,omitempty"`
 }
 
 type InviteMemberReq struct {

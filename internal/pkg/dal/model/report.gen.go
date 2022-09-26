@@ -16,6 +16,7 @@ const TableNameReport = "report"
 type Report struct {
 	ID        int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
 	TeamID    int64          `gorm:"column:team_id;not null" json:"team_id"`
+	Rank      int64          `gorm:"column:rank;not null" json:"rank"`
 	PlanID    int64          `gorm:"column:plan_id;not null" json:"plan_id"`
 	SceneID   int64          `gorm:"column:scene_id;not null" json:"scene_id"`
 	TaskType  int32          `gorm:"column:task_type;not null" json:"task_type"`
@@ -26,7 +27,6 @@ type Report struct {
 	CreatedAt time.Time      `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt time.Time      `gorm:"column:updated_at;not null;default:CURRENT_TIMESTAMP" json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`
-	Rank      int64          `gorm:"column:rank;not null" json:"rank"`
 }
 
 // TableName Report's table name

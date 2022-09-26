@@ -10,6 +10,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func SaveTeam(ctx *gin.Context) {
+	var req rao.SaveTeamReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	if err := team.SaveTeam(ctx, req.TeamID, jwt.GetUserIDByCtx(ctx), req.Name); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
+}
+
 // ListTeam 团队列表
 func ListTeam(ctx *gin.Context) {
 	teams, err := team.ListByUserID(ctx, jwt.GetUserIDByCtx(ctx))
@@ -50,7 +66,7 @@ func InviteMember(ctx *gin.Context) {
 		return
 	}
 
-	if err := team.InviteMember(ctx, req.TeamID, req.MemberEmail); err != nil {
+	if err := team.InviteMember(ctx, jwt.GetUserIDByCtx(ctx), req.TeamID, req.MemberEmail); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}

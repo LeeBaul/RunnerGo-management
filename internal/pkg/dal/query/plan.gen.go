@@ -29,6 +29,7 @@ func newPlan(db *gorm.DB) plan {
 	_plan.ALL = field.NewAsterisk(tableName)
 	_plan.ID = field.NewInt64(tableName, "id")
 	_plan.TeamID = field.NewInt64(tableName, "team_id")
+	_plan.Rank = field.NewInt64(tableName, "rank")
 	_plan.Name = field.NewString(tableName, "name")
 	_plan.TaskType = field.NewInt32(tableName, "task_type")
 	_plan.Mode = field.NewInt32(tableName, "mode")
@@ -40,7 +41,6 @@ func newPlan(db *gorm.DB) plan {
 	_plan.CreatedAt = field.NewTime(tableName, "created_at")
 	_plan.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_plan.DeletedAt = field.NewField(tableName, "deleted_at")
-	_plan.Rank = field.NewInt64(tableName, "rank")
 
 	_plan.fillFieldMap()
 
@@ -53,6 +53,7 @@ type plan struct {
 	ALL          field.Asterisk
 	ID           field.Int64
 	TeamID       field.Int64
+	Rank         field.Int64
 	Name         field.String
 	TaskType     field.Int32
 	Mode         field.Int32
@@ -64,7 +65,6 @@ type plan struct {
 	CreatedAt    field.Time
 	UpdatedAt    field.Time
 	DeletedAt    field.Field
-	Rank         field.Int64
 
 	fieldMap map[string]field.Expr
 }
@@ -83,6 +83,7 @@ func (p *plan) updateTableName(table string) *plan {
 	p.ALL = field.NewAsterisk(table)
 	p.ID = field.NewInt64(table, "id")
 	p.TeamID = field.NewInt64(table, "team_id")
+	p.Rank = field.NewInt64(table, "rank")
 	p.Name = field.NewString(table, "name")
 	p.TaskType = field.NewInt32(table, "task_type")
 	p.Mode = field.NewInt32(table, "mode")
@@ -94,7 +95,6 @@ func (p *plan) updateTableName(table string) *plan {
 	p.CreatedAt = field.NewTime(table, "created_at")
 	p.UpdatedAt = field.NewTime(table, "updated_at")
 	p.DeletedAt = field.NewField(table, "deleted_at")
-	p.Rank = field.NewInt64(table, "rank")
 
 	p.fillFieldMap()
 
@@ -120,6 +120,7 @@ func (p *plan) fillFieldMap() {
 	p.fieldMap = make(map[string]field.Expr, 14)
 	p.fieldMap["id"] = p.ID
 	p.fieldMap["team_id"] = p.TeamID
+	p.fieldMap["rank"] = p.Rank
 	p.fieldMap["name"] = p.Name
 	p.fieldMap["task_type"] = p.TaskType
 	p.fieldMap["mode"] = p.Mode
@@ -131,7 +132,6 @@ func (p *plan) fillFieldMap() {
 	p.fieldMap["created_at"] = p.CreatedAt
 	p.fieldMap["updated_at"] = p.UpdatedAt
 	p.fieldMap["deleted_at"] = p.DeletedAt
-	p.fieldMap["rank"] = p.Rank
 }
 
 func (p plan) clone(db *gorm.DB) plan {

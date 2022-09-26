@@ -49,6 +49,7 @@ func RegisterRouter(r *gin.Engine) {
 
 	// 团队
 	team := api.Group("/v1/team")
+	team.POST("/save", handler.SaveTeam)
 	team.GET("/list", handler.ListTeam)
 	team.GET("/members", handler.TeamMembers)
 	team.POST("/invite", handler.InviteMember)

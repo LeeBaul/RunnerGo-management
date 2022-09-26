@@ -29,6 +29,7 @@ func newReport(db *gorm.DB) report {
 	_report.ALL = field.NewAsterisk(tableName)
 	_report.ID = field.NewInt64(tableName, "id")
 	_report.TeamID = field.NewInt64(tableName, "team_id")
+	_report.Rank = field.NewInt64(tableName, "rank")
 	_report.PlanID = field.NewInt64(tableName, "plan_id")
 	_report.SceneID = field.NewInt64(tableName, "scene_id")
 	_report.TaskType = field.NewInt32(tableName, "task_type")
@@ -39,7 +40,6 @@ func newReport(db *gorm.DB) report {
 	_report.CreatedAt = field.NewTime(tableName, "created_at")
 	_report.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_report.DeletedAt = field.NewField(tableName, "deleted_at")
-	_report.Rank = field.NewInt64(tableName, "rank")
 
 	_report.fillFieldMap()
 
@@ -52,6 +52,7 @@ type report struct {
 	ALL       field.Asterisk
 	ID        field.Int64
 	TeamID    field.Int64
+	Rank      field.Int64
 	PlanID    field.Int64
 	SceneID   field.Int64
 	TaskType  field.Int32
@@ -62,7 +63,6 @@ type report struct {
 	CreatedAt field.Time
 	UpdatedAt field.Time
 	DeletedAt field.Field
-	Rank      field.Int64
 
 	fieldMap map[string]field.Expr
 }
@@ -81,6 +81,7 @@ func (r *report) updateTableName(table string) *report {
 	r.ALL = field.NewAsterisk(table)
 	r.ID = field.NewInt64(table, "id")
 	r.TeamID = field.NewInt64(table, "team_id")
+	r.Rank = field.NewInt64(table, "rank")
 	r.PlanID = field.NewInt64(table, "plan_id")
 	r.SceneID = field.NewInt64(table, "scene_id")
 	r.TaskType = field.NewInt32(table, "task_type")
@@ -91,7 +92,6 @@ func (r *report) updateTableName(table string) *report {
 	r.CreatedAt = field.NewTime(table, "created_at")
 	r.UpdatedAt = field.NewTime(table, "updated_at")
 	r.DeletedAt = field.NewField(table, "deleted_at")
-	r.Rank = field.NewInt64(table, "rank")
 
 	r.fillFieldMap()
 
@@ -117,6 +117,7 @@ func (r *report) fillFieldMap() {
 	r.fieldMap = make(map[string]field.Expr, 13)
 	r.fieldMap["id"] = r.ID
 	r.fieldMap["team_id"] = r.TeamID
+	r.fieldMap["rank"] = r.Rank
 	r.fieldMap["plan_id"] = r.PlanID
 	r.fieldMap["scene_id"] = r.SceneID
 	r.fieldMap["task_type"] = r.TaskType
@@ -127,7 +128,6 @@ func (r *report) fillFieldMap() {
 	r.fieldMap["created_at"] = r.CreatedAt
 	r.fieldMap["updated_at"] = r.UpdatedAt
 	r.fieldMap["deleted_at"] = r.DeletedAt
-	r.fieldMap["rank"] = r.Rank
 }
 
 func (r report) clone(db *gorm.DB) report {
