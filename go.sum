@@ -107,6 +107,8 @@ github.com/go-logr/logr v1.2.3/go.mod h1:jdQByPbusPIv2/zmleS9BjJVeZ6kBagPoEUsqbV
 github.com/go-logr/stdr v1.2.2/go.mod h1:mMo/vtBO5dYbehREoey6XUKy/eSumjCCveDpRre4VKE=
 github.com/go-omnibus/omnibus v0.0.0-20220916064730-73f307617fbc h1:oILp8f7GUyLeosukQgU1QieKSkPFlqar40N+0d9tgZ4=
 github.com/go-omnibus/omnibus v0.0.0-20220916064730-73f307617fbc/go.mod h1:vKhaItawR01k478zZl2zMIhlH9gUvVHtRqGYglbmAho=
+github.com/go-omnibus/omnibus v0.0.0-20220926022645-0ab40df65fb6 h1:Qas7AjYitKKD4P26nQ3oDMXc/4W86BTDKzKmDnXRkCs=
+github.com/go-omnibus/omnibus v0.0.0-20220926022645-0ab40df65fb6/go.mod h1:vKhaItawR01k478zZl2zMIhlH9gUvVHtRqGYglbmAho=
 github.com/go-omnibus/proof v0.0.0-20220920035050-20c928df67bd h1:lv48l1OfVRDEJqWDQElicl3uUM0iv+Xi4AKsVa5ZU4s=
 github.com/go-omnibus/proof v0.0.0-20220920035050-20c928df67bd/go.mod h1:JhJtolU+QVI1LtpqiWGnrhqb0JUAACRJ4pmGfZRzzM0=
 github.com/go-playground/assert/v2 v2.0.1 h1:MsBgLAaY856+nPRTKrp3/OZK38U/wa0CcBYNjji3q3A=
@@ -462,6 +464,8 @@ golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d/go.mod h1:IxCIyHEi3zRg3s0
 golang.org/x/crypto v0.0.0-20220829220503-c86fa9a7ed90/go.mod h1:IxCIyHEi3zRg3s0A5j5BB6A9Jmi73HwBIUl50j+osU4=
 golang.org/x/crypto v0.0.0-20220919173607-35f4265a4bc0 h1:a5Yg6ylndHHYJqIPrdq0AhvR6KTvDTAvgBtaidhEevY=
 golang.org/x/crypto v0.0.0-20220919173607-35f4265a4bc0/go.mod h1:IxCIyHEi3zRg3s0A5j5BB6A9Jmi73HwBIUl50j+osU4=
+golang.org/x/crypto v0.0.0-20220924013350-4ba4fb4dd9e7 h1:WJywXQVIb56P2kAvXeMGTIgQ1ZHQxR60+F9dLsodECc=
+golang.org/x/crypto v0.0.0-20220924013350-4ba4fb4dd9e7/go.mod h1:IxCIyHEi3zRg3s0A5j5BB6A9Jmi73HwBIUl50j+osU4=
 golang.org/x/exp v0.0.0-20190121172915-509febef88a4/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=
 golang.org/x/exp v0.0.0-20190306152737-a1d7652674e8/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=
 golang.org/x/exp v0.0.0-20190510132918-efd6b22b2522/go.mod h1:ZjyILWgesfNpC6sMxTJOJm9Kp84zZh5NQWvqDGG3Qr8=
