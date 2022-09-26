@@ -2,6 +2,9 @@ package operation
 
 import (
 	"context"
+	"time"
+
+	"github.com/go-omnibus/omnibus"
 
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/query"
@@ -11,7 +14,7 @@ import (
 
 func List(ctx context.Context, teamID int64, limit, offset int) ([]*rao.Operation, int64, error) {
 	tx := query.Use(dal.DB()).Operation
-	operations, cnt, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID)).
+	operations, cnt, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID), tx.CreatedAt.Between(time.Now().AddDate(0, 0, -2), time.Now())).
 		Order(tx.UpdatedAt.Desc()).FindByPage(offset, limit)
 	if err != nil {
 		return nil, 0, err
@@ -23,7 +26,7 @@ func List(ctx context.Context, teamID int64, limit, offset int) ([]*rao.Operatio
 	}
 
 	u := query.Use(dal.DB()).User
-	users, err := u.WithContext(ctx).Where(u.ID.In(userIDs...)).Find()
+	users, err := u.WithContext(ctx).Where(u.ID.In(omnibus.Int64ArrayUnique(userIDs)...)).Find()
 	if err != nil {
 		return nil, 0, err
 	}
