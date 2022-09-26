@@ -12,7 +12,7 @@ import (
 	"kp-management/internal/pkg/packer"
 )
 
-func Save(ctx context.Context, req *rao.SaveSceneReq, userID int64) (int64, error) {
+func Save(ctx context.Context, req *rao.SaveSceneReq, userID int64) (int64, string, error) {
 	target := packer.TransSaveSceneReqToTargetModel(req, userID)
 	//scene := packer.TransSaveSceneReqToMaoScene(req)
 
@@ -39,7 +39,7 @@ func Save(ctx context.Context, req *rao.SaveSceneReq, userID int64) (int64, erro
 		return record.InsertUpdate(ctx, target.TeamID, userID, fmt.Sprintf("修改场景 - %s", target.Name))
 	})
 
-	return target.ID, err
+	return target.ID, target.Name, err
 }
 
 func BatchGetByTargetID(ctx context.Context, teamID int64, targetIDs []int64) ([]*rao.Scene, error) {

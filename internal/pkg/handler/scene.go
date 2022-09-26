@@ -88,13 +88,16 @@ func SaveScene(ctx *gin.Context) {
 		return
 	}
 
-	targetID, err := scene.Save(ctx, &req, jwt.GetUserIDByCtx(ctx))
+	targetID, targetName, err := scene.Save(ctx, &req, jwt.GetUserIDByCtx(ctx))
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
-	response.SuccessWithData(ctx, rao.SaveSceneResp{TargetID: targetID})
+	response.SuccessWithData(ctx, rao.SaveSceneResp{
+		TargetID:   targetID,
+		TargetName: targetName,
+	})
 	return
 }
 
