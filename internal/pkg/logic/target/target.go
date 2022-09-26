@@ -103,7 +103,7 @@ func SendAPI(ctx context.Context, teamID, targetID int64) (string, error) {
 	}
 
 	v := dal.GetQuery().Variable
-	variables, err := v.WithContext(ctx).Where(tx.TeamID.Eq(teamID)).Find()
+	variables, err := v.WithContext(ctx).Where(v.TeamID.Eq(teamID)).Find()
 	if err != nil {
 		return "", err
 	}
