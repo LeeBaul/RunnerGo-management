@@ -31,7 +31,9 @@ func newReport(db *gorm.DB) report {
 	_report.TeamID = field.NewInt64(tableName, "team_id")
 	_report.Rank = field.NewInt64(tableName, "rank")
 	_report.PlanID = field.NewInt64(tableName, "plan_id")
+	_report.PlanName = field.NewString(tableName, "plan_name")
 	_report.SceneID = field.NewInt64(tableName, "scene_id")
+	_report.SceneName = field.NewString(tableName, "scene_name")
 	_report.TaskType = field.NewInt32(tableName, "task_type")
 	_report.TaskMode = field.NewInt32(tableName, "task_mode")
 	_report.Status = field.NewInt32(tableName, "status")
@@ -54,7 +56,9 @@ type report struct {
 	TeamID    field.Int64
 	Rank      field.Int64
 	PlanID    field.Int64
+	PlanName  field.String
 	SceneID   field.Int64
+	SceneName field.String
 	TaskType  field.Int32
 	TaskMode  field.Int32
 	Status    field.Int32
@@ -83,7 +87,9 @@ func (r *report) updateTableName(table string) *report {
 	r.TeamID = field.NewInt64(table, "team_id")
 	r.Rank = field.NewInt64(table, "rank")
 	r.PlanID = field.NewInt64(table, "plan_id")
+	r.PlanName = field.NewString(table, "plan_name")
 	r.SceneID = field.NewInt64(table, "scene_id")
+	r.SceneName = field.NewString(table, "scene_name")
 	r.TaskType = field.NewInt32(table, "task_type")
 	r.TaskMode = field.NewInt32(table, "task_mode")
 	r.Status = field.NewInt32(table, "status")
@@ -114,12 +120,14 @@ func (r *report) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (r *report) fillFieldMap() {
-	r.fieldMap = make(map[string]field.Expr, 13)
+	r.fieldMap = make(map[string]field.Expr, 15)
 	r.fieldMap["id"] = r.ID
 	r.fieldMap["team_id"] = r.TeamID
 	r.fieldMap["rank"] = r.Rank
 	r.fieldMap["plan_id"] = r.PlanID
+	r.fieldMap["plan_name"] = r.PlanName
 	r.fieldMap["scene_id"] = r.SceneID
+	r.fieldMap["scene_name"] = r.SceneName
 	r.fieldMap["task_type"] = r.TaskType
 	r.fieldMap["task_mode"] = r.TaskMode
 	r.fieldMap["status"] = r.Status

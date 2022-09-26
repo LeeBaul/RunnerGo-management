@@ -54,6 +54,7 @@ func RegisterRouter(r *gin.Engine) {
 	team.GET("/members", handler.TeamMembers)
 	team.POST("/invite", handler.InviteMember)
 	team.POST("/remove", handler.RemoveMember)
+	team.POST("/quit", handler.QuitTeam)
 
 	// 全局变量
 	variable := api.Group("/v1/variable")

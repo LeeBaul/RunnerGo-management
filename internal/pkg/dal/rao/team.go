@@ -57,3 +57,10 @@ type RemoveMemberReq struct {
 
 type RemoveMemberResp struct {
 }
+
+type QuitTeamReq struct {
+	TeamID int64 `json:"team_id" binding:"required,gt=0"`
+}
+
+type QuitTeamResp struct {
+}

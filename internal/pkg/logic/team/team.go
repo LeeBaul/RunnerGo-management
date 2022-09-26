@@ -109,3 +109,24 @@ func RemoveMember(ctx context.Context, teamID, memberID int64) error {
 	_, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID), tx.UserID.Eq(memberID)).Delete()
 	return err
 }
+
+func QuitTeam(ctx context.Context, teamID, userID int64) error {
+
+	return dal.GetQuery().Transaction(func(tx *query.Query) error {
+		ut, err := tx.UserTeam.WithContext(ctx).Where(tx.UserTeam.TeamID.Eq(teamID), tx.UserTeam.UserID.Eq(userID)).First()
+		if err != nil {
+			return err
+		}
+
+		switch ut.RoleID {
+		case consts.RoleTypeOwner:
+			break
+		case consts.RoleTypeMember:
+			break
+		case consts.RoleTypeAdmin:
+			break
+		}
+
+		return nil
+	})
+}

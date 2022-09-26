@@ -18,7 +18,9 @@ type Report struct {
 	TeamID    int64          `gorm:"column:team_id;not null" json:"team_id"`
 	Rank      int64          `gorm:"column:rank;not null" json:"rank"`
 	PlanID    int64          `gorm:"column:plan_id;not null" json:"plan_id"`
+	PlanName  string         `gorm:"column:plan_name;not null" json:"plan_name"`
 	SceneID   int64          `gorm:"column:scene_id;not null" json:"scene_id"`
+	SceneName string         `gorm:"column:scene_name;not null" json:"scene_name"`
 	TaskType  int32          `gorm:"column:task_type;not null" json:"task_type"`
 	TaskMode  int32          `gorm:"column:task_mode;not null" json:"task_mode"`
 	Status    int32          `gorm:"column:status;not null" json:"status"`
