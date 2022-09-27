@@ -17,6 +17,7 @@ type ListTeamResp struct {
 
 type Team struct {
 	Name   string `json:"name"`
+	Type   int32  `json:"type"`
 	Sort   int32  `json:"sort"`
 	TeamID int64  `json:"team_id"`
 	RoleID int64  `json:"role_id"`

@@ -19,6 +19,7 @@ func TransTeamsModelToRaoTeam(teams []*model.Team, userTeams []*model.UserTeam, 
 				if ut.TeamID == t.ID && cnt.TeamID == t.ID {
 					ret = append(ret, &rao.Team{
 						Name:   t.Name,
+						Type:   t.Type,
 						Sort:   ut.Sort,
 						TeamID: t.ID,
 						RoleID: ut.RoleID,
