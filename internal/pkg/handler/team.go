@@ -66,7 +66,7 @@ func InviteMember(ctx *gin.Context) {
 		return
 	}
 
-	if err := team.InviteMember(ctx, jwt.GetUserIDByCtx(ctx), req.TeamID, req.MemberEmail); err != nil {
+	if err := team.InviteMember(ctx, jwt.GetUserIDByCtx(ctx), req.TeamID, req.Members); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
