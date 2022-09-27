@@ -37,12 +37,14 @@ type Body struct {
 }
 
 type Parameter struct {
-	IsChecked   int32  `json:"is_checked"`
-	Type        string `json:"type"`
-	Key         string `json:"key"`
-	Value       string `json:"value"`
-	NotNull     int32  `json:"not_null"`
-	Description string `json:"description"`
+	IsChecked   int32    `json:"is_checked"`
+	Type        string   `json:"type"`
+	Key         string   `json:"key"`
+	Value       string   `json:"value"`
+	NotNull     int32    `json:"not_null"`
+	Description string   `json:"description"`
+	FileBase64  []string `json:"fileBase64"`
+	FieldType   string   `json:"field_type"`
 }
 
 type Script struct {
