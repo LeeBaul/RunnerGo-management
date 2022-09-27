@@ -16,12 +16,15 @@ type ListTeamResp struct {
 }
 
 type Team struct {
-	Name   string `json:"name"`
-	Type   int32  `json:"type"`
-	Sort   int32  `json:"sort"`
-	TeamID int64  `json:"team_id"`
-	RoleID int64  `json:"role_id"`
-	Cnt    int64  `json:"cnt"`
+	Name            string `json:"name"`
+	Type            int32  `json:"type"`
+	Sort            int32  `json:"sort"`
+	TeamID          int64  `json:"team_id"`
+	RoleID          int64  `json:"role_id"`
+	CreatedUserID   int64  `json:"created_user_id"`
+	CreatedUserName string `json:"created_user_name"`
+	CreatedTimeSec  int64  `json:"created_time_sec"`
+	Cnt             int64  `json:"cnt"`
 }
 
 type ListMembersReq struct {
