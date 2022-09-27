@@ -21,6 +21,7 @@ func SaveTeam(ctx context.Context, teamID, userID int64, name string) error {
 			tx.Team.ID.Value(teamID),
 			tx.Team.Name.Value(name),
 			tx.Team.Type.Value(consts.TeamTypeNormal),
+			tx.Team.CreatedUserID.Value(userID),
 		).FirstOrCreate()
 		if err != nil {
 			return err
