@@ -50,6 +50,15 @@ type InviteMemberReq struct {
 type InviteMemberResp struct {
 }
 
+type RoleUserReq struct {
+	TeamID int64 `json:"team_id" binding:"required,gt=0"`
+	RoleID int64 `json:"role_id" binding:"required,oneof=2 3"`
+	UserID int64 `json:"user_id" binding:"required,gt=0"`
+}
+
+type RoleUserResp struct {
+}
+
 type RemoveMemberReq struct {
 	TeamID   int64 `json:"team_id" binding:"required,gt=0"`
 	MemberID int64 `json:"member_id" binding:"required,gt=0"`

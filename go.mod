@@ -3,11 +3,13 @@ module kp-management
 go 1.18
 
 require (
+	github.com/allegro/bigcache/v3 v3.0.2
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-contrib/zap v0.1.0
 	github.com/gin-gonic/gin v1.8.1
-	github.com/go-omnibus/omnibus v0.0.0-20220926022645-0ab40df65fb6
+	github.com/go-omnibus/omnibus v0.0.0-20220926100401-d11913aae456
 	github.com/go-omnibus/proof v0.0.0-20220920035050-20c928df67bd
+	github.com/go-redis/redis/v8 v8.11.5
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/olivere/elastic/v7 v7.0.32
@@ -32,7 +34,6 @@ require (
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator/v10 v10.11.1 // indirect
-	github.com/go-redis/redis/v8 v8.11.5 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/goccy/go-json v0.9.11 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect

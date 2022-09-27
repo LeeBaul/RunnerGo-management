@@ -53,7 +53,7 @@ func RegisterRouter(r *gin.Engine) {
 	team.GET("/list", handler.ListTeam)
 	team.GET("/members", handler.TeamMembers)
 	team.POST("/invite", handler.InviteMember)
-
+	team.POST("/role", handler.RoleUser)
 	team.POST("/remove", handler.RemoveMember)
 	team.POST("/quit", handler.QuitTeam)
 

@@ -14,4 +14,5 @@ func InitProjects() {
 	proof.MustInitProof()
 	dal.MustInitGRPC()
 	dal.MustInitRedis()
+	dal.MustInitBigCache()
 }

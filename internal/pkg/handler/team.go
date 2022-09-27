@@ -75,6 +75,22 @@ func InviteMember(ctx *gin.Context) {
 	return
 }
 
+func RoleUser(ctx *gin.Context) {
+	var req rao.RoleUserReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	if err := team.RoleUser(ctx, req.TeamID, req.UserID, req.RoleID); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
+}
+
 // RemoveMember 移除成员
 func RemoveMember(ctx *gin.Context) {
 	var req rao.RemoveMemberReq
@@ -83,7 +99,7 @@ func RemoveMember(ctx *gin.Context) {
 		return
 	}
 
-	if err := team.RemoveMember(ctx, req.TeamID, req.MemberID); err != nil {
+	if err := team.RemoveMember(ctx, req.TeamID, jwt.GetUserIDByCtx(ctx), req.MemberID); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
