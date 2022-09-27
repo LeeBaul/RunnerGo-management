@@ -161,6 +161,15 @@ func RemoveMember(ctx context.Context, teamID, userID, memberID int64) error {
 func QuitTeam(ctx context.Context, teamID, userID int64) error {
 
 	return dal.GetQuery().Transaction(func(tx *query.Query) error {
+		team, err := tx.Team.WithContext(ctx).Where(tx.Team.ID.Eq(teamID)).First()
+		if err != nil {
+			return err
+		}
+
+		if team.Type == consts.TeamTypePrivate {
+			return fmt.Errorf("user no permissions")
+		}
+
 		ut, err := tx.UserTeam.WithContext(ctx).Where(tx.UserTeam.TeamID.Eq(teamID), tx.UserTeam.UserID.Eq(userID)).First()
 		if err != nil {
 			return err
