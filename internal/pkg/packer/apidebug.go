@@ -16,19 +16,19 @@ func TransMaoAPIDebugToRaoAPIDebug(m *mao.APIDebug) *rao.APIDebug {
 		})
 	}
 
-	var rs []*rao.DebugRegex
-	for _, r := range m.Regex {
-		rs = append(rs, &rao.DebugRegex{
-			Code: r.Code,
-		})
-	}
+	//var rs []*rao.DebugRegex
+	//for _, r := range m.Regex {
+	//	rs = append(rs, &rao.DebugRegex{
+	//		Code: r.Code,
+	//	})
+	//}
 
 	return &rao.APIDebug{
 		ApiID:                 m.ApiID,
 		APIName:               m.APIName,
 		Assertion:             as,
 		EventID:               m.EventID,
-		Regex:                 rs,
+		Regex:                 m.Regex,
 		RequestBody:           m.RequestBody,
 		RequestCode:           m.RequestCode,
 		RequestHeader:         m.RequestHeader,
