@@ -21,7 +21,7 @@ func SignUp(ctx context.Context, email, password, nickname string) (*model.User,
 	}
 
 	user := model.User{Email: email, Password: hashedPassword, Nickname: nickname}
-	team := model.Team{Name: fmt.Sprintf("%s 的团队", nickname)}
+	team := model.Team{Name: fmt.Sprintf("%s 的团队", nickname), Type: consts.TeamTypePrivate}
 
 	err = query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
 		if err := tx.User.WithContext(ctx).Create(&user); err != nil {

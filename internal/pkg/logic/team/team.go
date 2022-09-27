@@ -20,6 +20,7 @@ func SaveTeam(ctx context.Context, teamID, userID int64, name string) error {
 		team, err := tx.Team.WithContext(ctx).Where(tx.Team.ID.Eq(teamID)).Assign(
 			tx.Team.ID.Value(teamID),
 			tx.Team.Name.Value(name),
+			tx.Team.Type.Value(consts.TeamTypeNormal),
 		).FirstOrCreate()
 		if err != nil {
 			return err
@@ -121,11 +122,17 @@ func RoleUser(ctx context.Context, teamID, userID, roleID int64) error {
 func RemoveMember(ctx context.Context, teamID, userID, memberID int64) error {
 
 	return dal.GetQuery().Transaction(func(tx *query.Query) error {
+		// 不能移除自己
+		if userID == memberID {
+			return fmt.Errorf("user no permissions")
+		}
+
 		admin, err := tx.UserTeam.WithContext(ctx).Where(tx.UserTeam.TeamID.Eq(teamID), tx.UserTeam.UserID.Eq(userID)).First()
 		if err != nil {
 			return err
 		}
 
+		// 只有管理员和创建人可以操作移除
 		if !omnibus.InArray(admin.RoleID, []int64{consts.RoleTypeAdmin, consts.RoleTypeOwner}) {
 			return fmt.Errorf("user no permissions")
 		}
@@ -135,14 +142,14 @@ func RemoveMember(ctx context.Context, teamID, userID, memberID int64) error {
 			return err
 		}
 
+		// 不能移除创建人
 		if user.RoleID == consts.RoleTypeOwner {
 			return fmt.Errorf("user no permissions")
 		}
 
-		if user.RoleID == consts.RoleTypeAdmin {
-			if admin.RoleID != consts.RoleTypeOwner {
-				return fmt.Errorf("user no permissions")
-			}
+		// 只有创建人能移除管理员
+		if user.RoleID == consts.RoleTypeAdmin && admin.RoleID != consts.RoleTypeOwner {
+			return fmt.Errorf("user no permissions")
 		}
 
 		_, err = tx.UserTeam.WithContext(ctx).Where(tx.UserTeam.TeamID.Eq(teamID), tx.UserTeam.UserID.Eq(memberID)).Delete()
