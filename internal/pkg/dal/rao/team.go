@@ -47,8 +47,14 @@ type Member struct {
 }
 
 type InviteMemberReq struct {
-	TeamID      int64    `json:"team_id" binding:"required,gt=0"`
-	MemberEmail []string `json:"member_email"`
+	TeamID  int64           `json:"team_id" binding:"required,gt=0"`
+	Members []*InviteMember `json:"members"`
+	//MemberEmail []string `json:"member_email"`
+}
+
+type InviteMember struct {
+	Email  string `json:"email"`
+	RoleID int64  `json:"role_id"`
 }
 
 type InviteMemberResp struct {
