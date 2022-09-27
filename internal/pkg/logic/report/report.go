@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/shopspring/decimal"
 	"log"
 	"os"
 	"strconv"
@@ -325,7 +326,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 				resultData.Results[k].NinetyNineRequestTimeLineValue = apiResult.NinetyNineRequestTimeLineValue
 				resultData.Results[k].SendBytes = apiResult.SendBytes
 				resultData.Results[k].ReceivedBytes = apiResult.ReceivedBytes
-				resultData.Results[k].Qps = apiResult.Qps
+				resultData.Results[k].Qps, _ = decimal.NewFromFloat(apiResult.Qps).Round(2).Float64()
 				if resultData.Results[k].QpsList == nil {
 					resultData.Results[k].QpsList = []TimeValue{}
 				}
