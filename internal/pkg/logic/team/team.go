@@ -20,6 +20,7 @@ func SaveTeam(ctx context.Context, teamID, userID int64, name string) error {
 		team, err := tx.Team.WithContext(ctx).Where(tx.Team.ID.Eq(teamID)).Assign(
 			tx.Team.ID.Value(teamID),
 			tx.Team.Name.Value(name),
+			tx.Team.Type.Value(consts.TeamTypeNormal),
 		).FirstOrCreate()
 		if err != nil {
 			return err
