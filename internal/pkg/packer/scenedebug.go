@@ -19,20 +19,13 @@ func TransMaoSceneDebugsToRaoSceneDebugs(ms []*mao.SceneDebug) []*rao.SceneDebug
 			})
 		}
 
-		var rs []*rao.DebugRegex
-		for _, r := range m.Regex {
-			rs = append(rs, &rao.DebugRegex{
-				Code: r.Code,
-			})
-		}
-
 		ret = append(ret, &rao.SceneDebug{
 			ApiID:          m.ApiID,
 			APIName:        m.APIName,
 			Assertion:      as,
 			EventID:        m.EventID,
 			NextList:       m.NextList,
-			Regex:          rs,
+			Regex:          m.Regex,
 			RequestBody:    m.RequestBody,
 			RequestCode:    m.RequestCode,
 			RequestHeader:  m.RequestHeader,
