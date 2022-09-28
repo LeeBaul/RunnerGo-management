@@ -333,13 +333,21 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 				}
 				var timeValue = TimeValue{}
 				timeValue.TimeStamp = resultData.TimeStamp
+				// qps列表
 				timeValue.Value = resultData.Results[k].Qps
 				resultData.Results[k].QpsList = append(resultData.Results[k].QpsList, timeValue)
 				timeValue.Value = resultData.Results[k].ErrorNum
 				if resultData.Results[k].ErrorNumList == nil {
 					resultData.Results[k].ErrorNumList = []TimeValue{}
 				}
+				// 错误数列表
 				resultData.Results[k].ErrorNumList = append(resultData.Results[k].ErrorNumList, timeValue)
+				timeValue.Value = resultData.Results[k].Concurrency
+				if resultData.Results[k].ConcurrencyList == nil {
+					resultData.Results[k].ConcurrencyList = []TimeValue{}
+				}
+				// 并发数列表
+				resultData.Results[k].ConcurrencyList = append(resultData.Results[k].ConcurrencyList, timeValue)
 			}
 		}
 	}
@@ -408,6 +416,7 @@ type ResultDataMsg struct {
 	SendBytes                      uint64      `json:"send_bytes" bson:"send_bytes"`         // 发送字节数
 	ReceivedBytes                  uint64      `json:"received_bytes" bson:"received_bytes"` // 接收字节数
 	Qps                            float64     `json:"qps" bson:"qps"`
+	ConcurrencyList                []TimeValue `json:"concurrency_list"`
 	QpsList                        []TimeValue `json:"qps_list" bson:"qps_list"`
 	ErrorNumList                   []TimeValue `json:"error_num_list" bson:"error_num_list"`
 }
@@ -421,6 +430,7 @@ type ResultData struct {
 	SceneId         int64                     `json:"scene_id"`  // 场景
 	SceneName       string                    `json:"scene_name"`
 	Results         map[string]*ResultDataMsg `json:"results"`
+	TotalQps        []float64                 `json:"total_qps"`
 	Machine         map[string]int64          `json:"machine"`
 	ConcurrencyList []TimeValue               `json:"concurrency_list"`
 	TimeStamp       int64                     `json:"time_stamp"`
