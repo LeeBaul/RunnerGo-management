@@ -306,7 +306,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 				resultData.Results[k].ApiName = apiResult.Name
 				resultData.Results[k].Concurrency = apiResult.Concurrency
 				resultData.Results[k].TotalRequestNum = apiResult.TotalRequestNum
-				resultData.Results[k].TotalRequestTime = apiResult.TotalRequestTime
+				resultData.Results[k].TotalRequestTime = float64(apiResult.TotalRequestTime) / 1000000
 				resultData.Results[k].SuccessNum = apiResult.SuccessNum
 				resultData.Results[k].ErrorNum = apiResult.ErrorNum
 				if resultData.Results[k].ErrorNum != 0 && apiResult.TotalRequestNum != 0 {
@@ -314,17 +314,17 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 					resultData.Results[k].ErrorRate, _ = decimal.NewFromFloat(errRate).Round(4).Float64()
 				}
 
-				resultData.Results[k].AvgRequestTime = apiResult.AvgRequestTime
-				resultData.Results[k].MaxRequestTime = apiResult.MaxRequestTime
-				resultData.Results[k].MinRequestTime = apiResult.MinRequestTime
+				resultData.Results[k].AvgRequestTime, _ = decimal.NewFromFloat(apiResult.AvgRequestTime / 1000000).Round(2).Float64()
+				resultData.Results[k].MaxRequestTime, _ = decimal.NewFromFloat(apiResult.MaxRequestTime / 1000000).Round(2).Float64()
+				resultData.Results[k].MinRequestTime, _ = decimal.NewFromFloat(apiResult.MinRequestTime / 1000000).Round(2).Float64()
 				resultData.Results[k].CustomRequestTimeLine = apiResult.CustomRequestTimeLine
-				resultData.Results[k].CustomRequestTimeLineValue = apiResult.CustomRequestTimeLineValue
+				resultData.Results[k].CustomRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.CustomRequestTimeLineValue / 1000000).Round(2).Float64()
 				resultData.Results[k].NinetyRequestTimeLine = apiResult.NinetyRequestTimeLine
-				resultData.Results[k].NinetyRequestTimeLineValue = apiResult.NinetyRequestTimeLineValue
+				resultData.Results[k].NinetyRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.NinetyRequestTimeLineValue / 1000000).Round(2).Float64()
 				resultData.Results[k].NinetyFiveRequestTimeLine = apiResult.NinetyFiveRequestTimeLine
-				resultData.Results[k].NinetyFiveRequestTimeLineValue = apiResult.NinetyFiveRequestTimeLineValue
+				resultData.Results[k].NinetyFiveRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.NinetyFiveRequestTimeLineValue / 1000000).Round(2).Float64()
 				resultData.Results[k].NinetyNineRequestTimeLine = apiResult.NinetyNineRequestTimeLine
-				resultData.Results[k].NinetyNineRequestTimeLineValue = apiResult.NinetyNineRequestTimeLineValue
+				resultData.Results[k].NinetyNineRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.NinetyNineRequestTimeLineValue / 1000000).Round(2).Float64()
 				resultData.Results[k].SendBytes = apiResult.SendBytes
 				resultData.Results[k].ReceivedBytes = apiResult.ReceivedBytes
 				resultData.Results[k].Qps = apiResult.Qps
@@ -369,17 +369,17 @@ type ApiTestResultDataMsg struct {
 	SuccessNum                     uint64  `json:"success_num" bson:"success_num"`
 	ErrorNum                       uint64  `json:"error_num" bson:"error_num"`               // 错误数
 	ErrorThreshold                 float64 `json:"error_threshold" bson:"error_threshold"`   // 自定义错误率
-	AvgRequestTime                 uint64  `json:"avg_request_time" bson:"avg_request_time"` // 平均响应事件
-	MaxRequestTime                 uint64  `json:"max_request_time" bson:"max_request_time"`
-	MinRequestTime                 uint64  `json:"min_request_time" bson:"min_request_time"` // 毫秒
+	AvgRequestTime                 float64 `json:"avg_request_time" bson:"avg_request_time"` // 平均响应事件
+	MaxRequestTime                 float64 `json:"max_request_time" bson:"max_request_time"`
+	MinRequestTime                 float64 `json:"min_request_time" bson:"min_request_time"` // 毫秒
 	CustomRequestTimeLine          int64   `json:"custom_request_time_line" bson:"custom_request_time_line"`
 	NinetyRequestTimeLine          int64   `json:"ninety_request_time_line" bson:"ninety_request_time_line"`
 	NinetyFiveRequestTimeLine      int64   `json:"ninety_five_request_time_line" bson:"ninety_five_request_time_line"`
 	NinetyNineRequestTimeLine      int64   `json:"ninety_nine_request_time_line" bson:"ninety_nine_request_time_line"`
-	CustomRequestTimeLineValue     uint64  `json:"custom_request_time_line_value" bson:"custom_request_time_line_value"`
-	NinetyRequestTimeLineValue     uint64  `json:"ninety_request_time_line_value" bson:"ninety_request_time_line_value"`
-	NinetyFiveRequestTimeLineValue uint64  `json:"ninety_five_request_time_line_value" bson:"ninety_five_request_time_line_value"`
-	NinetyNineRequestTimeLineValue uint64  `json:"ninety_nine_request_time_line_value" bson:"ninety_nine_request_time_line_value"`
+	CustomRequestTimeLineValue     float64 `json:"custom_request_time_line_value" bson:"custom_request_time_line_value"`
+	NinetyRequestTimeLineValue     float64 `json:"ninety_request_time_line_value" bson:"ninety_request_time_line_value"`
+	NinetyFiveRequestTimeLineValue float64 `json:"ninety_five_request_time_line_value" bson:"ninety_five_request_time_line_value"`
+	NinetyNineRequestTimeLineValue float64 `json:"ninety_nine_request_time_line_value" bson:"ninety_nine_request_time_line_value"`
 	SendBytes                      uint64  `json:"send_bytes" bson:"send_bytes"`         // 发送字节数
 	ReceivedBytes                  uint64  `json:"received_bytes" bson:"received_bytes"` // 接收字节数
 	Qps                            float64 `json:"qps" bson:"qps"`
@@ -390,21 +390,21 @@ type ResultDataMsg struct {
 	ApiName                        string      `json:"api_name" bson:"api_name"`
 	Concurrency                    int64       `json:"concurrency" bson:"concurrency"`
 	TotalRequestNum                uint64      `json:"total_request_num" bson:"total_request_num"`   // 总请求数
-	TotalRequestTime               uint64      `json:"total_request_time" bson:"total_request_time"` // 总响应时间
+	TotalRequestTime               float64     `json:"total_request_time" bson:"total_request_time"` // 总响应时间
 	SuccessNum                     uint64      `json:"success_num" bson:"success_num"`
 	ErrorRate                      float64     `json:"error_rate" bson:"error_rate"`
 	ErrorNum                       uint64      `json:"error_num" bson:"error_num"`               // 错误数
-	AvgRequestTime                 uint64      `json:"avg_request_time" bson:"avg_request_time"` // 平均响应事件
-	MaxRequestTime                 uint64      `json:"max_request_time" bson:"max_request_time"`
-	MinRequestTime                 uint64      `json:"min_request_time" bson:"min_request_time"` // 毫秒
+	AvgRequestTime                 float64     `json:"avg_request_time" bson:"avg_request_time"` // 平均响应事件
+	MaxRequestTime                 float64     `json:"max_request_time" bson:"max_request_time"`
+	MinRequestTime                 float64     `json:"min_request_time" bson:"min_request_time"` // 毫秒
 	CustomRequestTimeLine          int64       `json:"custom_request_time_line" bson:"custom_request_time_line"`
 	NinetyRequestTimeLine          int64       `json:"ninety_request_time_line" bson:"ninety_request_time_line"`
 	NinetyFiveRequestTimeLine      int64       `json:"ninety_five_request_time_line" bson:"ninety_five_request_time_line"`
 	NinetyNineRequestTimeLine      int64       `json:"ninety_nine_request_time_line" bson:"ninety_nine_request_time_line"`
-	CustomRequestTimeLineValue     uint64      `json:"custom_request_time_line_value" bson:"custom_request_time_line_value"`
-	NinetyRequestTimeLineValue     uint64      `json:"ninety_request_time_line_value" bson:"ninety_request_time_line_value"`
-	NinetyFiveRequestTimeLineValue uint64      `json:"ninety_five_request_time_line_value" bson:"ninety_five_request_time_line_value"`
-	NinetyNineRequestTimeLineValue uint64      `json:"ninety_nine_request_time_line_value" bson:"ninety_nine_request_time_line_value"`
+	CustomRequestTimeLineValue     float64     `json:"custom_request_time_line_value" bson:"custom_request_time_line_value"`
+	NinetyRequestTimeLineValue     float64     `json:"ninety_request_time_line_value" bson:"ninety_request_time_line_value"`
+	NinetyFiveRequestTimeLineValue float64     `json:"ninety_five_request_time_line_value" bson:"ninety_five_request_time_line_value"`
+	NinetyNineRequestTimeLineValue float64     `json:"ninety_nine_request_time_line_value" bson:"ninety_nine_request_time_line_value"`
 	SendBytes                      uint64      `json:"send_bytes" bson:"send_bytes"`         // 发送字节数
 	ReceivedBytes                  uint64      `json:"received_bytes" bson:"received_bytes"` // 接收字节数
 	Qps                            float64     `json:"qps" bson:"qps"`
