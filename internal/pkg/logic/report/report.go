@@ -310,7 +310,8 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 				resultData.Results[k].SuccessNum = apiResult.SuccessNum
 				resultData.Results[k].ErrorNum = apiResult.ErrorNum
 				if resultData.Results[k].ErrorNum != 0 && apiResult.TotalRequestNum != 0 {
-					resultData.Results[k].ErrorRate = float64(apiResult.ErrorNum) / float64(apiResult.TotalRequestNum)
+					errRate := float64(apiResult.ErrorNum) / float64(apiResult.TotalRequestNum)
+					resultData.Results[k].ErrorRate, _ = decimal.NewFromFloat(errRate).Round(4).Float64()
 				}
 
 				resultData.Results[k].AvgRequestTime = apiResult.AvgRequestTime
@@ -326,7 +327,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 				resultData.Results[k].NinetyNineRequestTimeLineValue = apiResult.NinetyNineRequestTimeLineValue
 				resultData.Results[k].SendBytes = apiResult.SendBytes
 				resultData.Results[k].ReceivedBytes = apiResult.ReceivedBytes
-				resultData.Results[k].Qps, _ = decimal.NewFromFloat(apiResult.Qps).Round(2).Float64()
+				resultData.Results[k].Qps = apiResult.Qps
 				if resultData.Results[k].QpsList == nil {
 					resultData.Results[k].QpsList = []TimeValue{}
 				}
