@@ -38,7 +38,7 @@ func SendSceneAPI(ctx context.Context, sceneID int64, nodeID string) (string, er
 	return "", nil
 }
 
-func SendScene(ctx context.Context, sceneID int64) (string, error) {
+func SendScene(ctx context.Context, teamID, sceneID int64) (string, error) {
 	tx := dal.GetQuery().Target
 	t, err := tx.WithContext(ctx).Where(tx.ID.Eq(sceneID), tx.TargetType.Eq(consts.TargetTypeScene)).First()
 	if err != nil {
@@ -59,12 +59,17 @@ func SendScene(ctx context.Context, sceneID int64) (string, error) {
 	}
 
 	sv := dal.GetQuery().Variable
-	variables, err := sv.WithContext(ctx).Where(sv.SceneID.Eq(sceneID)).Find()
+	sceneVariables, err := sv.WithContext(ctx).Where(sv.SceneID.Eq(sceneID)).Find()
 	if err != nil {
 		return "", err
 	}
 
-	req := packer.TransMaoFlowToRaoSceneFlow(t, &f, vis, variables)
+	variables, err := sv.WithContext(ctx).Where(sv.TeamID.Eq(teamID)).Find()
+	if err != nil {
+		return "", err
+	}
+
+	req := packer.TransMaoFlowToRaoSceneFlow(t, &f, vis, sceneVariables, variables)
 	return runner.RunScene(ctx, req)
 }
 

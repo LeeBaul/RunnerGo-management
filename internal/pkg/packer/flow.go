@@ -31,7 +31,7 @@ func TransSaveFlowReqToMaoFlow(req *rao.SaveFlowReq) *mao.Flow {
 	}
 }
 
-func TransMaoFlowToRaoSceneFlow(t *model.Target, f *mao.Flow, vis []*model.VariableImport, variables []*model.Variable) *rao.SceneFlow {
+func TransMaoFlowToRaoSceneFlow(t *model.Target, f *mao.Flow, vis []*model.VariableImport, sceneVariables, variables []*model.Variable) *rao.SceneFlow {
 	var n mao.Node
 	if err := bson.Unmarshal(f.Nodes, &n); err != nil {
 		proof.Errorf("flow.nodes bson unmarshal err %w", err)
@@ -43,10 +43,18 @@ func TransMaoFlowToRaoSceneFlow(t *model.Target, f *mao.Flow, vis []*model.Varia
 	}
 
 	var v []rao.ConfVariable
-	for _, variable := range variables {
+	for _, variable := range sceneVariables {
 		v = append(v, rao.ConfVariable{
 			Var: variable.Var,
 			Val: variable.Val,
+		})
+	}
+
+	var globalVariables []*rao.KVVariable
+	for _, variable := range variables {
+		globalVariables = append(globalVariables, &rao.KVVariable{
+			Key:   variable.Var,
+			Value: variable.Val,
 		})
 	}
 
@@ -61,6 +69,7 @@ func TransMaoFlowToRaoSceneFlow(t *model.Target, f *mao.Flow, vis []*model.Varia
 			},
 			Variable: v,
 		},
+		Variable: globalVariables,
 	}
 }
 
