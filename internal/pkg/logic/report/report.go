@@ -347,6 +347,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 				}
 				// 并发数列表
 				resultData.Results[k].ConcurrencyList = append(resultData.Results[k].ConcurrencyList, timeValue)
+
 			}
 		}
 	}
@@ -421,18 +422,18 @@ type ResultDataMsg struct {
 }
 
 type ResultData struct {
-	End             bool                      `json:"end"`
-	ReportId        string                    `json:"report_id"`
-	ReportName      string                    `json:"report_name"`
-	PlanId          int64                     `json:"plan_id"`   // 任务ID
-	PlanName        string                    `json:"plan_name"` //
-	SceneId         int64                     `json:"scene_id"`  // 场景
-	SceneName       string                    `json:"scene_name"`
-	Results         map[string]*ResultDataMsg `json:"results"`
-	TotalQps        []float64                 `json:"total_qps"`
-	Machine         map[string]int64          `json:"machine"`
-	ConcurrencyList []TimeValue               `json:"concurrency_list"`
-	TimeStamp       int64                     `json:"time_stamp"`
+	End          bool                      `json:"end"`
+	ReportId     string                    `json:"report_id"`
+	ReportName   string                    `json:"report_name"`
+	PlanId       int64                     `json:"plan_id"`   // 任务ID
+	PlanName     string                    `json:"plan_name"` //
+	SceneId      int64                     `json:"scene_id"`  // 场景
+	SceneName    string                    `json:"scene_name"`
+	Results      map[string]*ResultDataMsg `json:"results"`
+	TotalQps     []float64                 `json:"total_qps"`
+	Machine      map[string]int64          `json:"machine"`
+	TotalQpsList []TimeValue               `json:"total_qps_list"`
+	TimeStamp    int64                     `json:"time_stamp"`
 }
 
 type TimeValue struct {
