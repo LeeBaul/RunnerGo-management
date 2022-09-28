@@ -247,7 +247,6 @@ func GetReportDebugLog(ctx context.Context, report rao.GetReportReq) (err error,
 func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, password string) (err error, resultData ResultData) {
 	reportId := strconv.FormatInt(report.ReportID, 10)
 	//index := strconv.FormatInt(report.TeamID, 10)
-	index := conf.Conf.ES.Index
 
 	queryEs := elastic.NewBoolQuery()
 	queryEs = queryEs.Must(elastic.NewMatchQuery("report_id", reportId))
@@ -270,7 +269,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 		proof.Error("es连接失败", proof.WithError(err))
 		return
 	}
-	res, err := client.Search(index).Query(queryEs).Sort("time_stamp", true).Size(conf.Conf.ES.Size).Pretty(true).Do(ctx)
+	res, err := client.Search(reportId).Query(queryEs).Sort("time_stamp", true).Size(conf.Conf.ES.Size).Pretty(true).Do(ctx)
 	if err != nil {
 		proof.Error("获取报告详情失败", proof.WithError(err))
 		return
