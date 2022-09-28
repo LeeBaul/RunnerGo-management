@@ -19,7 +19,7 @@ func SendScene(ctx *gin.Context) {
 		return
 	}
 
-	retID, err := target.SendScene(ctx, req.SceneID)
+	retID, err := target.SendScene(ctx, req.TeamID, req.SceneID)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return

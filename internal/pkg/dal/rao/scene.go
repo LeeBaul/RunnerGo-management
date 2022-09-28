@@ -1,6 +1,7 @@
 package rao
 
 type SendSceneReq struct {
+	TeamID  int64 `json:"team_id" binding:"required,gt=0"`
 	SceneID int64 `json:"scene_id" binding:"required,gt=0"`
 }
 
@@ -199,6 +200,7 @@ type SceneFlow struct {
 	TeamID        int64         `json:"team_id"`
 	Nodes         []*Node       `json:"nodes"`
 	Configuration Configuration `json:"configuration"`
+	Variable      []*KVVariable `json:"variable"` // 全局变量
 }
 
 type Configuration struct {
