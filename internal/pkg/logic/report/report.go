@@ -305,7 +305,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 				resultData.Results[k].ApiName = apiResult.Name
 				resultData.Results[k].Concurrency = apiResult.Concurrency
 				resultData.Results[k].TotalRequestNum = apiResult.TotalRequestNum
-				resultData.Results[k].TotalRequestTime = float64(apiResult.TotalRequestTime) / 1000000
+				resultData.Results[k].TotalRequestTime = float64(apiResult.TotalRequestTime) / 1000000000
 				resultData.Results[k].SuccessNum = apiResult.SuccessNum
 				resultData.Results[k].ErrorNum = apiResult.ErrorNum
 				if resultData.Results[k].ErrorNum != 0 && apiResult.TotalRequestNum != 0 {
@@ -388,8 +388,8 @@ type ApiTestResultDataMsg struct {
 	NinetyRequestTimeLineValue     float64 `json:"ninety_request_time_line_value" bson:"ninety_request_time_line_value"`
 	NinetyFiveRequestTimeLineValue float64 `json:"ninety_five_request_time_line_value" bson:"ninety_five_request_time_line_value"`
 	NinetyNineRequestTimeLineValue float64 `json:"ninety_nine_request_time_line_value" bson:"ninety_nine_request_time_line_value"`
-	SendBytes                      uint64  `json:"send_bytes" bson:"send_bytes"`         // 发送字节数
-	ReceivedBytes                  uint64  `json:"received_bytes" bson:"received_bytes"` // 接收字节数
+	SendBytes                      float64 `json:"send_bytes" bson:"send_bytes"`         // 发送字节数
+	ReceivedBytes                  float64 `json:"received_bytes" bson:"received_bytes"` // 接收字节数
 	Qps                            float64 `json:"qps" bson:"qps"`
 }
 
@@ -413,8 +413,8 @@ type ResultDataMsg struct {
 	NinetyRequestTimeLineValue     float64     `json:"ninety_request_time_line_value" bson:"ninety_request_time_line_value"`
 	NinetyFiveRequestTimeLineValue float64     `json:"ninety_five_request_time_line_value" bson:"ninety_five_request_time_line_value"`
 	NinetyNineRequestTimeLineValue float64     `json:"ninety_nine_request_time_line_value" bson:"ninety_nine_request_time_line_value"`
-	SendBytes                      uint64      `json:"send_bytes" bson:"send_bytes"`         // 发送字节数
-	ReceivedBytes                  uint64      `json:"received_bytes" bson:"received_bytes"` // 接收字节数
+	SendBytes                      float64     `json:"send_bytes" bson:"send_bytes"`         // 发送字节数
+	ReceivedBytes                  float64     `json:"received_bytes" bson:"received_bytes"` // 接收字节数
 	Qps                            float64     `json:"qps" bson:"qps"`
 	ConcurrencyList                []TimeValue `json:"concurrency_list"`
 	QpsList                        []TimeValue `json:"qps_list" bson:"qps_list"`
