@@ -16,7 +16,7 @@ import (
 	"kp-management/internal/pkg/packer"
 )
 
-func SendSceneAPI(ctx context.Context, sceneID int64, nodeID string) (string, error) {
+func SendSceneAPI(ctx context.Context, teamID, sceneID int64, nodeID string) (string, error) {
 	var f mao.Flow
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectFlow)
 	err := collection.FindOne(ctx, bson.D{{"scene_id", sceneID}}).Decode(&f)
@@ -31,6 +31,22 @@ func SendSceneAPI(ctx context.Context, sceneID int64, nodeID string) (string, er
 
 	for _, node := range n.Nodes {
 		if node.ID == nodeID {
+
+			tx := dal.GetQuery().Variable
+			variables, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID), tx.Type.Eq(consts.VariableTypeGlobal)).Find()
+			if err != nil {
+				return "", err
+			}
+
+			var vs []*rao.KVVariable
+			for _, v := range variables {
+				vs = append(vs, &rao.KVVariable{
+					Key:   v.Var,
+					Value: v.Val,
+				})
+			}
+
+			node.API.Variable = vs
 			return runner.RunAPI(ctx, node.API)
 		}
 	}

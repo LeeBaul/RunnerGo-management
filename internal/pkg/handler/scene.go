@@ -53,7 +53,7 @@ func SendSceneAPI(ctx *gin.Context) {
 		return
 	}
 
-	retID, err := target.SendSceneAPI(ctx, req.SceneID, req.NodeID)
+	retID, err := target.SendSceneAPI(ctx, req.TeamID, req.SceneID, req.NodeID)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
