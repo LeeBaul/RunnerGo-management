@@ -305,7 +305,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 				resultData.Results[k].ApiName = apiResult.Name
 				resultData.Results[k].Concurrency = apiResult.Concurrency
 				resultData.Results[k].TotalRequestNum = apiResult.TotalRequestNum
-				resultData.Results[k].TotalRequestTime, _ = decimal.NewFromFloat(float64(apiResult.TotalRequestTime) / float64(time.Second)).Round(1).Float64()
+				resultData.Results[k].TotalRequestTime, _ = decimal.NewFromFloat(float64(apiResult.TotalRequestTime) / float64(time.Second)).Round(2).Float64()
 				resultData.Results[k].SuccessNum = apiResult.SuccessNum
 				resultData.Results[k].ErrorNum = apiResult.ErrorNum
 				if resultData.Results[k].ErrorNum != 0 && apiResult.TotalRequestNum != 0 {
