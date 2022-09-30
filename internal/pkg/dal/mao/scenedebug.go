@@ -11,7 +11,7 @@ type SceneDebug struct {
 	RequestCode    int64                    `bson:"request_code"`
 	RequestHeader  string                   `bson:"request_header"`
 	ResponseBody   string                   `bson:"response_body"`
-	ResponseBytes  int64                    `bson:"response_bytes"`
+	ResponseBytes  float64                  `bson:"response_bytes"`
 	ResponseHeader string                   `bson:"response_header"`
 	Status         string                   `bson:"status"`
 	UUID           string                   `bson:"uuid"`
