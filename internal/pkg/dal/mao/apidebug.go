@@ -11,7 +11,7 @@ type APIDebug struct {
 	RequestHeader         string                   `bson:"request_header"`
 	RequestTime           int64                    `bson:"request_time"`
 	ResponseBody          string                   `bson:"response_body"`
-	ResponseBytes         int64                    `bson:"response_bytes"`
+	ResponseBytes         float64                  `bson:"response_bytes"`
 	ResponseHeader        string                   `bson:"response_header"`
 	ResponseTime          string                   `bson:"response_time"`
 	ResponseLen           int32                    `bson:"response_len"`
