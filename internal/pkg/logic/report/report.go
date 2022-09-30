@@ -305,7 +305,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 				resultData.Results[k].ApiName = apiResult.Name
 				resultData.Results[k].Concurrency = apiResult.Concurrency
 				resultData.Results[k].TotalRequestNum = apiResult.TotalRequestNum
-				resultData.Results[k].TotalRequestTime = float64(apiResult.TotalRequestTime) / 1000000000
+				resultData.Results[k].TotalRequestTime, _ = decimal.NewFromFloat(float64(apiResult.TotalRequestTime) / float64(time.Second)).Round(1).Float64()
 				resultData.Results[k].SuccessNum = apiResult.SuccessNum
 				resultData.Results[k].ErrorNum = apiResult.ErrorNum
 				if resultData.Results[k].ErrorNum != 0 && apiResult.TotalRequestNum != 0 {
@@ -313,17 +313,17 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 					resultData.Results[k].ErrorRate, _ = decimal.NewFromFloat(errRate).Round(4).Float64()
 				}
 
-				resultData.Results[k].AvgRequestTime, _ = decimal.NewFromFloat(apiResult.AvgRequestTime / 1000000).Round(2).Float64()
-				resultData.Results[k].MaxRequestTime, _ = decimal.NewFromFloat(apiResult.MaxRequestTime / 1000000).Round(2).Float64()
-				resultData.Results[k].MinRequestTime, _ = decimal.NewFromFloat(apiResult.MinRequestTime / 1000000).Round(2).Float64()
+				resultData.Results[k].AvgRequestTime, _ = decimal.NewFromFloat(apiResult.AvgRequestTime / float64(time.Millisecond)).Round(1).Float64()
+				resultData.Results[k].MaxRequestTime, _ = decimal.NewFromFloat(apiResult.MaxRequestTime / float64(time.Millisecond)).Round(1).Float64()
+				resultData.Results[k].MinRequestTime, _ = decimal.NewFromFloat(apiResult.MinRequestTime / float64(time.Millisecond)).Round(1).Float64()
 				resultData.Results[k].CustomRequestTimeLine = apiResult.CustomRequestTimeLine
-				resultData.Results[k].CustomRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.CustomRequestTimeLineValue / 1000000).Round(2).Float64()
+				resultData.Results[k].CustomRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.CustomRequestTimeLineValue / float64(time.Millisecond)).Round(1).Float64()
 				resultData.Results[k].NinetyRequestTimeLine = apiResult.NinetyRequestTimeLine
-				resultData.Results[k].NinetyRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.NinetyRequestTimeLineValue / 1000000).Round(2).Float64()
+				resultData.Results[k].NinetyRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.NinetyRequestTimeLineValue / float64(time.Millisecond)).Round(1).Float64()
 				resultData.Results[k].NinetyFiveRequestTimeLine = apiResult.NinetyFiveRequestTimeLine
-				resultData.Results[k].NinetyFiveRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.NinetyFiveRequestTimeLineValue / 1000000).Round(2).Float64()
+				resultData.Results[k].NinetyFiveRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.NinetyFiveRequestTimeLineValue / float64(time.Millisecond)).Round(1).Float64()
 				resultData.Results[k].NinetyNineRequestTimeLine = apiResult.NinetyNineRequestTimeLine
-				resultData.Results[k].NinetyNineRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.NinetyNineRequestTimeLineValue / 1000000).Round(2).Float64()
+				resultData.Results[k].NinetyNineRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.NinetyNineRequestTimeLineValue / float64(time.Millisecond)).Round(1).Float64()
 				resultData.Results[k].SendBytes = apiResult.SendBytes
 				resultData.Results[k].ReceivedBytes = apiResult.ReceivedBytes
 				resultData.Results[k].Qps = apiResult.Qps
