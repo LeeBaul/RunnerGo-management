@@ -324,8 +324,8 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 				resultData.Results[k].NinetyFiveRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.NinetyFiveRequestTimeLineValue / float64(time.Millisecond)).Round(1).Float64()
 				resultData.Results[k].NinetyNineRequestTimeLine = apiResult.NinetyNineRequestTimeLine
 				resultData.Results[k].NinetyNineRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.NinetyNineRequestTimeLineValue / float64(time.Millisecond)).Round(1).Float64()
-				resultData.Results[k].SendBytes = apiResult.SendBytes
-				resultData.Results[k].ReceivedBytes = apiResult.ReceivedBytes
+				resultData.Results[k].SendBytes, _ = decimal.NewFromFloat(apiResult.SendBytes).Round(1).Float64()
+				resultData.Results[k].ReceivedBytes, _ = decimal.NewFromFloat(apiResult.ReceivedBytes).Round(1).Float64()
 				resultData.Results[k].Qps = apiResult.Qps
 				if resultData.Results[k].QpsList == nil {
 					resultData.Results[k].QpsList = []TimeValue{}
