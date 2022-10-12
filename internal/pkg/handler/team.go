@@ -4,6 +4,7 @@ import (
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/jwt"
 	"kp-management/internal/pkg/biz/response"
+	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/logic/team"
 
@@ -54,6 +55,26 @@ func TeamMembers(ctx *gin.Context) {
 
 	response.SuccessWithData(ctx, rao.ListMembersResp{
 		Members: members,
+	})
+	return
+}
+
+func GetTeamRole(ctx *gin.Context) {
+	var req rao.GetTeamRoleReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	tx := dal.GetQuery().UserTeam
+	ut, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(req.TeamID), tx.UserID.Eq(jwt.GetUserIDByCtx(ctx))).First()
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.SuccessWithData(ctx, rao.GetTeamRoleResp{
+		RoleID: ut.RoleID,
 	})
 	return
 }

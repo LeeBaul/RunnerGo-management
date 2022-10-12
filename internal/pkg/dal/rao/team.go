@@ -83,3 +83,11 @@ type QuitTeamReq struct {
 
 type QuitTeamResp struct {
 }
+
+type GetTeamRoleReq struct {
+	TeamID int64 `json:"team_id"`
+}
+
+type GetTeamRoleResp struct {
+	RoleID int64 `json:"role_id"`
+}
