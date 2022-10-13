@@ -173,7 +173,7 @@ func QuitTeam(ctx context.Context, teamID, userID int64) error {
 			return err
 		}
 
-		if team.Type == consts.TeamTypePrivate {
+		if team.CreatedUserID == userID {
 			return fmt.Errorf("user no permissions")
 		}
 
@@ -202,4 +202,26 @@ func QuitTeam(ctx context.Context, teamID, userID int64) error {
 
 		return nil
 	})
+}
+
+func DisbandTeam(ctx context.Context, teamID, userID int64) error {
+
+	return dal.GetQuery().Transaction(func(tx *query.Query) error {
+		t, err := tx.Team.WithContext(ctx).Where(
+			tx.Team.ID.Eq(teamID), tx.Team.Type.Eq(consts.TeamTypeNormal), tx.Team.CreatedUserID.Eq(userID)).First()
+		if err != nil {
+			return err
+		}
+
+		_, err = tx.UserTeam.WithContext(ctx).Where(tx.UserTeam.TeamID.Eq(t.ID)).Delete()
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+}
+
+func TransferTeam(ctx context.Context, teamID, userID, toUserID int64) error {
+	return nil
 }

@@ -21,7 +21,6 @@ type AuthLoginReq struct {
 type AuthLoginResp struct {
 	Token         string `json:"token"`
 	ExpireTimeSec int64  `json:"expire_time_sec"`
-	IsAPIPostUser bool   `json:"is_api_post_user"`
 }
 
 type SetUserSettingsReq struct {
@@ -55,4 +54,13 @@ type AuthResetPasswordReq struct {
 }
 
 type AuthResetPasswordResp struct {
+}
+
+type UpdatePasswordReq struct {
+	CurrentPassword string `json:"current_password" binding:"required,min=6"`
+	NewPassword     string `json:"new_password" binding:"required,min=6,eqfield=RepeatPassword"`
+	RepeatPassword  string `json:"repeat_password" binding:"required,min=6,"`
+}
+
+type UpdatePasswordResp struct {
 }

@@ -35,6 +35,9 @@ func RegisterRouter(r *gin.Engine) {
 	auth.POST("/signup", handler.AuthSignup)
 	auth.POST("/login", handler.AuthLogin)
 	auth.POST("/refresh_token", handler.RefreshToken)
+	auth.POST("/update_password", handler.UpdatePassword)
+	auth.POST("/update_nickname")
+	auth.POST("/update_avatar")
 
 	auth.POST("/send_email_verify", handler.AuthSendMailVerify)
 	auth.POST("/reset_password", handler.AuthResetPassword)
@@ -57,6 +60,8 @@ func RegisterRouter(r *gin.Engine) {
 	team.GET("/role", handler.GetTeamRole)
 	team.POST("/remove", handler.RemoveMember)
 	team.POST("/quit", handler.QuitTeam)
+	team.POST("/disband", handler.DisbandTeam)
+	team.POST("/transfer", handler.TransferTeam)
 
 	// 全局变量
 	variable := api.Group("/v1/variable")

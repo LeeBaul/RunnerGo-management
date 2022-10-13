@@ -144,3 +144,27 @@ func QuitTeam(ctx *gin.Context) {
 	response.Success(ctx)
 	return
 }
+
+func DisbandTeam(ctx *gin.Context) {
+	var req rao.DisbandTeamReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	if err := team.DisbandTeam(ctx, req.TeamID, jwt.GetUserIDByCtx(ctx)); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
+}
+
+func TransferTeam(ctx *gin.Context) {
+	var req rao.TransferTeamReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+}

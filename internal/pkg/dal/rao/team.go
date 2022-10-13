@@ -91,3 +91,18 @@ type GetTeamRoleReq struct {
 type GetTeamRoleResp struct {
 	RoleID int64 `json:"role_id"`
 }
+
+type DisbandTeamReq struct {
+	TeamID int64 `json:"team_id"`
+}
+
+type DisbandTeamResp struct {
+}
+
+type TransferTeamReq struct {
+	TeamID   int64 `json:"team_id"`
+	ToUserID int64 `json:"to_user_id"`
+}
+
+type TransferTeamResp struct {
+}

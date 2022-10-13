@@ -3,11 +3,13 @@ package handler
 import (
 	"time"
 
+	"github.com/go-omnibus/omnibus"
 	"github.com/go-omnibus/proof"
 
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/jwt"
 	"kp-management/internal/pkg/biz/response"
+	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/logic/auth"
 
@@ -66,16 +68,6 @@ func AuthLogin(ctx *gin.Context) {
 		return
 	}
 
-	// first login
-	var isAPIPostUser bool
-	if u.LastLoginAt.IsZero() {
-		i, err := auth.IsAPIPostUser(ctx, u.Email)
-		if err != nil {
-			proof.Errorf("is apipost user err %s", err)
-		}
-		isAPIPostUser = i
-	}
-
 	if err := auth.UpdateLoginTime(ctx, u.ID); err != nil {
 		proof.Errorf("update login time err %s", err)
 	}
@@ -83,7 +75,6 @@ func AuthLogin(ctx *gin.Context) {
 	response.SuccessWithData(ctx, rao.AuthLoginResp{
 		Token:         token,
 		ExpireTimeSec: exp.Unix(),
-		IsAPIPostUser: isAPIPostUser,
 	})
 	return
 }
@@ -102,6 +93,34 @@ func RefreshToken(ctx *gin.Context) {
 		Token:         token,
 		ExpireTimeSec: exp.Unix(),
 	})
+	return
+}
+
+func UpdatePassword(ctx *gin.Context) {
+	var req rao.UpdatePasswordReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	if req.CurrentPassword == req.NewPassword {
+		response.ErrorWithMsg(ctx, errno.ErrParam, "password = new password")
+		return
+	}
+
+	hashedPassword, err := omnibus.GenerateBcryptFromPassword(req.NewPassword)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, "password = new password")
+		return
+	}
+
+	tx := dal.GetQuery().User
+	if _, err := tx.WithContext(ctx).Where(tx.ID.Eq(jwt.GetUserIDByCtx(ctx))).UpdateColumn(tx.Password, hashedPassword); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, "password = new password")
+		return
+	}
+
+	response.Success(ctx)
 	return
 }
 
