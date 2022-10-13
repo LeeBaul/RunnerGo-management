@@ -85,7 +85,7 @@ type QuitTeamResp struct {
 }
 
 type GetTeamRoleReq struct {
-	TeamID int64 `json:"team_id"`
+	TeamID int64 `form:"team_id"`
 }
 
 type GetTeamRoleResp struct {
