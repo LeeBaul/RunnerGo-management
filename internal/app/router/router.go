@@ -36,6 +36,8 @@ func RegisterRouter(r *gin.Engine) {
 	auth.POST("/login", handler.AuthLogin)
 	auth.POST("/refresh_token", handler.RefreshToken)
 	auth.POST("/update_password", handler.UpdatePassword)
+	auth.POST("/update_nickname")
+	auth.POST("/update_avatar")
 
 	auth.POST("/send_email_verify", handler.AuthSendMailVerify)
 	auth.POST("/reset_password", handler.AuthResetPassword)

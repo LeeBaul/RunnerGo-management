@@ -173,7 +173,7 @@ func QuitTeam(ctx context.Context, teamID, userID int64) error {
 			return err
 		}
 
-		if team.Type == consts.TeamTypePrivate {
+		if team.CreatedUserID == userID {
 			return fmt.Errorf("user no permissions")
 		}
 
