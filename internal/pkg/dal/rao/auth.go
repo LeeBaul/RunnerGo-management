@@ -55,3 +55,12 @@ type AuthResetPasswordReq struct {
 
 type AuthResetPasswordResp struct {
 }
+
+type UpdatePasswordReq struct {
+	CurrentPassword string `json:"current_password" binding:"required,min=6"`
+	NewPassword     string `json:"new_password" binding:"required,min=6,eqfield=RepeatPassword"`
+	RepeatPassword  string `json:"repeat_password" binding:"required,min=6,"`
+}
+
+type UpdatePasswordResp struct {
+}
