@@ -28,6 +28,7 @@ func SignUp(ctx context.Context, email, password, nickname string) (*model.User,
 			return err
 		}
 
+		team.CreatedUserID = user.ID
 		if err := tx.Team.WithContext(ctx).Create(&team); err != nil {
 			return err
 		}
