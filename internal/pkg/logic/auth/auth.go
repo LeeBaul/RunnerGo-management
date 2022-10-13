@@ -68,8 +68,3 @@ func UpdateLoginTime(ctx context.Context, userID int64) error {
 	_, err := tx.WithContext(ctx).Where(tx.ID.Eq(userID)).UpdateColumn(tx.LastLoginAt, time.Now())
 	return err
 }
-
-func IsAPIPostUser(ctx context.Context, email string) (bool, error) {
-	// todo 是否是apipost用户
-	return false, nil
-}

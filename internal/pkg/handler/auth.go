@@ -66,16 +66,6 @@ func AuthLogin(ctx *gin.Context) {
 		return
 	}
 
-	// first login
-	var isAPIPostUser bool
-	if u.LastLoginAt.IsZero() {
-		i, err := auth.IsAPIPostUser(ctx, u.Email)
-		if err != nil {
-			proof.Errorf("is apipost user err %s", err)
-		}
-		isAPIPostUser = i
-	}
-
 	if err := auth.UpdateLoginTime(ctx, u.ID); err != nil {
 		proof.Errorf("update login time err %s", err)
 	}
@@ -83,7 +73,6 @@ func AuthLogin(ctx *gin.Context) {
 	response.SuccessWithData(ctx, rao.AuthLoginResp{
 		Token:         token,
 		ExpireTimeSec: exp.Unix(),
-		IsAPIPostUser: isAPIPostUser,
 	})
 	return
 }
