@@ -22,7 +22,7 @@ func DashboardDefault(ctx *gin.Context) {
 		return
 	}
 
-	u, err := user.FirstByUserID(ctx, jwt.GetUserIDByCtx(ctx))
+	u, err := user.FirstByUserID(ctx, jwt.GetUserIDByCtx(ctx), req.TeamID)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
