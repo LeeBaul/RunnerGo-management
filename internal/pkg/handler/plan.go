@@ -62,6 +62,7 @@ func StopPlan(ctx *gin.Context) {
 	_, err = resty.New().R().
 		SetBody(runner.StopRunnerReq{ReportIds: omnibus.Int64sToStrings(reportIDs)}).
 		Post(conf.Conf.Clients.Runner.StopPlan)
+
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrHttpFailed, err.Error())
 		return
