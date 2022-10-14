@@ -236,7 +236,7 @@ func GetReportDebugStatus(ctx context.Context, report rao.GetReportReq) string {
 	}
 	for _, value := range list {
 		if value.Key() == "debug" {
-			return string(value.Value().Value)
+			return value.Value().String()
 		}
 	}
 	return consts.StopDebug
