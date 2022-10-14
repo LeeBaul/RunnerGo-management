@@ -13,4 +13,10 @@ const (
 	CollectAPIDebug    = "api_debug"
 	CollectSceneDebug  = "scene_debug"
 	CollectStressDebug = "stress_debug"
+	CollectDebugStatus = "debug_status"
+
+	All         = "all"
+	OnlyError   = "only_error"
+	OnlySuccess = "only_success"
+	StopDebug   = "stop"
 )

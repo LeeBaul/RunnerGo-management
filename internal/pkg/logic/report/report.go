@@ -219,6 +219,27 @@ func GetTaskDetail(ctx context.Context, req rao.GetReportReq) (*rao.ReportTask, 
 	}, nil
 }
 
+func GetReportDebugStatus(ctx context.Context, report rao.GetReportReq) string {
+	reportId := strconv.FormatInt(report.ReportID, 10)
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectDebugStatus)
+	filter := bson.D{{"report_id", reportId}}
+	cur := collection.FindOne(ctx, filter)
+	result, err := cur.DecodeBytes()
+	if err != nil {
+		return consts.StopDebug
+	}
+	list, err := result.Elements()
+	if err != nil {
+		return consts.StopDebug
+	}
+	for _, value := range list {
+		if value.Key() == "debug" {
+			return string(value.Value().Value)
+		}
+	}
+	return consts.StopDebug
+}
+
 func GetReportDebugLog(ctx context.Context, report rao.GetReportReq) (err error, debugMsgList []map[string]interface{}) {
 	//clientOptions := options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:%s@%s/%s", user, password, host, db))
 
