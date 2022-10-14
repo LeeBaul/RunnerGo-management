@@ -121,7 +121,7 @@ func DebugSetting(ctx *gin.Context) {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
 	}
-	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectStressDebug)
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectDebugStatus)
 	filter := bson.D{{"report_id", req.ReportID}}
 	singleResult := collection.FindOne(ctx, filter)
 	result, err := singleResult.DecodeBytes()
@@ -129,7 +129,7 @@ func DebugSetting(ctx *gin.Context) {
 		debug := bson.D{{"report_id", req.ReportID}, {"debug", req.Setting}}
 		_, err = collection.InsertOne(ctx, debug)
 		if err != nil {
-			response.ErrorWithMsg(ctx, errno.ErrRedisFailed, err.Error())
+			response.ErrorWithMsg(ctx, errno.ErrMongoFailed, err.Error())
 			return
 		}
 	} else {
@@ -138,14 +138,14 @@ func DebugSetting(ctx *gin.Context) {
 			debug := bson.D{{"report_id", req.ReportID}, {"debug", req.Setting}}
 			_, err = collection.InsertOne(ctx, debug)
 			if err != nil {
-				response.ErrorWithMsg(ctx, errno.ErrRedisFailed, err.Error())
+				response.ErrorWithMsg(ctx, errno.ErrMongoFailed, err.Error())
 				return
 			}
 		} else {
 			debug := bson.D{{"report_id", req.ReportID}, {"debug", req.Setting}}
 			_, err = collection.UpdateOne(ctx, filter, debug)
 			if err != nil {
-				response.ErrorWithMsg(ctx, errno.ErrRedisFailed, err.Error())
+				response.ErrorWithMsg(ctx, errno.ErrMongoFailed, err.Error())
 				return
 			}
 		}
