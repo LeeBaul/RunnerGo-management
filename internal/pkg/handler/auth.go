@@ -124,6 +124,40 @@ func UpdatePassword(ctx *gin.Context) {
 	return
 }
 
+func UpdateNickname(ctx *gin.Context) {
+	var req rao.UpdateNicknameReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	tx := dal.GetQuery().User
+	if _, err := tx.WithContext(ctx).Where(tx.ID.Eq(jwt.GetUserIDByCtx(ctx))).UpdateColumn(tx.Nickname, req.Nickname); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, "password = new password")
+		return
+	}
+
+	response.Success(ctx)
+	return
+}
+
+func UpdateAvatar(ctx *gin.Context) {
+	var req rao.UpdateAvatarReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	tx := dal.GetQuery().User
+	if _, err := tx.WithContext(ctx).Where(tx.ID.Eq(jwt.GetUserIDByCtx(ctx))).UpdateColumn(tx.Avatar, req.AvatarURL); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, "password = new password")
+		return
+	}
+
+	response.Success(ctx)
+	return
+}
+
 // SetUserSettings 设置用户配置
 func SetUserSettings(ctx *gin.Context) {
 	var req rao.SetUserSettingsReq
@@ -164,4 +198,24 @@ func AuthSendMailVerify(ctx *gin.Context) {
 }
 
 func AuthResetPassword(ctx *gin.Context) {
+	var req rao.ResetPasswordReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	hashedPassword, err := omnibus.GenerateBcryptFromPassword(req.NewPassword)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	tx := dal.GetQuery().User
+	if _, err := tx.WithContext(ctx).Where(tx.ID.Eq(jwt.GetUserIDByCtx(ctx))).UpdateColumn(tx.Password, hashedPassword); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
 }

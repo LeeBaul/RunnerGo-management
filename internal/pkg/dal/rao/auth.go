@@ -64,3 +64,25 @@ type UpdatePasswordReq struct {
 
 type UpdatePasswordResp struct {
 }
+
+type UpdateNicknameReq struct {
+	Nickname string `json:"nickname" binding:"required,min=2"`
+}
+
+type UpdateNicknameResp struct {
+}
+
+type UpdateAvatarReq struct {
+	AvatarURL string `json:"avatar_url" binding:"required"`
+}
+
+type UpdateAvatarResp struct {
+}
+
+type ResetPasswordReq struct {
+	NewPassword    string `json:"new_password" binding:"required,min=6,eqfield=RepeatPassword"`
+	RepeatPassword string `json:"repeat_password" binding:"required,min=6,"`
+}
+
+type ResetPasswordResp struct {
+}
