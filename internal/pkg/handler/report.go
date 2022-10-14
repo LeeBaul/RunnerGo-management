@@ -121,7 +121,7 @@ func DebugSetting(ctx *gin.Context) {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
 	}
-	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectStressDebug)
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectDebugStatus)
 	filter := bson.D{{"report_id", req.ReportID}}
 	singleResult := collection.FindOne(ctx, filter)
 	result, err := singleResult.DecodeBytes()
