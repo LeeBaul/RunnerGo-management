@@ -133,7 +133,7 @@ func DebugSetting(ctx *gin.Context) {
 			return
 		}
 	} else {
-		_, err := result.Elements()
+		_, err = result.Elements()
 		if err != nil {
 			debug := bson.D{{"report_id", req.ReportID}, {"debug", req.Setting}}
 			_, err = collection.InsertOne(ctx, debug)
