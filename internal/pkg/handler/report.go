@@ -129,23 +129,23 @@ func DebugSetting(ctx *gin.Context) {
 		debug := bson.D{{"report_id", req.ReportID}, {"debug", req.Setting}}
 		_, err = collection.InsertOne(ctx, debug)
 		if err != nil {
-			response.ErrorWithMsg(ctx, errno.ErrRedisFailed, err.Error())
+			response.ErrorWithMsg(ctx, errno.ErrMongoFailed, err.Error())
 			return
 		}
 	} else {
-		_, err := result.Elements()
+		_, err = result.Elements()
 		if err != nil {
 			debug := bson.D{{"report_id", req.ReportID}, {"debug", req.Setting}}
 			_, err = collection.InsertOne(ctx, debug)
 			if err != nil {
-				response.ErrorWithMsg(ctx, errno.ErrRedisFailed, err.Error())
+				response.ErrorWithMsg(ctx, errno.ErrMongoFailed, err.Error())
 				return
 			}
 		} else {
 			debug := bson.D{{"report_id", req.ReportID}, {"debug", req.Setting}}
 			_, err = collection.UpdateOne(ctx, filter, debug)
 			if err != nil {
-				response.ErrorWithMsg(ctx, errno.ErrRedisFailed, err.Error())
+				response.ErrorWithMsg(ctx, errno.ErrMongoFailed, err.Error())
 				return
 			}
 		}
