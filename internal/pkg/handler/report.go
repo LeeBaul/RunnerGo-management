@@ -1,12 +1,11 @@
 package handler
 
 import (
-	"fmt"
-	"time"
-
 	"github.com/gin-gonic/gin"
 	"github.com/go-omnibus/omnibus"
 	"github.com/go-resty/resty/v2"
+	"go.mongodb.org/mongo-driver/bson"
+	"kp-management/internal/pkg/biz/consts"
 
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/response"
@@ -89,6 +88,17 @@ func GetReportTaskDetail(ctx *gin.Context) {
 	return
 }
 
+// DebugDetail 查询报告debug状态
+func DebugDetail(ctx *gin.Context) {
+	var req rao.GetReportReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+	result := report.GetReportDebugStatus(ctx, req)
+	response.SuccessWithData(ctx, result)
+}
+
 // GetDebug 获取debug日志
 func GetDebug(ctx *gin.Context) {
 	var req rao.GetReportReq
@@ -104,19 +114,50 @@ func GetDebug(ctx *gin.Context) {
 	response.SuccessWithData(ctx, result)
 }
 
+// DebugSetting 开启debug模式
 func DebugSetting(ctx *gin.Context) {
 	var req rao.DebugSettingReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
 	}
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectStressDebug)
+	filter := bson.D{{"report_id", req.ReportID}}
+	singleResult := collection.FindOne(ctx, filter)
+	result, err := singleResult.DecodeBytes()
+	if err != nil {
+		debug := bson.D{{"report_id", req.ReportID}, {"debug", req.Setting}}
+		_, err = collection.InsertOne(ctx, debug)
+		if err != nil {
+			response.ErrorWithMsg(ctx, errno.ErrRedisFailed, err.Error())
+			return
+		}
+	} else {
+		_, err := result.Elements()
+		if err != nil {
+			debug := bson.D{{"report_id", req.ReportID}, {"debug", req.Setting}}
+			_, err = collection.InsertOne(ctx, debug)
+			if err != nil {
+				response.ErrorWithMsg(ctx, errno.ErrRedisFailed, err.Error())
+				return
+			}
+		} else {
+			debug := bson.D{{"report_id", req.ReportID}, {"debug", req.Setting}}
+			_, err = collection.UpdateOne(ctx, filter, debug)
+			if err != nil {
+				response.ErrorWithMsg(ctx, errno.ErrRedisFailed, err.Error())
+				return
+			}
+		}
+
+	}
 
 	//reportID:debug
-	_, err := dal.GetRDB().Set(ctx, fmt.Sprintf("%d:debug", req.ReportID), req.Setting, 10*time.Minute).Result()
-	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrRedisFailed, err.Error())
-		return
-	}
+	//_, err = dal.GetRDB().Set(ctx, fmt.Sprintf("%d:debug", req.ReportID), req.Setting, 10*time.Minute).Result()
+	//if err != nil {
+	//	response.ErrorWithMsg(ctx, errno.ErrRedisFailed, err.Error())
+	//	return
+	//}
 
 	response.Success(ctx)
 	return

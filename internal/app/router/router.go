@@ -146,6 +146,7 @@ func RegisterRouter(r *gin.Engine) {
 	report.GET("/task_detail", handler.GetReportTaskDetail)
 	report.POST("/debug/setting", handler.DebugSetting)
 	report.POST("/stop", handler.StopReport)
+	report.GET("/debug/detail", handler.DebugDetail)
 
 	// 操作日志
 	operation := api.Group("/v1/operation")
