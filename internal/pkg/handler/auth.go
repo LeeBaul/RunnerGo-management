@@ -133,7 +133,7 @@ func UpdateNickname(ctx *gin.Context) {
 
 	tx := dal.GetQuery().User
 	if _, err := tx.WithContext(ctx).Where(tx.ID.Eq(jwt.GetUserIDByCtx(ctx))).UpdateColumn(tx.Nickname, req.Nickname); err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrParam, "password = new password")
+		response.ErrorWithMsg(ctx, errno.ErrParam, "nickname failed")
 		return
 	}
 
