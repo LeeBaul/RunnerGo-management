@@ -39,9 +39,9 @@ func TestGetReportDetail(t *testing.T) {
 		return
 	}
 
-	collection := mongoClient.Database("kunpeng").Collection("api_debug")
+	collection := mongoClient.Database("kunpeng").Collection("debug_status")
 
-	filter := bson.D{{"uuid", "ecbbabcc-443c-46c4-abce-6170f19ca06b"}}
+	filter := bson.D{{"report_id", 1149}}
 	fmt.Println("lllllll        ", collection)
 	cur := collection.FindOne(context.TODO(), filter)
 	result, err := cur.DecodeBytes()
@@ -65,4 +65,40 @@ func TestGetReportDetail(t *testing.T) {
 	//		return
 	//	}
 	//}
+}
+
+func TestGetReportDebugStatus(t *testing.T) {
+
+	//re := rao.GetReportReq{
+	//	ReportID: 1149,
+	////}
+	//conf := fmt.Sprintf("mongodb://%s:%s@%s/%s", "kunpeng", "kYjJpU8BYvb4EJ9x", "172.17.18.255:27017", "kunpeng")
+	//
+	//clientOptions := options.Client().ApplyURI(conf)
+	//mongoClient, err := mongo.Connect(context.TODO(), clientOptions)
+	//if err != nil {
+	//	fmt.Println("err:          ", err)
+	//	return
+	//}
+	//
+	//collection := mongoClient.Database("kunpeng").Collection("debug_status")
+	////filter := bson.D{{"report_id", 1149}}
+	////cur := collection.FindOne(context.TODO(), filter)
+	//list, err := cur.DecodeBytes()
+	//if err != nil {
+	//	fmt.Println("err:             ", err)
+	//}
+	//
+	//fmt.Println(list)
+	//str := GetReportDebugStatus(context.TODO(), re)
+	//fmt.Println("111111111111111", str)
+	//req := rao.GetReportReq{
+	//	ReportID: 1149,
+	//}
+	//ctx := context.TODO()
+	//result := GetReportDebugStatus(ctx, req, collection)
+	//fmt.Println("result:           ", result)
+	//fmt.Println("123")
+	//response.SuccessWithData(ctx, result)
+
 }
