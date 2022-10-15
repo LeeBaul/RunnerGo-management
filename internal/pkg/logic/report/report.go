@@ -224,7 +224,7 @@ func GetReportDebugStatus(ctx context.Context, report rao.GetReportReq) string {
 	//reportId := report.ReportID
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectDebugStatus)
 	filter := bson.D{{"report_id", reportId}}
-	fmt.Println("filter:", filter)
+	//fmt.Println("filter:", filter)
 	cur := collection.FindOne(ctx, filter)
 	result, err := cur.DecodeBytes()
 	if err != nil {
@@ -236,7 +236,7 @@ func GetReportDebugStatus(ctx context.Context, report rao.GetReportReq) string {
 	}
 	for _, value := range list {
 		if value.Key() == "debug" {
-			return value.Value().String()
+			return value.Value().StringValue()
 		}
 	}
 	return consts.StopDebug
