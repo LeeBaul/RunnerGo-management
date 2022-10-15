@@ -108,13 +108,22 @@ func UpdatePassword(ctx *gin.Context) {
 		return
 	}
 
+	tx := dal.GetQuery().User
+	u, err := tx.WithContext(ctx).Where(tx.ID.Eq(jwt.GetUserIDByCtx(ctx))).First()
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, "password = new password")
+		return
+	}
+	if err := omnibus.CompareBcryptHashAndPassword(u.Password, req.CurrentPassword); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, "password = new password")
+		return
+	}
+
 	hashedPassword, err := omnibus.GenerateBcryptFromPassword(req.NewPassword)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrParam, "password = new password")
 		return
 	}
-
-	tx := dal.GetQuery().User
 	if _, err := tx.WithContext(ctx).Where(tx.ID.Eq(jwt.GetUserIDByCtx(ctx))).UpdateColumn(tx.Password, hashedPassword); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrParam, "password = new password")
 		return
