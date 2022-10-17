@@ -106,6 +106,7 @@ type DebugSettingReq struct {
 }
 
 type ReportEmailReq struct {
+	TeamID   int64    `json:"team_id"`
 	ReportID int64    `json:"report_id"`
 	Emails   []string `json:"emails"`
 }

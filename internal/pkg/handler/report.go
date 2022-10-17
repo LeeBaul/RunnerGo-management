@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 
 	"kp-management/internal/pkg/biz/consts"
+	"kp-management/internal/pkg/biz/jwt"
 	"kp-management/internal/pkg/biz/mail"
 
 	"kp-management/internal/pkg/biz/errno"
@@ -241,8 +242,29 @@ func ReportEmail(ctx *gin.Context) {
 		return
 	}
 
+	tx := dal.GetQuery().Team
+	team, err := tx.WithContext(ctx).Where(tx.ID.Eq(req.TeamID)).First()
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	ux := dal.GetQuery().User
+	user, err := ux.WithContext(ctx).Where(ux.ID.Eq(jwt.GetUserIDByCtx(ctx))).First()
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	rx := dal.GetQuery().Report
+	report, err := rx.WithContext(ctx).Where(rx.ID.Eq(req.ReportID)).First()
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
 	for _, email := range req.Emails {
-		if err := mail.SendReportEmail(ctx, email, req.ReportID); err != nil {
+		if err := mail.SendReportEmail(ctx, email, req.ReportID, team, user, report); err != nil {
 			response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 			return
 		}
