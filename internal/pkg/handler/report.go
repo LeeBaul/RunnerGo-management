@@ -242,7 +242,7 @@ func ReportEmail(ctx *gin.Context) {
 	}
 
 	for _, email := range req.Emails {
-		if err := mail.SendReportEmail(ctx, email); err != nil {
+		if err := mail.SendReportEmail(ctx, email, req.ReportID); err != nil {
 			response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 			return
 		}

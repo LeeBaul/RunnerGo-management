@@ -115,8 +115,19 @@ func InviteMember(ctx context.Context, inviteUserID, teamID int64, members []*ra
 		return err
 	}
 
+	u, err := tx.WithContext(ctx).Where(tx.ID.Eq(inviteUserID)).First()
+	if err != nil {
+		return err
+	}
+
+	px := dal.GetQuery().Team
+	t, err := px.WithContext(ctx).Where(px.ID.Eq(teamID)).First()
+	if err != nil {
+		return err
+	}
+
 	for _, e := range emails {
-		if err := mail.SendInviteEmail(ctx, e); err != nil {
+		if err := mail.SendInviteEmail(ctx, e, u.Nickname, t.Name, true); err != nil {
 			return err
 		}
 	}
