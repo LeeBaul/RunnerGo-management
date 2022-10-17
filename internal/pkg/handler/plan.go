@@ -284,6 +284,17 @@ func PlanEmail(ctx *gin.Context) {
 	}
 
 	tx := dal.GetQuery().PlanEmail
+	cnt, err := tx.WithContext(ctx).Where(tx.PlanID.Eq(req.PlanID), tx.Email.In(req.Emails...)).Count()
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	if cnt > 0 {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, "email exists")
+		return
+	}
+
 	if err := tx.WithContext(ctx).CreateInBatches(palnEmails, 5); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
