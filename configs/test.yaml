@@ -1,5 +1,6 @@
 base:
   is_debug: false
+  domain: "https://kp-test-fe.apipost.cn/"
 
 http:
   port: 20123

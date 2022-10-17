@@ -26,7 +26,8 @@ type Config struct {
 }
 
 type Base struct {
-	IsDebug bool `mapstructure:"is_debug"`
+	IsDebug bool   `mapstructure:"is_debug"`
+	Domain  string `mapstructure:"domain"`
 }
 
 type Http struct {

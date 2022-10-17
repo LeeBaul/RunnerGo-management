@@ -95,7 +95,7 @@ const (
         <p class="slogn">预见未来, 轻松上线</p>
         <div class="email-body">
             <p>点击下方按钮重置密码</p>
-            <button>重置密码</button>
+            <button><a href="%s">重置密码</a></button>
         </div>
     </div>
 </body>
@@ -114,7 +114,7 @@ func SendForgetPasswordEmail(ctx context.Context, toEmail string, userID int64) 
 	header["To"] = toEmail
 	header["Subject"] = "找回密码"
 	header["Content-Type"] = "text/html; charset=UTF-8"
-	body := forgetHTMLTemplate
+	body := fmt.Sprintf(forgetHTMLTemplate, conf.Conf.Base.Domain+"/reset?email="+toEmail)
 	message := ""
 	for k, v := range header {
 		message += fmt.Sprintf("%s: %s\r\n", k, v)
