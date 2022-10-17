@@ -48,3 +48,9 @@ redis:
   address: "172.17.101.191:6398"
   password: "apipost"
   db: 0
+
+smtp:
+  host: "smtpdm.aliyun.com"
+  port: 465
+  email: "findpwd@no-reply.apipost.cn"
+  password: "BIyela4341"

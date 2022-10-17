@@ -31,6 +31,7 @@ func newTeam(db *gorm.DB) team {
 	_team.Name = field.NewString(tableName, "name")
 	_team.Type = field.NewInt32(tableName, "type")
 	_team.CreatedUserID = field.NewInt64(tableName, "created_user_id")
+	_team.CreateUserIdentify = field.NewString(tableName, "create_user_identify")
 	_team.CreatedAt = field.NewTime(tableName, "created_at")
 	_team.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_team.DeletedAt = field.NewField(tableName, "deleted_at")
@@ -43,14 +44,15 @@ func newTeam(db *gorm.DB) team {
 type team struct {
 	teamDo teamDo
 
-	ALL           field.Asterisk
-	ID            field.Int64
-	Name          field.String
-	Type          field.Int32 // 1: 私有团队；2: 普通团队
-	CreatedUserID field.Int64
-	CreatedAt     field.Time
-	UpdatedAt     field.Time
-	DeletedAt     field.Field
+	ALL                field.Asterisk
+	ID                 field.Int64
+	Name               field.String
+	Type               field.Int32 // 1: 私有团队；2: 普通团队
+	CreatedUserID      field.Int64
+	CreateUserIdentify field.String
+	CreatedAt          field.Time
+	UpdatedAt          field.Time
+	DeletedAt          field.Field
 
 	fieldMap map[string]field.Expr
 }
@@ -71,6 +73,7 @@ func (t *team) updateTableName(table string) *team {
 	t.Name = field.NewString(table, "name")
 	t.Type = field.NewInt32(table, "type")
 	t.CreatedUserID = field.NewInt64(table, "created_user_id")
+	t.CreateUserIdentify = field.NewString(table, "create_user_identify")
 	t.CreatedAt = field.NewTime(table, "created_at")
 	t.UpdatedAt = field.NewTime(table, "updated_at")
 	t.DeletedAt = field.NewField(table, "deleted_at")
@@ -96,11 +99,12 @@ func (t *team) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (t *team) fillFieldMap() {
-	t.fieldMap = make(map[string]field.Expr, 7)
+	t.fieldMap = make(map[string]field.Expr, 8)
 	t.fieldMap["id"] = t.ID
 	t.fieldMap["name"] = t.Name
 	t.fieldMap["type"] = t.Type
 	t.fieldMap["created_user_id"] = t.CreatedUserID
+	t.fieldMap["create_user_identify"] = t.CreateUserIdentify
 	t.fieldMap["created_at"] = t.CreatedAt
 	t.fieldMap["updated_at"] = t.UpdatedAt
 	t.fieldMap["deleted_at"] = t.DeletedAt

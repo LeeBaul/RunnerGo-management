@@ -30,6 +30,7 @@ func newOperation(db *gorm.DB) operation {
 	_operation.ID = field.NewInt64(tableName, "id")
 	_operation.TeamID = field.NewInt64(tableName, "team_id")
 	_operation.UserID = field.NewInt64(tableName, "user_id")
+	_operation.UserIdentify = field.NewString(tableName, "user_identify")
 	_operation.Category = field.NewInt32(tableName, "category")
 	_operation.Name = field.NewString(tableName, "name")
 	_operation.CreatedAt = field.NewTime(tableName, "created_at")
@@ -44,15 +45,16 @@ func newOperation(db *gorm.DB) operation {
 type operation struct {
 	operationDo operationDo
 
-	ALL       field.Asterisk
-	ID        field.Int64
-	TeamID    field.Int64
-	UserID    field.Int64
-	Category  field.Int32
-	Name      field.String
-	CreatedAt field.Time
-	UpdatedAt field.Time
-	DeletedAt field.Field
+	ALL          field.Asterisk
+	ID           field.Int64
+	TeamID       field.Int64
+	UserID       field.Int64
+	UserIdentify field.String
+	Category     field.Int32
+	Name         field.String
+	CreatedAt    field.Time
+	UpdatedAt    field.Time
+	DeletedAt    field.Field
 
 	fieldMap map[string]field.Expr
 }
@@ -72,6 +74,7 @@ func (o *operation) updateTableName(table string) *operation {
 	o.ID = field.NewInt64(table, "id")
 	o.TeamID = field.NewInt64(table, "team_id")
 	o.UserID = field.NewInt64(table, "user_id")
+	o.UserIdentify = field.NewString(table, "user_identify")
 	o.Category = field.NewInt32(table, "category")
 	o.Name = field.NewString(table, "name")
 	o.CreatedAt = field.NewTime(table, "created_at")
@@ -101,10 +104,11 @@ func (o *operation) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (o *operation) fillFieldMap() {
-	o.fieldMap = make(map[string]field.Expr, 8)
+	o.fieldMap = make(map[string]field.Expr, 9)
 	o.fieldMap["id"] = o.ID
 	o.fieldMap["team_id"] = o.TeamID
 	o.fieldMap["user_id"] = o.UserID
+	o.fieldMap["user_identify"] = o.UserIdentify
 	o.fieldMap["category"] = o.Category
 	o.fieldMap["name"] = o.Name
 	o.fieldMap["created_at"] = o.CreatedAt

@@ -29,9 +29,11 @@ func newUserTeam(db *gorm.DB) userTeam {
 	_userTeam.ALL = field.NewAsterisk(tableName)
 	_userTeam.ID = field.NewInt64(tableName, "id")
 	_userTeam.UserID = field.NewInt64(tableName, "user_id")
+	_userTeam.UserIdentify = field.NewString(tableName, "user_identify")
 	_userTeam.TeamID = field.NewInt64(tableName, "team_id")
 	_userTeam.RoleID = field.NewInt64(tableName, "role_id")
 	_userTeam.InviteUserID = field.NewInt64(tableName, "invite_user_id")
+	_userTeam.InviteUserIdentify = field.NewString(tableName, "invite_user_identify")
 	_userTeam.Sort = field.NewInt32(tableName, "sort")
 	_userTeam.CreatedAt = field.NewTime(tableName, "created_at")
 	_userTeam.UpdatedAt = field.NewTime(tableName, "updated_at")
@@ -45,16 +47,18 @@ func newUserTeam(db *gorm.DB) userTeam {
 type userTeam struct {
 	userTeamDo userTeamDo
 
-	ALL          field.Asterisk
-	ID           field.Int64
-	UserID       field.Int64
-	TeamID       field.Int64
-	RoleID       field.Int64
-	InviteUserID field.Int64
-	Sort         field.Int32
-	CreatedAt    field.Time
-	UpdatedAt    field.Time
-	DeletedAt    field.Field
+	ALL                field.Asterisk
+	ID                 field.Int64
+	UserID             field.Int64
+	UserIdentify       field.String
+	TeamID             field.Int64
+	RoleID             field.Int64
+	InviteUserID       field.Int64
+	InviteUserIdentify field.String
+	Sort               field.Int32
+	CreatedAt          field.Time
+	UpdatedAt          field.Time
+	DeletedAt          field.Field
 
 	fieldMap map[string]field.Expr
 }
@@ -73,9 +77,11 @@ func (u *userTeam) updateTableName(table string) *userTeam {
 	u.ALL = field.NewAsterisk(table)
 	u.ID = field.NewInt64(table, "id")
 	u.UserID = field.NewInt64(table, "user_id")
+	u.UserIdentify = field.NewString(table, "user_identify")
 	u.TeamID = field.NewInt64(table, "team_id")
 	u.RoleID = field.NewInt64(table, "role_id")
 	u.InviteUserID = field.NewInt64(table, "invite_user_id")
+	u.InviteUserIdentify = field.NewString(table, "invite_user_identify")
 	u.Sort = field.NewInt32(table, "sort")
 	u.CreatedAt = field.NewTime(table, "created_at")
 	u.UpdatedAt = field.NewTime(table, "updated_at")
@@ -102,12 +108,14 @@ func (u *userTeam) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (u *userTeam) fillFieldMap() {
-	u.fieldMap = make(map[string]field.Expr, 9)
+	u.fieldMap = make(map[string]field.Expr, 11)
 	u.fieldMap["id"] = u.ID
 	u.fieldMap["user_id"] = u.UserID
+	u.fieldMap["user_identify"] = u.UserIdentify
 	u.fieldMap["team_id"] = u.TeamID
 	u.fieldMap["role_id"] = u.RoleID
 	u.fieldMap["invite_user_id"] = u.InviteUserID
+	u.fieldMap["invite_user_identify"] = u.InviteUserIdentify
 	u.fieldMap["sort"] = u.Sort
 	u.fieldMap["created_at"] = u.CreatedAt
 	u.fieldMap["updated_at"] = u.UpdatedAt

@@ -36,7 +36,7 @@ func RegisterRouter(r *gin.Engine) {
 	auth.POST("/login", handler.AuthLogin)
 	auth.POST("/refresh_token", handler.RefreshToken)
 
-	auth.POST("/send_email_verify", handler.AuthSendMailVerify)
+	auth.POST("/forget_password", handler.AuthForgetPassword)
 	auth.POST("/reset_password", handler.AuthResetPassword)
 
 	// 开启接口鉴权
@@ -134,6 +134,7 @@ func RegisterRouter(r *gin.Engine) {
 	plan.GET("/detail", handler.GetPlan)
 	plan.POST("/task/save", handler.SavePlanTask)
 	plan.POST("/delete", handler.DeletePlan)
+	plan.POST("/email_notify", handler.PlanEmail)
 	// 计划预设配置
 	plan.POST("/preinstall/save", handler.SetPreinstall)
 	plan.GET("/preinstall/detail", handler.GetPreinstall)
@@ -149,6 +150,7 @@ func RegisterRouter(r *gin.Engine) {
 	report.POST("/debug/setting", handler.DebugSetting)
 	report.POST("/stop", handler.StopReport)
 	report.GET("/debug/detail", handler.DebugDetail)
+	report.POST("/email_notify", handler.ReportEmail)
 
 	// 操作日志
 	operation := api.Group("/v1/operation")

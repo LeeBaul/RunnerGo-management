@@ -41,11 +41,11 @@ type UserSettings struct {
 	CurrentTeamID int64 `json:"current_team_id" binding:"required,gt=0"`
 }
 
-type AuthSendMailVerifyReq struct {
+type ForgetPasswordReq struct {
 	Email string `json:"email"`
 }
 
-type AuthSendMailVerifyResp struct {
+type ForgetPasswordResp struct {
 }
 
 type AuthResetPasswordReq struct {
@@ -80,6 +80,7 @@ type UpdateAvatarResp struct {
 }
 
 type ResetPasswordReq struct {
+	U              int64  `json:"u"`
 	NewPassword    string `json:"new_password" binding:"required,min=6,eqfield=RepeatPassword"`
 	RepeatPassword string `json:"repeat_password" binding:"required,min=6,"`
 }

@@ -38,6 +38,7 @@ func newReport(db *gorm.DB) report {
 	_report.TaskMode = field.NewInt32(tableName, "task_mode")
 	_report.Status = field.NewInt32(tableName, "status")
 	_report.RanAt = field.NewTime(tableName, "ran_at")
+	_report.RunUserIdentify = field.NewString(tableName, "run_user_identify")
 	_report.RunUserID = field.NewInt64(tableName, "run_user_id")
 	_report.CreatedAt = field.NewTime(tableName, "created_at")
 	_report.UpdatedAt = field.NewTime(tableName, "updated_at")
@@ -51,22 +52,23 @@ func newReport(db *gorm.DB) report {
 type report struct {
 	reportDo reportDo
 
-	ALL       field.Asterisk
-	ID        field.Int64
-	TeamID    field.Int64
-	Rank      field.Int64
-	PlanID    field.Int64
-	PlanName  field.String
-	SceneID   field.Int64
-	SceneName field.String
-	TaskType  field.Int32
-	TaskMode  field.Int32
-	Status    field.Int32
-	RanAt     field.Time
-	RunUserID field.Int64
-	CreatedAt field.Time
-	UpdatedAt field.Time
-	DeletedAt field.Field
+	ALL             field.Asterisk
+	ID              field.Int64
+	TeamID          field.Int64
+	Rank            field.Int64
+	PlanID          field.Int64
+	PlanName        field.String
+	SceneID         field.Int64
+	SceneName       field.String
+	TaskType        field.Int32
+	TaskMode        field.Int32
+	Status          field.Int32
+	RanAt           field.Time
+	RunUserIdentify field.String
+	RunUserID       field.Int64
+	CreatedAt       field.Time
+	UpdatedAt       field.Time
+	DeletedAt       field.Field
 
 	fieldMap map[string]field.Expr
 }
@@ -94,6 +96,7 @@ func (r *report) updateTableName(table string) *report {
 	r.TaskMode = field.NewInt32(table, "task_mode")
 	r.Status = field.NewInt32(table, "status")
 	r.RanAt = field.NewTime(table, "ran_at")
+	r.RunUserIdentify = field.NewString(table, "run_user_identify")
 	r.RunUserID = field.NewInt64(table, "run_user_id")
 	r.CreatedAt = field.NewTime(table, "created_at")
 	r.UpdatedAt = field.NewTime(table, "updated_at")
@@ -120,7 +123,7 @@ func (r *report) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (r *report) fillFieldMap() {
-	r.fieldMap = make(map[string]field.Expr, 15)
+	r.fieldMap = make(map[string]field.Expr, 16)
 	r.fieldMap["id"] = r.ID
 	r.fieldMap["team_id"] = r.TeamID
 	r.fieldMap["rank"] = r.Rank
@@ -132,6 +135,7 @@ func (r *report) fillFieldMap() {
 	r.fieldMap["task_mode"] = r.TaskMode
 	r.fieldMap["status"] = r.Status
 	r.fieldMap["ran_at"] = r.RanAt
+	r.fieldMap["run_user_identify"] = r.RunUserIdentify
 	r.fieldMap["run_user_id"] = r.RunUserID
 	r.fieldMap["created_at"] = r.CreatedAt
 	r.fieldMap["updated_at"] = r.UpdatedAt

@@ -1,4 +1,4 @@
-package main
+package mail
 
 import (
 	"crypto/tls"
@@ -11,9 +11,9 @@ import (
 func main() {
 	host := "smtpdm.aliyun.com"
 	port := 465
-	email := "xxx@xxx.com"
-	password := "TExxxxxst"
-	toEmail := "xxx@xxxxx.com"
+	email := "findpwd@no-reply.apipost.cn"
+	password := "BIyela4341"
+	toEmail := "chunice@qq.com"
 	header := make(map[string]string)
 	header["From"] = "test" + "<" + email + ">"
 	header["To"] = toEmail
@@ -45,23 +45,18 @@ func main() {
 	}
 }
 
-// return a smtp client
 func Dial(addr string) (*smtp.Client, error) {
 	conn, err := tls.Dial("tcp", addr, nil)
 	if err != nil {
 		log.Println("Dialing Error:", err)
 		return nil, err
 	}
-	//分解主机端口字符串
+
 	host, _, _ := net.SplitHostPort(addr)
 	return smtp.NewClient(conn, host)
 }
 
-// 参考net/smtp的func SendMail()
-// 使用net.Dial连接tls(ssl)端口时,smtp.NewClient()会卡住且不提示err
-// len(to)>1时,to[1]开始提示是密送
-func SendMailUsingTLS(addr string, auth smtp.Auth, from string,
-	to []string, msg []byte) (err error) {
+func SendMailUsingTLS(addr string, auth smtp.Auth, from string, to []string, msg []byte) (err error) {
 	//create smtp client
 	c, err := Dial(addr)
 	if err != nil {

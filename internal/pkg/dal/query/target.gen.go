@@ -37,6 +37,8 @@ func newTarget(db *gorm.DB) target {
 	_target.TypeSort = field.NewInt32(tableName, "type_sort")
 	_target.Status = field.NewInt32(tableName, "status")
 	_target.Version = field.NewInt32(tableName, "version")
+	_target.CreateUserIdentify = field.NewString(tableName, "create_user_identify")
+	_target.RecentUserIdentify = field.NewString(tableName, "recent_user_identify")
 	_target.CreatedUserID = field.NewInt64(tableName, "created_user_id")
 	_target.RecentUserID = field.NewInt64(tableName, "recent_user_id")
 	_target.Description = field.NewString(tableName, "description")
@@ -54,25 +56,27 @@ func newTarget(db *gorm.DB) target {
 type target struct {
 	targetDo targetDo
 
-	ALL           field.Asterisk
-	ID            field.Int64 // id
-	TeamID        field.Int64
-	TargetType    field.String
-	Name          field.String
-	ParentID      field.Int64
-	Method        field.String // 方法
-	Sort          field.Int32  // 排序
-	TypeSort      field.Int32  // 类型排序
-	Status        field.Int32
-	Version       field.Int32
-	CreatedUserID field.Int64
-	RecentUserID  field.Int64
-	Description   field.String
-	Source        field.Int32
-	PlanID        field.Int64
-	CreatedAt     field.Time
-	UpdatedAt     field.Time
-	DeletedAt     field.Field
+	ALL                field.Asterisk
+	ID                 field.Int64 // id
+	TeamID             field.Int64
+	TargetType         field.String
+	Name               field.String
+	ParentID           field.Int64
+	Method             field.String // 方法
+	Sort               field.Int32  // 排序
+	TypeSort           field.Int32  // 类型排序
+	Status             field.Int32
+	Version            field.Int32
+	CreateUserIdentify field.String
+	RecentUserIdentify field.String
+	CreatedUserID      field.Int64
+	RecentUserID       field.Int64
+	Description        field.String
+	Source             field.Int32
+	PlanID             field.Int64
+	CreatedAt          field.Time
+	UpdatedAt          field.Time
+	DeletedAt          field.Field
 
 	fieldMap map[string]field.Expr
 }
@@ -99,6 +103,8 @@ func (t *target) updateTableName(table string) *target {
 	t.TypeSort = field.NewInt32(table, "type_sort")
 	t.Status = field.NewInt32(table, "status")
 	t.Version = field.NewInt32(table, "version")
+	t.CreateUserIdentify = field.NewString(table, "create_user_identify")
+	t.RecentUserIdentify = field.NewString(table, "recent_user_identify")
 	t.CreatedUserID = field.NewInt64(table, "created_user_id")
 	t.RecentUserID = field.NewInt64(table, "recent_user_id")
 	t.Description = field.NewString(table, "description")
@@ -129,7 +135,7 @@ func (t *target) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (t *target) fillFieldMap() {
-	t.fieldMap = make(map[string]field.Expr, 18)
+	t.fieldMap = make(map[string]field.Expr, 20)
 	t.fieldMap["id"] = t.ID
 	t.fieldMap["team_id"] = t.TeamID
 	t.fieldMap["target_type"] = t.TargetType
@@ -140,6 +146,8 @@ func (t *target) fillFieldMap() {
 	t.fieldMap["type_sort"] = t.TypeSort
 	t.fieldMap["status"] = t.Status
 	t.fieldMap["version"] = t.Version
+	t.fieldMap["create_user_identify"] = t.CreateUserIdentify
+	t.fieldMap["recent_user_identify"] = t.RecentUserIdentify
 	t.fieldMap["created_user_id"] = t.CreatedUserID
 	t.fieldMap["recent_user_id"] = t.RecentUserID
 	t.fieldMap["description"] = t.Description

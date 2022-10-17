@@ -14,21 +14,22 @@ const TableNameReport = "report"
 
 // Report mapped from table <report>
 type Report struct {
-	ID        int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	TeamID    int64          `gorm:"column:team_id;not null" json:"team_id"`
-	Rank      int64          `gorm:"column:rank;not null" json:"rank"`
-	PlanID    int64          `gorm:"column:plan_id;not null" json:"plan_id"`
-	PlanName  string         `gorm:"column:plan_name;not null" json:"plan_name"`
-	SceneID   int64          `gorm:"column:scene_id;not null" json:"scene_id"`
-	SceneName string         `gorm:"column:scene_name;not null" json:"scene_name"`
-	TaskType  int32          `gorm:"column:task_type;not null" json:"task_type"`
-	TaskMode  int32          `gorm:"column:task_mode;not null" json:"task_mode"`
-	Status    int32          `gorm:"column:status;not null" json:"status"`
-	RanAt     time.Time      `gorm:"column:ran_at;not null;default:CURRENT_TIMESTAMP" json:"ran_at"`
-	RunUserID int64          `gorm:"column:run_user_id;not null" json:"run_user_id"`
-	CreatedAt time.Time      `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"`
-	UpdatedAt time.Time      `gorm:"column:updated_at;not null;default:CURRENT_TIMESTAMP" json:"updated_at"`
-	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`
+	ID              int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
+	TeamID          int64          `gorm:"column:team_id;not null" json:"team_id"`
+	Rank            int64          `gorm:"column:rank;not null" json:"rank"`
+	PlanID          int64          `gorm:"column:plan_id;not null" json:"plan_id"`
+	PlanName        string         `gorm:"column:plan_name;not null" json:"plan_name"`
+	SceneID         int64          `gorm:"column:scene_id;not null" json:"scene_id"`
+	SceneName       string         `gorm:"column:scene_name;not null" json:"scene_name"`
+	TaskType        int32          `gorm:"column:task_type;not null" json:"task_type"`
+	TaskMode        int32          `gorm:"column:task_mode;not null" json:"task_mode"`
+	Status          int32          `gorm:"column:status;not null" json:"status"`
+	RanAt           time.Time      `gorm:"column:ran_at;not null;default:CURRENT_TIMESTAMP" json:"ran_at"`
+	RunUserIdentify string         `gorm:"column:run_user_identify;not null" json:"run_user_identify"`
+	RunUserID       int64          `gorm:"column:run_user_id;not null" json:"run_user_id"`
+	CreatedAt       time.Time      `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"`
+	UpdatedAt       time.Time      `gorm:"column:updated_at;not null;default:CURRENT_TIMESTAMP" json:"updated_at"`
+	DeletedAt       gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`
 }
 
 // TableName Report's table name

@@ -128,6 +128,14 @@ type DeletePlanReq struct {
 type DeletePlanResp struct {
 }
 
+type PlanEmailReq struct {
+	PlanID int64    `json:"plan_id"`
+	Emails []string `json:"emails"`
+}
+
+type PlanEmailResp struct {
+}
+
 type SetPreinstallReq struct {
 	TeamID   int64     `json:"team_id" binding:"required,gt=0"`
 	TaskType int32     `json:"task_type" binding:"required,gt=0"`
