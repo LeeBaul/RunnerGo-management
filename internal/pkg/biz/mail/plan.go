@@ -57,7 +57,7 @@ const (
         }
 
         .email-body {
-            width: 508px;
+            width: 908px;
             /* height: 135px; */
             background-color: #f8f8f8;
             border-radius: 15px;
@@ -89,7 +89,7 @@ const (
         }
 
         .line {
-            width: 449px;
+            width: 817px;
             height: 10px;
             background-color: #1A1A1D;
             border-radius: 4.5px;
@@ -106,10 +106,11 @@ const (
             border-width: 0px 2px 2px 2px;
             border-style: solid;
             border-color: #EC663C;
-            width: 437px;
+            width: 805px;
+            max-height: 400px;
+            overflow-y: scroll;
             box-sizing: border-box;
             z-index: 20;
-            /* overflow: hidden; */
         }
 
         .list-item {
