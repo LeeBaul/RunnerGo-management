@@ -85,6 +85,11 @@ const (
             margin-top: 24px;
             border: none;
         }
+
+        a {
+            color: #fff;
+            text-decoration: none;
+        }
     </style>
 </head>
 
@@ -95,7 +100,7 @@ const (
         <p class="slogn">预见未来, 轻松上线</p>
         <div class="email-body">
             <p>点击下方按钮查看测试报告</p>
-            <button>查看测试报告</button>
+            <button><a href="%s">查看测试报告</a></button>
         </div>
     </div>
 </body>
@@ -103,7 +108,7 @@ const (
 </html>`
 )
 
-func SendReportEmail(ctx context.Context, toEmail string) error {
+func SendReportEmail(ctx context.Context, toEmail string, reportID int64) error {
 	host := conf.Conf.SMTP.Host
 	port := conf.Conf.SMTP.Port
 	email := conf.Conf.SMTP.Email
@@ -114,7 +119,7 @@ func SendReportEmail(ctx context.Context, toEmail string) error {
 	header["To"] = toEmail
 	header["Subject"] = "报告通知"
 	header["Content-Type"] = "text/html; charset=UTF-8"
-	body := reportHTMLTemplate
+	body := fmt.Sprintf(reportHTMLTemplate, conf.Conf.Base.Domain+"#/login?report_id="+fmt.Sprintf("%d", reportID))
 	message := ""
 	for k, v := range header {
 		message += fmt.Sprintf("%s: %s\r\n", k, v)

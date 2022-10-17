@@ -104,7 +104,7 @@ const (
         <p class="title">性能测试平台</p>
         <p class="slogn">预见未来, 轻松上线</p>
         <div class="email-body">
-            <p class="p1">您已被【Frank】成功邀请加入【cici】的团队</p>
+            <p class="p1">您已被【%s】成功邀请加入【%s】的团队</p>
             <p class="p2">点击下方登录查看团队</p>
             <button>立即登录</button>
         </div>
@@ -114,7 +114,7 @@ const (
 </html>`
 )
 
-func SendInviteEmail(ctx context.Context, toEmail string) error {
+func SendInviteEmail(ctx context.Context, toEmail string, userName, teamName string, isRegister bool) error {
 	host := conf.Conf.SMTP.Host
 	port := conf.Conf.SMTP.Port
 	email := conf.Conf.SMTP.Email
@@ -125,7 +125,7 @@ func SendInviteEmail(ctx context.Context, toEmail string) error {
 	header["To"] = toEmail
 	header["Subject"] = "邀请成员"
 	header["Content-Type"] = "text/html; charset=UTF-8"
-	body := inviteHTMLTemplate
+	body := fmt.Sprintf(inviteHTMLTemplate, userName, teamName)
 	message := ""
 	for k, v := range header {
 		message += fmt.Sprintf("%s: %s\r\n", k, v)
