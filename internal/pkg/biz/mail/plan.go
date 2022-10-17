@@ -6,6 +6,7 @@ import (
 	"net/smtp"
 
 	"kp-management/internal/pkg/conf"
+	"kp-management/internal/pkg/dal/model"
 )
 
 const (
@@ -149,40 +150,13 @@ const (
         <img class="logo" src="https://apipost.oss-cn-beijing.aliyuncs.com/kunpeng/logo_black.png" alt="">
         <p class="title">性能测试平台</p>
         <p class="slogn">预见未来, 轻松上线</p>
-        <p class="team">【Cici的私有团队】</p>
+        <p class="team">【%s】</p>
         <div class="email-body">
-            <p class="plan-name">【新闻APP计划】By圣圣</p>
+            <p class="plan-name">【%s】By %s</p>
             <div class="report-list">
                 <div class="line"></div>
                 <div class="list">
-                    <a href="">
-                        <div class="list-item">
-                            <p>【场景一】</p>
-                            <p>执行者: Cici</p>
-                            <p>2022.10.17 10:23:06</p>
-                        </div>
-                    </a>
-                    <a href="">
-                        <div class="list-item">
-                            <p>【场景一】</p>
-                            <p>执行者: Cici</p>
-                            <p>2022.10.17 10:23:06</p>
-                        </div>
-                    </a>
-                    <a href="">
-                        <div class="list-item">
-                            <p>【场景一】</p>
-                            <p>执行者: Cici</p>
-                            <p>2022.10.17 10:23:06</p>
-                        </div>
-                    </a>
-                    <a href="">
-                        <div class="list-item">
-                            <p>【场景一】</p>
-                            <p>执行者: Cici</p>
-                            <p>2022.10.17 10:23:06</p>
-                        </div>
-                    </a>
+                    %s
                 </div>
             </div>
         </div>
@@ -190,9 +164,17 @@ const (
 </body>
 
 </html>`
+
+	reportListHTMLTemplate = `<a href="%s">
+                        <div class="list-item">
+                            <p>【%s】</p>
+                            <p>执行者: %s</p>
+                            <p>%s</p>
+                        </div>
+                    </a>`
 )
 
-func SendPlanEmail(ctx context.Context, toEmail string) error {
+func SendPlanEmail(ctx context.Context, toEmail string, planName, teamName, userName string, reports []*model.Report, runUsers []*model.User) error {
 	host := conf.Conf.SMTP.Host
 	port := conf.Conf.SMTP.Port
 	email := conf.Conf.SMTP.Email
@@ -203,7 +185,17 @@ func SendPlanEmail(ctx context.Context, toEmail string) error {
 	header["To"] = toEmail
 	header["Subject"] = "计划列表"
 	header["Content-Type"] = "text/html; charset=UTF-8"
-	body := planHTMLTemplate
+
+	memo := make(map[int64]*model.User, 0)
+	for _, user := range runUsers {
+		memo[user.ID] = user
+	}
+
+	var r string
+	for _, report := range reports {
+		r += fmt.Sprintf(reportListHTMLTemplate, conf.Conf.Base.Domain+"#/login?report_id="+fmt.Sprintf("%d", report.ID), report.SceneName, memo[report.RunUserID].Nickname, report.CreatedAt.Format("2006-01-02 15:04:05"))
+	}
+	body := fmt.Sprintf(planHTMLTemplate, teamName, planName, userName, r)
 	message := ""
 	for k, v := range header {
 		message += fmt.Sprintf("%s: %s\r\n", k, v)

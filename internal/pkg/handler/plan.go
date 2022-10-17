@@ -46,8 +46,46 @@ func RunPlan(ctx *gin.Context) {
 		return
 	}
 
+	px := dal.GetQuery().Plan
+	plan, err := px.WithContext(ctx).Where(px.ID.Eq(req.PlanID)).First()
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	ttx := dal.GetQuery().Team
+	team, err := ttx.WithContext(ctx).Where(ttx.ID.Eq(req.TeamID)).First()
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	rx := dal.GetQuery().Report
+	reports, err := rx.WithContext(ctx).Where(rx.PlanID.Eq(req.PlanID)).Find()
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	ux := dal.GetQuery().User
+	user, err := ux.WithContext(ctx).Where(ux.ID.Eq(jwt.GetUserIDByCtx(ctx))).First()
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	var userIDs []int64
+	for _, report := range reports {
+		userIDs = append(userIDs, report.RunUserID)
+	}
+	runUsers, err := ux.WithContext(ctx).Where(ux.ID.In(userIDs...)).Find()
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
 	for _, email := range emails {
-		if err := mail.SendPlanEmail(ctx, email.Email); err != nil {
+		if err := mail.SendPlanEmail(ctx, email.Email, plan.Name, team.Name, user.Nickname, reports, runUsers); err != nil {
 			response.ErrorWithMsg(ctx, errno.ErrHttpFailed, err.Error())
 			return
 		}
