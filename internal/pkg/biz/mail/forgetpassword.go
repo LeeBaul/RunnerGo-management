@@ -85,6 +85,11 @@ const (
             margin-top: 24px;
             border: none;
         }
+
+        a {
+            text-decoration: none;
+            color: #fff;
+        }
     </style>
 </head>
 
@@ -114,7 +119,7 @@ func SendForgetPasswordEmail(ctx context.Context, toEmail string, userID int64) 
 	header["To"] = toEmail
 	header["Subject"] = "找回密码"
 	header["Content-Type"] = "text/html; charset=UTF-8"
-	body := fmt.Sprintf(forgetHTMLTemplate, conf.Conf.Base.Domain+"/reset?email="+toEmail)
+	body := fmt.Sprintf(forgetHTMLTemplate, conf.Conf.Base.Domain+"reset?u="+fmt.Sprintf("%d", userID))
 	message := ""
 	for k, v := range header {
 		message += fmt.Sprintf("%s: %s\r\n", k, v)
