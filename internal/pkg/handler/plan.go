@@ -61,7 +61,7 @@ func RunPlan(ctx *gin.Context) {
 	}
 
 	rx := dal.GetQuery().Report
-	reports, err := rx.WithContext(ctx).Where(rx.PlanID.Eq(req.PlanID)).Find()
+	reports, err := rx.WithContext(ctx).Where(rx.PlanID.Eq(req.PlanID), rx.CreatedAt.Gt(emails[0].CreatedAt)).Find()
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return

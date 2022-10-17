@@ -6,6 +6,7 @@ import (
 	"net/smtp"
 
 	"kp-management/internal/pkg/conf"
+	"kp-management/internal/pkg/dal/model"
 )
 
 const (
@@ -108,7 +109,7 @@ const (
 </html>`
 )
 
-func SendReportEmail(ctx context.Context, toEmail string, reportID int64) error {
+func SendReportEmail(ctx context.Context, toEmail string, reportID int64, team *model.Team, user *model.User, report *model.Report) error {
 	host := conf.Conf.SMTP.Host
 	port := conf.Conf.SMTP.Port
 	email := conf.Conf.SMTP.Email
@@ -117,7 +118,7 @@ func SendReportEmail(ctx context.Context, toEmail string, reportID int64) error 
 	header := make(map[string]string)
 	header["From"] = "RunnerGo" + "<" + email + ">"
 	header["To"] = toEmail
-	header["Subject"] = "报告通知"
+	header["Subject"] = fmt.Sprintf("测试报告 【%s】的【%s】给您发送了【%s-%s】的测试报告", team.Name, user.Nickname, report.PlanName, report.SceneName)
 	header["Content-Type"] = "text/html; charset=UTF-8"
 	body := fmt.Sprintf(reportHTMLTemplate, conf.Conf.Base.Domain+"#/login?report_id="+fmt.Sprintf("%d", reportID))
 	message := ""

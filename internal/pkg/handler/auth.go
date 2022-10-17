@@ -244,3 +244,23 @@ func AuthResetPassword(ctx *gin.Context) {
 	response.Success(ctx)
 	return
 }
+
+func VerifyPassword(ctx *gin.Context) {
+	var req rao.VerifyPasswordReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	tx := dal.GetQuery().User
+	u, err := tx.WithContext(ctx).Where(tx.ID.Eq(jwt.GetUserIDByCtx(ctx))).First()
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	err = omnibus.CompareBcryptHashAndPassword(u.Password, req.Password)
+
+	response.SuccessWithData(ctx, rao.VerifyPasswordResp{IsMatch: err == nil})
+	return
+}

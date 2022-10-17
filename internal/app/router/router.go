@@ -46,6 +46,7 @@ func RegisterRouter(r *gin.Engine) {
 	user.POST("/update_password", handler.UpdatePassword)
 	user.POST("/update_nickname", handler.UpdateNickname)
 	user.POST("/update_avatar", handler.UpdateAvatar)
+	user.POST("/verify_password", handler.VerifyPassword)
 
 	// 用户配置
 	setting := api.Group("/v1/setting")
