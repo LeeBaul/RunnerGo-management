@@ -79,10 +79,18 @@ type UpdateAvatarReq struct {
 type UpdateAvatarResp struct {
 }
 
+type VerifyPasswordReq struct {
+	Password string `json:"password"`
+}
+
+type VerifyPasswordResp struct {
+	IsMatch bool `json:"is_match"`
+}
+
 type ResetPasswordReq struct {
 	U              int64  `json:"u"`
 	NewPassword    string `json:"new_password" binding:"required,min=6,eqfield=RepeatPassword"`
-	RepeatPassword string `json:"repeat_password" binding:"required,min=6,"`
+	RepeatPassword string `json:"repeat_password" binding:"required,min=6"`
 }
 
 type ResetPasswordResp struct {
