@@ -8,9 +8,11 @@ import (
 	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/jwt"
+	"kp-management/internal/pkg/biz/mail"
 	"kp-management/internal/pkg/biz/response"
 	"kp-management/internal/pkg/conf"
 	"kp-management/internal/pkg/dal"
+	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/dal/runner"
 	"kp-management/internal/pkg/logic/plan"
@@ -35,6 +37,20 @@ func RunPlan(ctx *gin.Context) {
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrHttpFailed, err.Error())
 		return
+	}
+
+	tx := dal.GetQuery().PlanEmail
+	emails, err := tx.WithContext(ctx).Where(tx.PlanID.Eq(req.PlanID)).Find()
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrHttpFailed, err.Error())
+		return
+	}
+
+	for _, email := range emails {
+		if err := mail.SendPlanEmail(ctx, email.Email); err != nil {
+			response.ErrorWithMsg(ctx, errno.ErrHttpFailed, err.Error())
+			return
+		}
 	}
 
 	response.Success(ctx)
@@ -206,6 +222,31 @@ func DeletePlan(ctx *gin.Context) {
 	}
 
 	if err := plan.DeleteByPlanID(ctx, req.TeamID, req.PlanID); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
+}
+
+func PlanEmail(ctx *gin.Context) {
+	var req rao.PlanEmailReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	var palnEmails []*model.PlanEmail
+	for _, email := range req.Emails {
+		palnEmails = append(palnEmails, &model.PlanEmail{
+			PlanID: req.PlanID,
+			Email:  email,
+		})
+	}
+
+	tx := dal.GetQuery().PlanEmail
+	if err := tx.WithContext(ctx).CreateInBatches(palnEmails, 5); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}

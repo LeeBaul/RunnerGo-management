@@ -7,6 +7,7 @@ import (
 	"github.com/go-omnibus/omnibus"
 
 	"kp-management/internal/pkg/biz/consts"
+	"kp-management/internal/pkg/biz/mail"
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/query"
@@ -87,15 +88,15 @@ func ListMembersByTeamID(ctx context.Context, teamID int64) ([]*rao.Member, erro
 
 func InviteMember(ctx context.Context, inviteUserID, teamID int64, members []*rao.InviteMember) error {
 
-	var email []string
+	var emails []string
 	memo := make(map[string]int64)
 	for _, member := range members {
-		email = append(email, member.Email)
+		emails = append(emails, member.Email)
 		memo[member.Email] = member.RoleID
 	}
 
 	tx := query.Use(dal.DB()).User
-	users, err := tx.WithContext(ctx).Where(tx.Email.In(email...)).Find()
+	users, err := tx.WithContext(ctx).Where(tx.Email.In(emails...)).Find()
 	if err != nil {
 		return err
 	}
@@ -110,7 +111,17 @@ func InviteMember(ctx context.Context, inviteUserID, teamID int64, members []*ra
 		})
 	}
 
-	return query.Use(dal.DB()).UserTeam.WithContext(ctx).CreateInBatches(ut, 5)
+	if err := query.Use(dal.DB()).UserTeam.WithContext(ctx).CreateInBatches(ut, 5); err != nil {
+		return err
+	}
+
+	for _, e := range emails {
+		if err := mail.SendInviteEmail(ctx, e); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func RoleUser(ctx context.Context, teamID, userID, roleID int64) error {

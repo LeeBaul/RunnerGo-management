@@ -5,7 +5,9 @@ import (
 	"github.com/go-omnibus/omnibus"
 	"github.com/go-resty/resty/v2"
 	"go.mongodb.org/mongo-driver/bson"
+
 	"kp-management/internal/pkg/biz/consts"
+	"kp-management/internal/pkg/biz/mail"
 
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/response"
@@ -227,6 +229,24 @@ func StopReport(ctx *gin.Context) {
 	//		return
 	//	}
 	//}
+
+	response.Success(ctx)
+	return
+}
+
+func ReportEmail(ctx *gin.Context) {
+	var req rao.ReportEmailReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	for _, email := range req.Emails {
+		if err := mail.SendReportEmail(ctx, email); err != nil {
+			response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+			return
+		}
+	}
 
 	response.Success(ctx)
 	return

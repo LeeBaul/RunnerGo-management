@@ -29,6 +29,7 @@ func newSetting(db *gorm.DB) setting {
 	_setting.ALL = field.NewAsterisk(tableName)
 	_setting.ID = field.NewInt64(tableName, "id")
 	_setting.UserID = field.NewInt64(tableName, "user_id")
+	_setting.UserIdentify = field.NewString(tableName, "user_identify")
 	_setting.TeamID = field.NewInt64(tableName, "team_id")
 	_setting.CreatedAt = field.NewTime(tableName, "created_at")
 	_setting.UpdatedAt = field.NewTime(tableName, "updated_at")
@@ -42,13 +43,14 @@ func newSetting(db *gorm.DB) setting {
 type setting struct {
 	settingDo settingDo
 
-	ALL       field.Asterisk
-	ID        field.Int64
-	UserID    field.Int64
-	TeamID    field.Int64
-	CreatedAt field.Time
-	UpdatedAt field.Time
-	DeletedAt field.Field
+	ALL          field.Asterisk
+	ID           field.Int64
+	UserID       field.Int64
+	UserIdentify field.String
+	TeamID       field.Int64
+	CreatedAt    field.Time
+	UpdatedAt    field.Time
+	DeletedAt    field.Field
 
 	fieldMap map[string]field.Expr
 }
@@ -67,6 +69,7 @@ func (s *setting) updateTableName(table string) *setting {
 	s.ALL = field.NewAsterisk(table)
 	s.ID = field.NewInt64(table, "id")
 	s.UserID = field.NewInt64(table, "user_id")
+	s.UserIdentify = field.NewString(table, "user_identify")
 	s.TeamID = field.NewInt64(table, "team_id")
 	s.CreatedAt = field.NewTime(table, "created_at")
 	s.UpdatedAt = field.NewTime(table, "updated_at")
@@ -93,9 +96,10 @@ func (s *setting) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (s *setting) fillFieldMap() {
-	s.fieldMap = make(map[string]field.Expr, 6)
+	s.fieldMap = make(map[string]field.Expr, 7)
 	s.fieldMap["id"] = s.ID
 	s.fieldMap["user_id"] = s.UserID
+	s.fieldMap["user_identify"] = s.UserIdentify
 	s.fieldMap["team_id"] = s.TeamID
 	s.fieldMap["created_at"] = s.CreatedAt
 	s.fieldMap["updated_at"] = s.UpdatedAt

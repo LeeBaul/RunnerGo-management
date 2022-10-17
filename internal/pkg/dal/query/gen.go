@@ -16,6 +16,7 @@ func Use(db *gorm.DB) *Query {
 		db:             db,
 		Operation:      newOperation(db),
 		Plan:           newPlan(db),
+		PlanEmail:      newPlanEmail(db),
 		Report:         newReport(db),
 		ReportMachine:  newReportMachine(db),
 		Setting:        newSetting(db),
@@ -33,6 +34,7 @@ type Query struct {
 
 	Operation      operation
 	Plan           plan
+	PlanEmail      planEmail
 	Report         report
 	ReportMachine  reportMachine
 	Setting        setting
@@ -51,6 +53,7 @@ func (q *Query) clone(db *gorm.DB) *Query {
 		db:             db,
 		Operation:      q.Operation.clone(db),
 		Plan:           q.Plan.clone(db),
+		PlanEmail:      q.PlanEmail.clone(db),
 		Report:         q.Report.clone(db),
 		ReportMachine:  q.ReportMachine.clone(db),
 		Setting:        q.Setting.clone(db),
@@ -66,6 +69,7 @@ func (q *Query) clone(db *gorm.DB) *Query {
 type queryCtx struct {
 	Operation      *operationDo
 	Plan           *planDo
+	PlanEmail      *planEmailDo
 	Report         *reportDo
 	ReportMachine  *reportMachineDo
 	Setting        *settingDo
@@ -81,6 +85,7 @@ func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
 		Operation:      q.Operation.WithContext(ctx),
 		Plan:           q.Plan.WithContext(ctx),
+		PlanEmail:      q.PlanEmail.WithContext(ctx),
 		Report:         q.Report.WithContext(ctx),
 		ReportMachine:  q.ReportMachine.WithContext(ctx),
 		Setting:        q.Setting.WithContext(ctx),

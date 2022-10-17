@@ -8,6 +8,7 @@ import (
 
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/jwt"
+	"kp-management/internal/pkg/biz/mail"
 	"kp-management/internal/pkg/biz/response"
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/rao"
@@ -198,12 +199,27 @@ func GetUserSettings(ctx *gin.Context) {
 	return
 }
 
-func AuthSendMailVerify(ctx *gin.Context) {
-	var req rao.AuthSendMailVerifyReq
+func AuthForgetPassword(ctx *gin.Context) {
+	var req rao.ForgetPasswordReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
 	}
+
+	tx := dal.GetQuery().User
+	u, err := tx.WithContext(ctx).Where(tx.Email.Eq(req.Email)).First()
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	if err := mail.SendForgetPasswordEmail(ctx, req.Email, u.ID); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrRPCFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
 }
 
 func AuthResetPassword(ctx *gin.Context) {
@@ -220,7 +236,7 @@ func AuthResetPassword(ctx *gin.Context) {
 	}
 
 	tx := dal.GetQuery().User
-	if _, err := tx.WithContext(ctx).Where(tx.ID.Eq(jwt.GetUserIDByCtx(ctx))).UpdateColumn(tx.Password, hashedPassword); err != nil {
+	if _, err := tx.WithContext(ctx).Where(tx.ID.Eq(req.U)).UpdateColumn(tx.Password, hashedPassword); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}

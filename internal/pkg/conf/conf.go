@@ -22,6 +22,7 @@ type Config struct {
 	Clients    Clients    `yaml:"clients"`
 	Proof      Proof      `yaml:"proof"`
 	Redis      Redis      `yaml:"redis"`
+	SMTP       SMTP       `yaml:"smtp"`
 }
 
 type Base struct {
@@ -95,6 +96,13 @@ type Redis struct {
 	Address  string `yaml:"address"`
 	Password string `yaml:"password"`
 	DB       int    `yaml:"db"`
+}
+
+type SMTP struct {
+	Host     string `mapstructure:"host"`
+	Port     int32  `mapstructure:"port"`
+	Email    string `mapstructure:"email"`
+	Password string `mapstructure:"password"`
 }
 
 func MustInitConf() {

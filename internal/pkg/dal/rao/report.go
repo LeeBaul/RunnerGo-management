@@ -104,3 +104,11 @@ type DebugSettingReq struct {
 	TeamID   int64  `json:"team_id"`
 	Setting  string `json:"setting"`
 }
+
+type ReportEmailReq struct {
+	ReportID int64    `json:"report_id"`
+	Emails   []string `json:"emails"`
+}
+
+type ReportEmailResp struct {
+}

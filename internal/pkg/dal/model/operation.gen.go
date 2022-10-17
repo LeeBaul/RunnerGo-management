@@ -14,14 +14,15 @@ const TableNameOperation = "operation"
 
 // Operation mapped from table <operation>
 type Operation struct {
-	ID        int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	TeamID    int64          `gorm:"column:team_id;not null" json:"team_id"`
-	UserID    int64          `gorm:"column:user_id;not null" json:"user_id"`
-	Category  int32          `gorm:"column:category;not null" json:"category"`
-	Name      string         `gorm:"column:name;not null" json:"name"`
-	CreatedAt time.Time      `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"`
-	UpdatedAt time.Time      `gorm:"column:updated_at;not null;default:CURRENT_TIMESTAMP" json:"updated_at"`
-	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`
+	ID           int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
+	TeamID       int64          `gorm:"column:team_id;not null" json:"team_id"`
+	UserID       int64          `gorm:"column:user_id;not null" json:"user_id"`
+	UserIdentify string         `gorm:"column:user_identify;not null" json:"user_identify"`
+	Category     int32          `gorm:"column:category;not null" json:"category"`
+	Name         string         `gorm:"column:name;not null" json:"name"`
+	CreatedAt    time.Time      `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"`
+	UpdatedAt    time.Time      `gorm:"column:updated_at;not null;default:CURRENT_TIMESTAMP" json:"updated_at"`
+	DeletedAt    gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`
 }
 
 // TableName Operation's table name
