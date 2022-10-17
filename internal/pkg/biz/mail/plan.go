@@ -8,6 +8,190 @@ import (
 	"kp-management/internal/pkg/conf"
 )
 
+const (
+	planHTMLTemplate = `<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        .email {
+            width: 100vw;
+            height: 100vh;
+            background-color: #f2f2f2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo {
+            width: 159px;
+            height: 26px;
+        }
+
+        .title {
+            margin-top: 30px;
+            font-size: 30px;
+            color: #000;
+            font-family: 'PingFang SC';
+            font-style: normal;
+            font-weight: 600;
+        }
+
+        .slogn {
+            margin-top: 30px;
+            font-family: 'PingFang SC';
+            font-style: normal;
+            font-weight: 400;
+            font-size: 18px;
+            color: #999999;
+        }
+
+        .email-body {
+            width: 508px;
+            /* height: 135px; */
+            background-color: #f8f8f8;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 36px;
+            padding-top: 24px;
+            box-sizing: border-box;
+            /* overflow: hidden; */
+        }
+
+        .email-body > .plan-name {
+            font-family: 'PingFang SC';
+            font-style: normal;
+            font-weight: 600;
+            font-size: 16px;
+            color: #000;
+        }
+
+        .report-list {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-top: 13px;
+            padding-bottom: 41px;
+        }
+
+        .line {
+            width: 449px;
+            height: 10px;
+            background-color: #1A1A1D;
+            border-radius: 4.5px;
+            position: absolute;
+            top: 15px;
+        }
+
+        .list {
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 20px;
+            margin-top: 20px;
+            background-color: #FEFEFE;
+            border-width: 0px 2px 2px 2px;
+            border-style: solid;
+            border-color: #EC663C;
+            width: 437px;
+            box-sizing: border-box;
+            z-index: 20;
+            /* overflow: hidden; */
+        }
+
+        .list-item {
+            display: flex;
+            box-sizing: border-box;
+            justify-content: space-between;
+            padding: 10px 0;
+            font-size: 12px;
+            margin: 0 26px;
+            border-bottom: 1px solid #000;
+            cursor: pointer;
+        }
+
+        .list-item > p:nth-child(1) {
+            font-size: 14px !important;
+        }
+
+        .list-item:hover {
+            color: #EC663C;
+            border-color: #EC663C;
+        }
+
+
+        .team {
+            font-size: 20px;
+            margin-top: 36px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #000;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="email">
+        <img class="logo" src="https://apipost.oss-cn-beijing.aliyuncs.com/kunpeng/logo_black.png" alt="">
+        <p class="title">性能测试平台</p>
+        <p class="slogn">预见未来, 轻松上线</p>
+        <p class="team">【Cici的私有团队】</p>
+        <div class="email-body">
+            <p class="plan-name">【新闻APP计划】By圣圣</p>
+            <div class="report-list">
+                <div class="line"></div>
+                <div class="list">
+                    <a href="">
+                        <div class="list-item">
+                            <p>【场景一】</p>
+                            <p>执行者: Cici</p>
+                            <p>2022.10.17 10:23:06</p>
+                        </div>
+                    </a>
+                    <a href="">
+                        <div class="list-item">
+                            <p>【场景一】</p>
+                            <p>执行者: Cici</p>
+                            <p>2022.10.17 10:23:06</p>
+                        </div>
+                    </a>
+                    <a href="">
+                        <div class="list-item">
+                            <p>【场景一】</p>
+                            <p>执行者: Cici</p>
+                            <p>2022.10.17 10:23:06</p>
+                        </div>
+                    </a>
+                    <a href="">
+                        <div class="list-item">
+                            <p>【场景一】</p>
+                            <p>执行者: Cici</p>
+                            <p>2022.10.17 10:23:06</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>`
+)
+
 func SendPlanEmail(ctx context.Context, toEmail string) error {
 	host := conf.Conf.SMTP.Host
 	port := conf.Conf.SMTP.Port
@@ -15,11 +199,11 @@ func SendPlanEmail(ctx context.Context, toEmail string) error {
 	password := conf.Conf.SMTP.Password
 
 	header := make(map[string]string)
-	header["From"] = "test" + "<" + email + ">"
+	header["From"] = "RunnerGo" + "<" + email + ">"
 	header["To"] = toEmail
-	header["Subject"] = "邀请成员"
+	header["Subject"] = "计划列表"
 	header["Content-Type"] = "text/html; charset=UTF-8"
-	body := "我是一封测试电子邮件!"
+	body := planHTMLTemplate
 	message := ""
 	for k, v := range header {
 		message += fmt.Sprintf("%s: %s\r\n", k, v)
