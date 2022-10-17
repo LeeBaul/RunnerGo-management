@@ -95,6 +95,11 @@ const (
             color: #fff;
             border: none;
         }
+
+        a {
+            text-decoration: none;
+            color: #fff;
+        }
     </style>
 </head>
 
@@ -106,7 +111,7 @@ const (
         <div class="email-body">
             <p class="p1">您已被【%s】成功邀请加入【%s】的团队</p>
             <p class="p2">点击下方登录查看团队</p>
-            <button>立即登录</button>
+            <button><a href="%s">立即登录</a></button>
         </div>
     </div>
 </body>
@@ -123,9 +128,13 @@ func SendInviteEmail(ctx context.Context, toEmail string, userName, teamName str
 	header := make(map[string]string)
 	header["From"] = "RunnerGo" + "<" + email + ">"
 	header["To"] = toEmail
-	header["Subject"] = "邀请成员"
+	header["Subject"] = fmt.Sprintf("团队邀请 您已被【%s】成功邀请加入【%s】团队", userName, teamName)
 	header["Content-Type"] = "text/html; charset=UTF-8"
-	body := fmt.Sprintf(inviteHTMLTemplate, userName, teamName)
+	path := "#/login"
+	if !isRegister {
+		path = "#/register"
+	}
+	body := fmt.Sprintf(inviteHTMLTemplate, userName, teamName, conf.Conf.Base.Domain+path)
 	message := ""
 	for k, v := range header {
 		message += fmt.Sprintf("%s: %s\r\n", k, v)

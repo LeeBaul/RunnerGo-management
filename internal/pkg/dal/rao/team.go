@@ -58,6 +58,9 @@ type InviteMember struct {
 }
 
 type InviteMemberResp struct {
+	RegisterNum      int      `json:"register_num"`
+	UnRegisterNum    int      `json:"un_register_num"`
+	UnRegisterEmails []string `json:"un_register_emails"`
 }
 
 type RoleUserReq struct {

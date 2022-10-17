@@ -22,6 +22,7 @@ func Use(db *gorm.DB) *Query {
 		Setting:        newSetting(db),
 		Target:         newTarget(db),
 		Team:           newTeam(db),
+		TeamUserQueue:  newTeamUserQueue(db),
 		User:           newUser(db),
 		UserTeam:       newUserTeam(db),
 		Variable:       newVariable(db),
@@ -40,6 +41,7 @@ type Query struct {
 	Setting        setting
 	Target         target
 	Team           team
+	TeamUserQueue  teamUserQueue
 	User           user
 	UserTeam       userTeam
 	Variable       variable
@@ -59,6 +61,7 @@ func (q *Query) clone(db *gorm.DB) *Query {
 		Setting:        q.Setting.clone(db),
 		Target:         q.Target.clone(db),
 		Team:           q.Team.clone(db),
+		TeamUserQueue:  q.TeamUserQueue.clone(db),
 		User:           q.User.clone(db),
 		UserTeam:       q.UserTeam.clone(db),
 		Variable:       q.Variable.clone(db),
@@ -75,6 +78,7 @@ type queryCtx struct {
 	Setting        *settingDo
 	Target         *targetDo
 	Team           *teamDo
+	TeamUserQueue  *teamUserQueueDo
 	User           *userDo
 	UserTeam       *userTeamDo
 	Variable       *variableDo
@@ -91,6 +95,7 @@ func (q *Query) WithContext(ctx context.Context) *queryCtx {
 		Setting:        q.Setting.WithContext(ctx),
 		Target:         q.Target.WithContext(ctx),
 		Team:           q.Team.WithContext(ctx),
+		TeamUserQueue:  q.TeamUserQueue.WithContext(ctx),
 		User:           q.User.WithContext(ctx),
 		UserTeam:       q.UserTeam.WithContext(ctx),
 		Variable:       q.Variable.WithContext(ctx),
