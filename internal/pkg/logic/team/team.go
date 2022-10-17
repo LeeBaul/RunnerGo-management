@@ -86,7 +86,7 @@ func ListMembersByTeamID(ctx context.Context, teamID int64) ([]*rao.Member, erro
 	return packer.TransUsersToRaoMembers(users, userTeams), nil
 }
 
-func InviteMember(ctx context.Context, inviteUserID, teamID int64, members []*rao.InviteMember) error {
+func InviteMember(ctx context.Context, inviteUserID, teamID int64, members []*rao.InviteMember) (*rao.InviteMemberResp, error) {
 
 	var emails []string
 	memo := make(map[string]int64)
@@ -98,7 +98,12 @@ func InviteMember(ctx context.Context, inviteUserID, teamID int64, members []*ra
 	tx := query.Use(dal.DB()).User
 	users, err := tx.WithContext(ctx).Where(tx.Email.In(emails...)).Find()
 	if err != nil {
-		return err
+		return nil, err
+	}
+
+	var registerEmail []string
+	for _, user := range users {
+		registerEmail = append(registerEmail, user.Email)
 	}
 
 	var ut []*model.UserTeam
@@ -112,27 +117,50 @@ func InviteMember(ctx context.Context, inviteUserID, teamID int64, members []*ra
 	}
 
 	if err := query.Use(dal.DB()).UserTeam.WithContext(ctx).CreateInBatches(ut, 5); err != nil {
-		return err
+		return nil, err
 	}
 
 	u, err := tx.WithContext(ctx).Where(tx.ID.Eq(inviteUserID)).First()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	px := dal.GetQuery().Team
 	t, err := px.WithContext(ctx).Where(px.ID.Eq(teamID)).First()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	for _, e := range emails {
+	for _, e := range registerEmail {
 		if err := mail.SendInviteEmail(ctx, e, u.Nickname, t.Name, true); err != nil {
-			return err
+			return nil, err
 		}
 	}
 
-	return nil
+	unRegisterEmail := omnibus.StringArrayDiff(emails, registerEmail)
+	if len(unRegisterEmail) > 0 {
+		var userQueue []*model.TeamUserQueue
+		for _, e := range unRegisterEmail {
+			if err := mail.SendInviteEmail(ctx, e, u.Nickname, t.Name, false); err != nil {
+				return nil, err
+			}
+
+			userQueue = append(userQueue, &model.TeamUserQueue{
+				Email:  e,
+				TeamID: teamID,
+			})
+		}
+		qx := dal.GetQuery().TeamUserQueue
+		if err := qx.WithContext(ctx).CreateInBatches(userQueue, 5); err != nil {
+			return nil, err
+		}
+	}
+
+	return &rao.InviteMemberResp{
+		RegisterNum:      len(registerEmail),
+		UnRegisterNum:    len(unRegisterEmail),
+		UnRegisterEmails: unRegisterEmail,
+	}, nil
 }
 
 func RoleUser(ctx context.Context, teamID, userID, roleID int64) error {
