@@ -49,6 +49,7 @@ func ListByUserID(ctx context.Context, userID int64) ([]*rao.Team, error) {
 	for _, team := range userTeams {
 		teamIDs = append(teamIDs, team.TeamID)
 	}
+	teamIDs = omnibus.Int64ArrayUnique(teamIDs)
 
 	t := query.Use(dal.DB()).Team
 	teams, err := t.WithContext(ctx).Where(t.ID.In(teamIDs...)).Find()
