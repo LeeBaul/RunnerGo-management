@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"time"
 
 	"github.com/go-omnibus/omnibus"
@@ -20,7 +21,8 @@ func SignUp(ctx context.Context, email, password, nickname string) (*model.User,
 		return nil, err
 	}
 
-	user := model.User{Email: email, Password: hashedPassword, Nickname: nickname}
+	rand.Seed(time.Now().UnixNano())
+	user := model.User{Email: email, Password: hashedPassword, Nickname: nickname, Avatar: consts.DefaultAvatarMemo[rand.Intn(3)]}
 	team := model.Team{Name: fmt.Sprintf("%s 的团队", nickname), Type: consts.TeamTypePrivate}
 
 	err = query.Use(dal.DB()).Transaction(func(tx *query.Query) error {

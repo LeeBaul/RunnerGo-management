@@ -275,9 +275,9 @@ func PlanEmail(ctx *gin.Context) {
 		return
 	}
 
-	var palnEmails []*model.PlanEmail
+	var planEmails []*model.PlanEmail
 	for _, email := range req.Emails {
-		palnEmails = append(palnEmails, &model.PlanEmail{
+		planEmails = append(planEmails, &model.PlanEmail{
 			PlanID: req.PlanID,
 			Email:  email,
 		})
@@ -295,7 +295,7 @@ func PlanEmail(ctx *gin.Context) {
 		return
 	}
 
-	if err := tx.WithContext(ctx).CreateInBatches(palnEmails, 5); err != nil {
+	if err := tx.WithContext(ctx).CreateInBatches(planEmails, 5); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
