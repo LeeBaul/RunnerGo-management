@@ -17,8 +17,12 @@ type ListReportsReq struct {
 	Size   int   `form:"size,default=10"`
 
 	Keyword      string `form:"keyword"`
+	TaskType     int32  `form:"task_type"`
+	TaskMode     int32  `form:"task_mode"`
+	Status       int32  `form:"status"`
 	StartTimeSec int64  `form:"start_time_sec"`
 	EndTimeSec   int64  `form:"end_time_sec"`
+	Sort         int32  `form:"sort"`
 }
 
 type ListReportsResp struct {
