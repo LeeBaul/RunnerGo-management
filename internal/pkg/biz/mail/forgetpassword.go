@@ -119,7 +119,7 @@ func SendForgetPasswordEmail(ctx context.Context, toEmail string, userID int64) 
 	header["To"] = toEmail
 	header["Subject"] = "重置密码"
 	header["Content-Type"] = "text/html; charset=UTF-8"
-	body := fmt.Sprintf(forgetHTMLTemplate, conf.Conf.Base.Domain+"#/reset?u="+fmt.Sprintf("%d", userID))
+	body := fmt.Sprintf(forgetHTMLTemplate, conf.Conf.Base.Domain+"#/reset?u="+fmt.Sprintf("%d", userID)+"&email="+toEmail)
 	message := ""
 	for k, v := range header {
 		message += fmt.Sprintf("%s: %s\r\n", k, v)
