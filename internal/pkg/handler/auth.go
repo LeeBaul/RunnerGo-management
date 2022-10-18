@@ -25,9 +25,20 @@ func AuthSignup(ctx *gin.Context) {
 		return
 	}
 
+	tx := dal.GetQuery().User
+	cnt, err := tx.WithContext(ctx).Where(tx.Email.Eq(req.Email)).Count()
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+	if cnt > 0 {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
 	u, err := auth.SignUp(ctx, req.Email, req.Password, req.Nickname)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrInvalidToken, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 

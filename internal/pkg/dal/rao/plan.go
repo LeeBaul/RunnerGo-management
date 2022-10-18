@@ -78,6 +78,11 @@ type ListPlansReq struct {
 	Keyword      string `form:"keyword"`
 	StartTimeSec int64  `form:"start_time_sec"`
 	EndTimeSec   int64  `form:"end_time_sec"`
+
+	TaskType int32 `form:"task_type"`
+	TaskMode int32 `form:"task_mode"`
+	Status   int32 `form:"status"`
+	Sort     int32 `form:"sort"`
 }
 
 type ListPlansResp struct {
