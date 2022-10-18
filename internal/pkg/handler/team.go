@@ -109,7 +109,7 @@ func GetInviteMemberURL(ctx *gin.Context) {
 	}
 
 	response.SuccessWithData(ctx, &rao.GetInviteMemberURLResp{
-		URL:     fmt.Sprintf("%s#/invite?team_id=%d&role_id=%d", conf.Conf.Base.Domain, req.TeamID, req.RoleID),
+		URL:     fmt.Sprintf("%s#/login?team_id=%d&role_id=%d", conf.Conf.Base.Domain, req.TeamID, req.RoleID),
 		Expired: time.Now().Add(time.Hour * 24).Unix(),
 	})
 	return
