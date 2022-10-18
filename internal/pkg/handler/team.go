@@ -128,6 +128,10 @@ func CheckInviteMemberURL(ctx *gin.Context) {
 		response.ErrorWithMsg(ctx, errno.ErrRedisFailed, err.Error())
 		return
 	}
+	if inviteUserID == "" {
+		response.ErrorWithMsg(ctx, errno.ErrURLExpired, "")
+		return
+	}
 
 	tx := dal.GetQuery().UserTeam
 	err = tx.WithContext(ctx).Create(&model.UserTeam{
