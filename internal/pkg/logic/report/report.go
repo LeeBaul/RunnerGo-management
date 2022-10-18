@@ -4,11 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/shopspring/decimal"
 	"log"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/shopspring/decimal"
+	"gorm.io/gen/field"
 
 	"kp-management/internal/pkg/conf"
 
@@ -31,7 +33,7 @@ func CountByTeamID(ctx context.Context, teamID int64) (int64, error) {
 	return tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID)).Count()
 }
 
-func ListByTeamID2(ctx context.Context, teamID int64, limit, offset int, keyword string, startTimeSec, endTimeSec int64) ([]*rao.Report, int64, error) {
+func ListByTeamID2(ctx context.Context, teamID int64, limit, offset int, keyword string, startTimeSec, endTimeSec int64, taskType, taskMode, status, sortTag int32) ([]*rao.Report, int64, error) {
 
 	tx := query.Use(dal.DB()).Report
 
@@ -72,8 +74,39 @@ func ListByTeamID2(ctx context.Context, teamID int64, limit, offset int, keyword
 		conditions = append(conditions, tx.CreatedAt.Between(startTime, endTime))
 	}
 
+	if taskType > 0 {
+		conditions = append(conditions, tx.TaskType.Eq(taskType))
+	}
+
+	if taskMode > 0 {
+		conditions = append(conditions, tx.TaskMode.Eq(taskMode))
+	}
+
+	if status > 0 {
+		conditions = append(conditions, tx.Status.Eq(status))
+	}
+
+	sort := make([]field.Expr, 0)
+
+	if sortTag == 0 { // 默认排序
+		sort = append(sort, tx.Rank.Desc())
+		sort = append(sort, tx.ID.Desc())
+	}
+	if sortTag == 1 { // 创建时间倒序
+		sort = append(sort, tx.CreatedAt.Desc())
+	}
+	if sortTag == 2 { // 创建时间正序
+		sort = append(sort, tx.CreatedAt)
+	}
+	if sortTag == 3 { // 修改时间倒序
+		sort = append(sort, tx.UpdatedAt.Desc())
+	}
+	if sortTag == 4 { // 修改时间正序
+		sort = append(sort, tx.UpdatedAt)
+	}
+
 	reports, cnt, err := tx.WithContext(ctx).Where(conditions...).
-		Order(tx.Rank.Desc(), tx.ID.Desc()).
+		Order(sort...).
 		FindByPage(offset, limit)
 
 	if err != nil {
