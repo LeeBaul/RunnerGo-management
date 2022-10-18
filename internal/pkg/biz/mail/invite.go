@@ -134,7 +134,7 @@ func SendInviteEmail(ctx context.Context, toEmail string, userName, teamName str
 	if !isRegister {
 		path = "#/register"
 	}
-	body := fmt.Sprintf(inviteHTMLTemplate, userName, teamName, conf.Conf.Base.Domain+path)
+	body := fmt.Sprintf(inviteHTMLTemplate, userName, teamName, conf.Conf.Base.Domain+path+"?email="+toEmail)
 	message := ""
 	for k, v := range header {
 		message += fmt.Sprintf("%s: %s\r\n", k, v)
