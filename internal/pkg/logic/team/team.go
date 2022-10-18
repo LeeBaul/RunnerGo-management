@@ -40,7 +40,7 @@ func SaveTeam(ctx context.Context, teamID, userID int64, name string) error {
 
 func ListByUserID(ctx context.Context, userID int64) ([]*rao.Team, error) {
 	ut := query.Use(dal.DB()).UserTeam
-	userTeams, err := ut.WithContext(ctx).Where(ut.UserID.Eq(userID)).Find()
+	userTeams, err := ut.WithContext(ctx).Where(ut.UserID.Eq(userID)).Distinct(ut.TeamID).Find()
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,6 @@ func ListByUserID(ctx context.Context, userID int64) ([]*rao.Team, error) {
 	for _, team := range userTeams {
 		teamIDs = append(teamIDs, team.TeamID)
 	}
-	teamIDs = omnibus.Int64ArrayUnique(teamIDs)
 
 	t := query.Use(dal.DB()).Team
 	teams, err := t.WithContext(ctx).Where(t.ID.In(teamIDs...)).Find()
