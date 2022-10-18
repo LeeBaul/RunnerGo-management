@@ -1,10 +1,18 @@
 package handler
 
 import (
+	"fmt"
+	"time"
+
+	"github.com/go-omnibus/omnibus"
+
+	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/jwt"
 	"kp-management/internal/pkg/biz/response"
+	"kp-management/internal/pkg/conf"
 	"kp-management/internal/pkg/dal"
+	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/logic/team"
 
@@ -76,6 +84,64 @@ func GetTeamRole(ctx *gin.Context) {
 	response.SuccessWithData(ctx, rao.GetTeamRoleResp{
 		RoleID: ut.RoleID,
 	})
+	return
+}
+
+func GetInviteMemberURL(ctx *gin.Context) {
+	var req rao.GetInviteMemberURLReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	tx := dal.GetQuery().UserTeam
+	_, err := tx.WithContext(ctx).Where(tx.UserID.Eq(jwt.GetUserIDByCtx(ctx)), tx.RoleID.In(consts.RoleTypeAdmin, consts.RoleTypeOwner)).First()
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	k := fmt.Sprintf("invite:url:%d:%d", req.TeamID, req.RoleID)
+	_, err = dal.GetRDB().Set(ctx, k, fmt.Sprintf("%d", jwt.GetUserIDByCtx(ctx)), time.Hour*24).Result()
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrRedisFailed, err.Error())
+		return
+	}
+
+	response.SuccessWithData(ctx, &rao.GetInviteMemberURLResp{
+		URL:     fmt.Sprintf("%s#/invite?team_id=%d&role_id=%d", conf.Conf.Base.Domain, req.TeamID, req.RoleID),
+		Expired: time.Now().Add(time.Hour * 24).Unix(),
+	})
+	return
+}
+
+func CheckInviteMemberURL(ctx *gin.Context) {
+	var req rao.CheckInviteMemberURLReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	k := fmt.Sprintf("invite:url:%d:%d", req.TeamID, req.RoleID)
+	inviteUserID, err := dal.GetRDB().Get(ctx, k).Result()
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrRedisFailed, err.Error())
+		return
+	}
+
+	tx := dal.GetQuery().UserTeam
+	err = tx.WithContext(ctx).Create(&model.UserTeam{
+		UserID:       jwt.GetUserIDByCtx(ctx),
+		TeamID:       req.TeamID,
+		RoleID:       req.RoleID,
+		InviteUserID: omnibus.DefiniteInt64(inviteUserID),
+	})
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
 	return
 }
 

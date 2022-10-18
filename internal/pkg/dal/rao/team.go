@@ -46,6 +46,25 @@ type Member struct {
 	JoinTimeSec    int64  `json:"join_time_sec,omitempty"`
 }
 
+type GetInviteMemberURLReq struct {
+	TeamID int64 `form:"team_id" binding:"required,gt=0"`
+	RoleID int64 `form:"role_id" binding:"required,gt=0"`
+}
+
+type GetInviteMemberURLResp struct {
+	URL     string `json:"url"`
+	Expired int64  `json:"expired"`
+}
+
+type CheckInviteMemberURLReq struct {
+	TeamID int64 `json:"team_id" binding:"required,gt=0"`
+	RoleID int64 `json:"role_id" binding:"required,gt=0"`
+	//Email  string `json:"email" binding:"required,gt=0"`
+}
+
+type CheckInviteMemberURLResp struct {
+}
+
 type InviteMemberReq struct {
 	TeamID  int64           `json:"team_id" binding:"required,gt=0"`
 	Members []*InviteMember `json:"members"`
