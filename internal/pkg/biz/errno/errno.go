@@ -23,6 +23,7 @@ const (
 	ErrMustLogin       = 20003
 	ErrAuthFailed      = 20004
 	ErrYetRegister     = 20005
+	ErrURLExpired      = 20006
 )
 
 // CodeMsgMap 错误码映射错误信息，不展示给用户
@@ -48,6 +49,7 @@ var CodeMsgMap = map[int]string{
 	ErrHttpFailed:      "http failed",
 	ErrAuthFailed:      "username/password failed",
 	ErrYetRegister:     "email yet register",
+	ErrURLExpired:      "invite url expired",
 }
 
 // CodeAlertMap 错图码映射错误提示，展示给用户
@@ -73,4 +75,5 @@ var CodeAlertMap = map[int]string{
 	ErrHttpFailed:      "请求下游Http服务失败",
 	ErrAuthFailed:      "用户名或密码错误",
 	ErrYetRegister:     "用户已注册",
+	ErrURLExpired:      "邀请链接已过期",
 }

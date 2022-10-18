@@ -11,8 +11,8 @@ var rdb *redis.Client
 func MustInitRedis() {
 	rdb = redis.NewClient(&redis.Options{
 		Addr:     conf.Conf.Redis.Address,
-		Password: conf.Conf.Redis.Password, // no password set
-		DB:       conf.Conf.Redis.DB,       // use default DB
+		Password: conf.Conf.Redis.Password,
+		DB:       conf.Conf.Redis.DB,
 	})
 }
 
