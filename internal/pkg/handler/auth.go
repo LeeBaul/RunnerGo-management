@@ -32,7 +32,7 @@ func AuthSignup(ctx *gin.Context) {
 		return
 	}
 	if cnt > 0 {
-		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrYetRegister, "")
 		return
 	}
 
