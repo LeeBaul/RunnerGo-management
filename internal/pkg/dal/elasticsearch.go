@@ -16,7 +16,8 @@ func MustInitElasticSearch() {
 	var err error
 	esc, err = elastic.NewClient(
 		elastic.SetURL(conf.Conf.ES.Host),
-		elastic.SetBasicAuth(conf.Conf.ES.Username, conf.Conf.ES.Password))
+		elastic.SetBasicAuth(conf.Conf.ES.Username, conf.Conf.ES.Password),
+		elastic.SetSniff(false))
 
 	if err != nil {
 		panic(err)
