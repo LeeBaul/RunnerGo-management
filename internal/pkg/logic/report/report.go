@@ -404,6 +404,34 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 				// 并发数列表
 				resultData.Results[k].ConcurrencyList = append(resultData.Results[k].ConcurrencyList, timeValue)
 
+				// 平均响应时间列表
+				timeValue.Value = resultData.Results[k].AvgRequestTime
+				if resultData.Results[k].AvgList == nil {
+					resultData.Results[k].AvgList = []TimeValue{}
+				}
+				resultData.Results[k].AvgList = append(resultData.Results[k].AvgList, timeValue)
+
+				// 90响应时间列表
+				timeValue.Value = resultData.Results[k].NinetyNineRequestTimeLineValue
+				if resultData.Results[k].NinetyList == nil {
+					resultData.Results[k].NinetyList = []TimeValue{}
+				}
+				resultData.Results[k].NinetyList = append(resultData.Results[k].NinetyList, timeValue)
+
+				// 95响应时间列表
+				timeValue.Value = resultData.Results[k].NinetyFiveRequestTimeLineValue
+				if resultData.Results[k].NinetyFiveList == nil {
+					resultData.Results[k].NinetyFiveList = []TimeValue{}
+				}
+				resultData.Results[k].NinetyFiveList = append(resultData.Results[k].NinetyFiveList, timeValue)
+
+				// 99响应时间列表
+				timeValue.Value = resultData.Results[k].NinetyNineRequestTimeLineValue
+				if resultData.Results[k].NinetyNineList == nil {
+					resultData.Results[k].NinetyNineList = []TimeValue{}
+				}
+				resultData.Results[k].NinetyNineList = append(resultData.Results[k].NinetyNineList, timeValue)
+
 			}
 		}
 	}
@@ -475,6 +503,10 @@ type ResultDataMsg struct {
 	ConcurrencyList                []TimeValue `json:"concurrency_list"`
 	QpsList                        []TimeValue `json:"qps_list" bson:"qps_list"`
 	ErrorNumList                   []TimeValue `json:"error_num_list" bson:"error_num_list"`
+	AvgList                        []TimeValue `json:"avg_list" bson:"avg_list"`
+	NinetyList                     []TimeValue `json:"ninety_list" bson:"ninety_list"`
+	NinetyFiveList                 []TimeValue `json:"ninety_five_list" bson:"ninety_five_list"`
+	NinetyNineList                 []TimeValue `json:"ninety_nine_list" bson:"ninety_nine_list"`
 }
 
 type ResultData struct {
