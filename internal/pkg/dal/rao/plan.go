@@ -98,7 +98,8 @@ type SavePlanReq struct {
 }
 
 type SavePlanConfReq struct {
-	PlanID   int64     `json:"plan_id"`
+	PlanID   int64     `json:"plan_id" binding:"required,gt=0"`
+	SceneID  int64     `json:"scene_id" binding:"required,gt=0"`
 	TeamID   int64     `json:"team_id" binding:"required,gt=0"`
 	Name     string    `json:"name" binding:"required"`
 	TaskType int32     `json:"task_type" binding:"required,gt=0"`
