@@ -23,6 +23,7 @@ type ModeConf struct {
 
 type Preinstall struct {
 	TeamID   int64     `bson:"team_id"`
+	PlanID   int64     `bson:"plan_id"`
 	TaskType int32     `bson:"task_type"`
 	CronExpr string    `bson:"cron_expr"`
 	Mode     int32     `bson:"mode"`

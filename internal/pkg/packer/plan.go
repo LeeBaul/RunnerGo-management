@@ -127,6 +127,7 @@ func TransSetPreinstallReqToMaoPreinstall(req *rao.SetPreinstallReq) *mao.Preins
 	return &mao.Preinstall{
 		TeamID:   req.TeamID,
 		TaskType: req.TaskType,
+		PlanID:   req.PlanID,
 		CronExpr: req.CronExpr,
 		Mode:     req.Mode,
 		ModeConf: &mao.ModeConf{
