@@ -1,11 +1,12 @@
 package mao
 
 type Task struct {
-	PlanID   int64     `bson:"plan_id"`
-	ModeConf *ModeConf `bson:"mode_conf"`
+	PlanID   int64 `bson:"plan_id"`
+	SceneID  int64 `bson:"scene_id"`
+	TaskType int32 `bson:"task_type"`
+	TaskMode int32 `bson:"task_mode"`
 
-	//Nodes bson.Raw `bson:"nodes"`
-	//Edges bson.Raw `bson:"edges"`
+	ModeConf *ModeConf `bson:"mode_conf"`
 }
 
 type ModeConf struct {

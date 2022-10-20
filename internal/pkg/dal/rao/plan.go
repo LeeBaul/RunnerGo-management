@@ -18,8 +18,14 @@ type Plan struct {
 	UpdatedTimeSec    int64     `json:"updated_time_sec"`
 	CronExpr          string    `json:"cron_expr"`
 	ModeConf          *ModeConf `json:"mode_conf"`
-	//Nodes             []*Node   `json:"nodes"`
-	//Edges             []*Edge   `json:"edges"`
+}
+
+type PlanTask struct {
+	PlanID   int64     `json:"plan_id"`
+	SceneID  int64     `json:"scene_id"`
+	TaskType int32     `json:"task_type"`
+	Mode     int32     `json:"mode"`
+	ModeConf *ModeConf `json:"mode_conf"`
 }
 
 type ModeConf struct {
@@ -98,7 +104,8 @@ type SavePlanReq struct {
 }
 
 type SavePlanConfReq struct {
-	PlanID   int64     `json:"plan_id"`
+	PlanID   int64     `json:"plan_id" binding:"required,gt=0"`
+	SceneID  int64     `json:"scene_id" binding:"required,gt=0"`
 	TeamID   int64     `json:"team_id" binding:"required,gt=0"`
 	Name     string    `json:"name" binding:"required"`
 	TaskType int32     `json:"task_type" binding:"required,gt=0"`
@@ -114,6 +121,16 @@ type SavePlanConfReq struct {
 
 type SavePlanResp struct {
 	PlanID int64 `json:"plan_id"`
+}
+
+type GetPlanTaskReq struct {
+	PlanID  int64 `form:"plan_id" binding:"required,gt=0"`
+	SceneID int64 `form:"scene_id" binding:"required,gt=0"`
+	TeamID  int64 `form:"team_id" binding:"required,gt=0"`
+}
+
+type GetPlanTaskResp struct {
+	PlanTask *PlanTask `json:"plan_task"`
 }
 
 type GetPlanConfReq struct {

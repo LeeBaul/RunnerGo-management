@@ -6,6 +6,7 @@ const (
 
 	PlanTaskTypeNormal  = 1 // 普通任务
 	PlanTaskTypeCronjob = 2 // 定时任务
+	PlanTaskTypeMix     = 3 // 混合模式
 
 	PlanModeConcurrence  = 1 // 并发模式
 	PlanModeStep         = 2 // 阶梯模式
@@ -13,4 +14,5 @@ const (
 	PlanModeResponseTime = 4 // 响应时间模式
 	PlanModeRPS          = 5 //每秒请求数模式
 	PlanModeTPS          = 6 //每秒事务数模式
+	PlanModeMix          = 7 // 混合模式
 )

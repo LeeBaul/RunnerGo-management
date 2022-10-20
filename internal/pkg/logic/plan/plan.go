@@ -164,31 +164,99 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 
 	return query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
 
-		err := collection.FindOne(ctx, bson.D{{"plan_id", req.PlanID}}).Err()
+		err := collection.FindOne(ctx, bson.D{{"scene_id", req.SceneID}}).Err()
 		if err == mongo.ErrNoDocuments {
-			if _, err := tx.Plan.WithContext(ctx).Omit(tx.Plan.CreateUserID).Updates(plan); err != nil {
-				return err
-			}
+			//if _, err := tx.Plan.WithContext(ctx).Omit(tx.Plan.CreateUserID).Updates(plan); err != nil {
+			//	return err
+			//}
 
 			_, err := collection.InsertOne(ctx, task)
 			if err != nil {
 				return err
 			}
 
-			return record.InsertCreate(ctx, plan.TeamID, userID, fmt.Sprintf("创建计划 - %s", plan.Name))
+			err = record.InsertCreate(ctx, plan.TeamID, userID, fmt.Sprintf("创建计划 - %s", plan.Name))
+			if err != nil {
+				return err
+			}
 		}
 
-		if _, err := tx.Plan.WithContext(ctx).Omit(tx.Plan.CreateUserID).Updates(plan); err != nil {
-			return err
+		if err == nil {
+			//if _, err := tx.Plan.WithContext(ctx).Omit(tx.Plan.CreateUserID).Updates(plan); err != nil {
+			//	return err
+			//}
+
+			_, err = collection.UpdateOne(ctx, bson.D{{"scene_id", req.SceneID}}, bson.M{"$set": task})
+			if err != nil {
+				return err
+			}
+
+			err := record.InsertUpdate(ctx, plan.TeamID, userID, fmt.Sprintf("修改计划 - %s", plan.Name))
+			if err != nil {
+				return err
+			}
 		}
 
-		_, err = collection.UpdateOne(ctx, bson.D{{"plan_id", plan.ID}}, bson.M{"$set": task})
+		cur, err := collection.Find(ctx, bson.D{{"plan_id", req.PlanID}})
 		if err != nil {
 			return err
 		}
+		var tasks []*mao.Task
+		if err := cur.All(ctx, &tasks); err != nil {
+			return err
+		}
 
-		return record.InsertUpdate(ctx, plan.TeamID, userID, fmt.Sprintf("修改计划 - %s", plan.Name))
+		if len(tasks) > 0 {
+			planType := tasks[0].TaskType
+			planMode := tasks[0].TaskMode
+			for i, t := range tasks {
+				if i > 0 {
+					if t.TaskType != planType {
+						planType = consts.PlanTaskTypeMix
+						break
+					}
+					if t.TaskMode != planMode {
+						planMode = consts.PlanModeMix
+						break
+					}
+				}
+			}
+
+			_, err := tx.Plan.WithContext(ctx).Where(tx.Plan.ID.Eq(req.PlanID)).UpdateSimple(tx.Plan.TaskType.Value(planType), tx.Plan.Mode.Value(planMode))
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
 	})
+}
+
+func GetPlanTask(ctx context.Context, planID, sceneID int64) (*rao.PlanTask, error) {
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectTask)
+
+	var t *mao.Task
+	if err := collection.FindOne(ctx, bson.D{{"scene_id", sceneID}}).Decode(&t); err != nil {
+		return nil, err
+	}
+
+	return &rao.PlanTask{
+		PlanID:   t.PlanID,
+		SceneID:  t.SceneID,
+		TaskType: t.TaskType,
+		Mode:     t.TaskMode,
+		ModeConf: &rao.ModeConf{
+			ReheatTime:       t.ModeConf.ReheatTime,
+			RoundNum:         t.ModeConf.RoundNum,
+			Concurrency:      t.ModeConf.Concurrency,
+			ThresholdValue:   t.ModeConf.ThresholdValue,
+			StartConcurrency: t.ModeConf.StartConcurrency,
+			Step:             t.ModeConf.Step,
+			StepRunTime:      t.ModeConf.StepRunTime,
+			MaxConcurrency:   t.ModeConf.MaxConcurrency,
+			Duration:         t.ModeConf.Duration,
+		},
+	}, nil
 }
 
 func GetByPlanID(ctx context.Context, teamID, planID int64) (*rao.Plan, error) {

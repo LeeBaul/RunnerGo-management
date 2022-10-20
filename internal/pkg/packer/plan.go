@@ -51,18 +51,11 @@ func TransSavePlanReqToPlanModel(req *rao.SavePlanConfReq, userID int64) *model.
 func TransSavePlanReqToMaoTask(req *rao.SavePlanConfReq) *mao.Task {
 	mc := req.ModeConf
 
-	//nodes, err := bson.Marshal(mao.Node{Nodes: req.Nodes})
-	//if err != nil {
-	//	proof.Errorf("flow.nodes json marshal err %w", err)
-	//}
-	//
-	//edges, err := bson.Marshal(mao.Edge{Edges: req.Edges})
-	//if err != nil {
-	//	proof.Errorf("flow.edges json marshal err %w", err)
-	//}
-
 	return &mao.Task{
-		PlanID: req.PlanID,
+		PlanID:   req.PlanID,
+		SceneID:  req.SceneID,
+		TaskMode: req.Mode,
+		TaskType: req.TaskType,
 		ModeConf: &mao.ModeConf{
 			ReheatTime:       mc.ReheatTime,
 			RoundNum:         mc.RoundNum,
@@ -74,8 +67,6 @@ func TransSavePlanReqToMaoTask(req *rao.SavePlanConfReq) *mao.Task {
 			MaxConcurrency:   mc.MaxConcurrency,
 			Duration:         mc.Duration,
 		},
-		//Nodes: nodes,
-		//Edges: edges,
 	}
 
 }
