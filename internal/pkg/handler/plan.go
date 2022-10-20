@@ -236,6 +236,23 @@ func SavePlanTask(ctx *gin.Context) {
 	return
 }
 
+func GetPlanTask(ctx *gin.Context) {
+	var req rao.GetPlanTaskReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	pt, err := plan.GetPlanTask(ctx, req.PlanID, req.SceneID)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.SuccessWithData(ctx, rao.GetPlanTaskResp{PlanTask: pt})
+	return
+}
+
 // GetPlan 获取计划
 func GetPlan(ctx *gin.Context) {
 	var req rao.GetPlanConfReq

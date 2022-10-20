@@ -175,7 +175,10 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 				return err
 			}
 
-			return record.InsertCreate(ctx, plan.TeamID, userID, fmt.Sprintf("创建计划 - %s", plan.Name))
+			err = record.InsertCreate(ctx, plan.TeamID, userID, fmt.Sprintf("创建计划 - %s", plan.Name))
+			if err != nil {
+				return err
+			}
 		}
 
 		if err == nil {
@@ -188,7 +191,10 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 				return err
 			}
 
-			return record.InsertUpdate(ctx, plan.TeamID, userID, fmt.Sprintf("修改计划 - %s", plan.Name))
+			err := record.InsertUpdate(ctx, plan.TeamID, userID, fmt.Sprintf("修改计划 - %s", plan.Name))
+			if err != nil {
+				return err
+			}
 		}
 
 		cur, err := collection.Find(ctx, bson.D{{"plan_id", req.PlanID}})
@@ -222,6 +228,33 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 
 		return nil
 	})
+}
+
+func GetPlanTask(ctx context.Context, planID, sceneID int64) (*rao.PlanTask, error) {
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectTask)
+
+	var t *mao.Task
+	if err := collection.FindOne(ctx, bson.D{{"scene_id", sceneID}}).Decode(&t); err != nil {
+		return nil, err
+	}
+
+	return &rao.PlanTask{
+		PlanID:   t.PlanID,
+		SceneID:  t.SceneID,
+		TaskType: t.TaskType,
+		Mode:     t.TaskMode,
+		ModeConf: &rao.ModeConf{
+			ReheatTime:       t.ModeConf.ReheatTime,
+			RoundNum:         t.ModeConf.RoundNum,
+			Concurrency:      t.ModeConf.Concurrency,
+			ThresholdValue:   t.ModeConf.ThresholdValue,
+			StartConcurrency: t.ModeConf.StartConcurrency,
+			Step:             t.ModeConf.Step,
+			StepRunTime:      t.ModeConf.StepRunTime,
+			MaxConcurrency:   t.ModeConf.MaxConcurrency,
+			Duration:         t.ModeConf.Duration,
+		},
+	}, nil
 }
 
 func GetByPlanID(ctx context.Context, teamID, planID int64) (*rao.Plan, error) {
