@@ -303,7 +303,7 @@ func SetPreinstall(ctx context.Context, req *rao.SetPreinstallReq) error {
 	p := packer.TransSetPreinstallReqToMaoPreinstall(req)
 
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectPreinstall)
-	err := collection.FindOne(ctx, bson.D{{"team_id", req.TeamID}}).Err()
+	err := collection.FindOne(ctx, bson.D{{"plan_id", req.PlanID}}).Err()
 	if err == mongo.ErrNoDocuments { // 新建
 		_, err := collection.InsertOne(ctx, p)
 
@@ -311,17 +311,17 @@ func SetPreinstall(ctx context.Context, req *rao.SetPreinstallReq) error {
 	}
 
 	_, err = collection.UpdateOne(ctx, bson.D{
-		{"team_id", req.TeamID},
+		{"plan_id", req.PlanID},
 	}, bson.M{"$set": p})
 
 	return err
 }
 
-func GetPreinstall(ctx context.Context, teamID int64) (*rao.Preinstall, error) {
+func GetPreinstall(ctx context.Context, planID int64) (*rao.Preinstall, error) {
 
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectPreinstall)
 	var p mao.Preinstall
-	err := collection.FindOne(ctx, bson.D{{"team_id", teamID}}).Decode(&p)
+	err := collection.FindOne(ctx, bson.D{{"plan_id", planID}}).Decode(&p)
 	if err == mongo.ErrNoDocuments {
 		return nil, nil
 	}

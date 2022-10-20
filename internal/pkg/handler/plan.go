@@ -349,7 +349,7 @@ func GetPreinstall(ctx *gin.Context) {
 		return
 	}
 
-	p, err := plan.GetPreinstall(ctx, req.TeamID)
+	p, err := plan.GetPreinstall(ctx, req.PlanID)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
