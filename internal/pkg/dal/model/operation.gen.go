@@ -19,6 +19,7 @@ type Operation struct {
 	UserID       int64          `gorm:"column:user_id;not null" json:"user_id"`
 	UserIdentify string         `gorm:"column:user_identify;not null" json:"user_identify"`
 	Category     int32          `gorm:"column:category;not null" json:"category"`
+	Operate      int32          `gorm:"column:operate" json:"operate"`
 	Name         string         `gorm:"column:name;not null" json:"name"`
 	CreatedAt    time.Time      `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt    time.Time      `gorm:"column:updated_at;not null;default:CURRENT_TIMESTAMP" json:"updated_at"`

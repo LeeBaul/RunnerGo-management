@@ -2,7 +2,6 @@ package folder
 
 import (
 	"context"
-	"fmt"
 
 	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/biz/record"
@@ -30,7 +29,7 @@ func Save(ctx context.Context, userID int64, req *rao.SaveFolderReq) error {
 			//	return err
 			//}
 
-			return record.InsertCreate(ctx, target.TeamID, userID, fmt.Sprintf("创建文件夹 - %s", target.Name))
+			return record.InsertCreate(ctx, target.TeamID, userID, record.OperationOperateCreateFolder, target.Name)
 		}
 
 		if _, err := tx.Target.WithContext(ctx).Omit(tx.Target.CreatedUserID).Updates(target); err != nil {
@@ -42,7 +41,7 @@ func Save(ctx context.Context, userID int64, req *rao.SaveFolderReq) error {
 		//	return err
 		//}
 
-		return record.InsertUpdate(ctx, target.TeamID, userID, fmt.Sprintf("修改文件夹 - %s", target.Name))
+		return record.InsertUpdate(ctx, target.TeamID, userID, record.OperationOperateUpdateFolder, target.Name)
 	})
 }
 

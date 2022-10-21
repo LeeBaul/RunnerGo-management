@@ -2,7 +2,6 @@ package group
 
 import (
 	"context"
-	"fmt"
 
 	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/biz/record"
@@ -31,7 +30,7 @@ func Save(ctx context.Context, req *rao.SaveGroupReq, userID int64) error {
 			//	return err
 			//}
 
-			return record.InsertCreate(ctx, target.TeamID, userID, fmt.Sprintf("创建分组 - %s", target.Name))
+			return record.InsertCreate(ctx, target.TeamID, userID, record.OperationOperateCreateGroup, target.Name)
 		}
 
 		if _, err := tx.Target.WithContext(ctx).Omit(tx.Target.CreatedUserID).Updates(target); err != nil {
@@ -43,7 +42,7 @@ func Save(ctx context.Context, req *rao.SaveGroupReq, userID int64) error {
 		//	return err
 		//}
 
-		return record.InsertUpdate(ctx, target.TeamID, userID, fmt.Sprintf("修改分组 - %s", target.Name))
+		return record.InsertUpdate(ctx, target.TeamID, userID, record.OperationOperateUpdateGroup, target.Name)
 	})
 }
 
