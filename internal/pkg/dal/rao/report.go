@@ -95,6 +95,8 @@ type ReportTask struct {
 	UserAvatar     string    `json:"user_avatar"`
 	PlanID         int64     `json:"plan_id"`
 	PlanName       string    `json:"plan_name"`
+	SceneID        int64     `json:"scene_id"`
+	SceneName      string    `json:"scene_name"`
 	ReportID       int64     `json:"report_id"`
 	CreatedTimeSec int64     `json:"created_time_sec"`
 	TaskType       int32     `json:"task_type"`
