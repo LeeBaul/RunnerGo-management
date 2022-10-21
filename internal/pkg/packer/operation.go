@@ -25,5 +25,6 @@ func TransOperationsToRaoOperationList(operations []*model.Operation, users []*m
 			CreatedTimeSec: o.CreatedAt.Unix(),
 		})
 	}
+
 	return ret
 }
