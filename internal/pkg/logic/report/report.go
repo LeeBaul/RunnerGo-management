@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/shopspring/decimal"
-	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gen/field"
 
 	"kp-management/internal/pkg/conf"
@@ -209,9 +208,6 @@ func GetTaskDetail(ctx context.Context, req rao.GetReportReq) (*rao.ReportTask, 
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectReportTask)
 
 	err := collection.FindOne(ctx, bson.D{{"report_id", req.ReportID}}).Decode(&detail)
-	if err == mongo.ErrNoDocuments {
-		return nil, nil
-	}
 	if err != nil {
 		proof.Error("mongo decode err", proof.WithError(err))
 		return nil, err

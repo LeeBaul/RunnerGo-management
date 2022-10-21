@@ -236,7 +236,11 @@ func GetPlanTask(ctx context.Context, planID, sceneID int64) (*rao.PlanTask, err
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectTask)
 
 	var t *mao.Task
-	if err := collection.FindOne(ctx, bson.D{{"scene_id", sceneID}}).Decode(&t); err != nil {
+	err := collection.FindOne(ctx, bson.D{{"scene_id", sceneID}}).Decode(&t)
+	if err == mongo.ErrNoDocuments {
+		return nil, nil
+	}
+	if err != nil {
 		return nil, err
 	}
 
