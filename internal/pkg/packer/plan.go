@@ -9,26 +9,28 @@ import (
 
 func TransPlansToRaoPlanList(plans []*model.Plan, users []*model.User) []*rao.Plan {
 	ret := make([]*rao.Plan, 0)
+
+	memo := make(map[int64]*model.User)
+	for _, user := range users {
+		memo[user.ID] = user
+	}
+
 	for _, p := range plans {
-		for _, u := range users {
-			if p.CreateUserID == u.ID {
-				ret = append(ret, &rao.Plan{
-					PlanID:            p.ID,
-					Rank:              p.Rank,
-					TeamID:            p.TeamID,
-					Name:              p.Name,
-					TaskType:          p.TaskType,
-					Mode:              p.Mode,
-					Status:            p.Status,
-					CreatedUserName:   u.Nickname,
-					CreatedUserAvatar: u.Avatar,
-					CreatedUserID:     p.CreateUserID,
-					Remark:            p.Remark,
-					CreatedTimeSec:    p.CreatedAt.Unix(),
-					UpdatedTimeSec:    p.UpdatedAt.Unix(),
-				})
-			}
-		}
+		ret = append(ret, &rao.Plan{
+			PlanID:            p.ID,
+			Rank:              p.Rank,
+			TeamID:            p.TeamID,
+			Name:              p.Name,
+			TaskType:          p.TaskType,
+			Mode:              p.Mode,
+			Status:            p.Status,
+			CreatedUserName:   memo[p.CreateUserID].Nickname,
+			CreatedUserAvatar: memo[p.CreateUserID].Avatar,
+			CreatedUserID:     p.CreateUserID,
+			Remark:            p.Remark,
+			CreatedTimeSec:    p.CreatedAt.Unix(),
+			UpdatedTimeSec:    p.UpdatedAt.Unix(),
+		})
 	}
 
 	return ret
