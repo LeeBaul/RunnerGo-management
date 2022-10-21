@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
 
@@ -33,7 +32,7 @@ func Save(ctx context.Context, req *rao.SaveTargetReq, userID int64) (int64, err
 				return err
 			}
 
-			return record.InsertCreate(ctx, target.TeamID, userID, fmt.Sprintf("创建接口 - %s", target.Name))
+			return record.InsertCreate(ctx, target.TeamID, userID, record.OperationOperateCreateAPI, target.Name)
 		}
 
 		if _, err := tx.Target.WithContext(ctx).Omit(tx.Target.CreatedUserID).Updates(target); err != nil {
@@ -45,7 +44,7 @@ func Save(ctx context.Context, req *rao.SaveTargetReq, userID int64) (int64, err
 			return err
 		}
 
-		return record.InsertUpdate(ctx, target.TeamID, userID, fmt.Sprintf("修改接口 - %s", target.Name))
+		return record.InsertUpdate(ctx, target.TeamID, userID, record.OperationOperateUpdateAPI, target.Name)
 	})
 
 	return target.ID, err

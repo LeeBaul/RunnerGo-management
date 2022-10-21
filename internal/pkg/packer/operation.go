@@ -17,6 +17,7 @@ func TransOperationsToRaoOperationList(operations []*model.Operation, users []*m
 					UserAvatar:     u.Avatar,
 					UserStatus:     0,
 					Category:       o.Category,
+					Operate:        o.Operate,
 					Name:           o.Name,
 					CreatedTimeSec: o.CreatedAt.Unix(),
 				})

@@ -175,7 +175,7 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 				return err
 			}
 
-			err = record.InsertCreate(ctx, plan.TeamID, userID, fmt.Sprintf("创建计划 - %s", plan.Name))
+			err = record.InsertCreate(ctx, plan.TeamID, userID, record.OperationOperateCreatePlan, plan.Name)
 			if err != nil {
 				return err
 			}
@@ -191,7 +191,7 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 				return err
 			}
 
-			err := record.InsertUpdate(ctx, plan.TeamID, userID, fmt.Sprintf("修改计划 - %s", plan.Name))
+			err := record.InsertUpdate(ctx, plan.TeamID, userID, record.OperationOperateUpdatePlan, plan.Name)
 			if err != nil {
 				return err
 			}
@@ -447,7 +447,7 @@ func ClonePlan(ctx context.Context, planID, userID int64) error {
 			return err
 		}
 
-		return record.InsertCreate(ctx, p.TeamID, userID, fmt.Sprintf("克隆计划 - %s", p.Name))
+		return record.InsertCreate(ctx, p.TeamID, userID, record.OperationOperateClonePlan, p.Name)
 	})
 
 }
