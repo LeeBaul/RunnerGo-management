@@ -12,6 +12,7 @@ import (
 	"github.com/shopspring/decimal"
 	"gorm.io/gen/field"
 
+	"kp-management/internal/pkg/biz/record"
 	"kp-management/internal/pkg/conf"
 
 	"github.com/go-omnibus/proof"
@@ -196,11 +197,24 @@ func KeywordFindUser(ctx context.Context, keyword string) ([]int64, error) {
 	return reportIDs, nil
 }
 
-func DeleteReport(ctx context.Context, teamID, reportID int64) error {
-	tx := query.Use(dal.DB()).Report
-	_, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID), tx.ID.Eq(reportID)).Delete()
+func DeleteReport(ctx context.Context, teamID, reportID, userID int64) error {
+	//tx := query.Use(dal.DB()).Report
+	//_, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID), tx.ID.Eq(reportID)).Delete()
+	//
+	//return err
 
-	return err
+	return dal.GetQuery().Transaction(func(tx *query.Query) error {
+		r, err := tx.Report.WithContext(ctx).Where(tx.Report.ID.Eq(reportID)).First()
+		if err != nil {
+			return err
+		}
+
+		if _, err := tx.Report.WithContext(ctx).Where(tx.Report.TeamID.Eq(teamID), tx.Report.ID.Eq(reportID)).Delete(); err != nil {
+			return err
+		}
+
+		return record.InsertDelete(ctx, teamID, userID, record.OperationOperateDeleteReport, fmt.Sprintf("%s %s", r.PlanName, r.SceneName))
+	})
 }
 
 func GetTaskDetail(ctx context.Context, req rao.GetReportReq) (*rao.ReportTask, error) {

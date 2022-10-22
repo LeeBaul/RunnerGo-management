@@ -12,4 +12,9 @@ const (
 	OperationOperateUpdatePlan   = 9  // 修改计划
 	OperationOperateUpdateScene  = 10 // 修改场景
 	OperationOperateClonePlan    = 11 // 克隆计划
+	OperationOperateDeleteReport = 12 // 删除报告
+	OperationOperateDeleteScene  = 13 // 删除场景
+	OperationOperateDeletePlan   = 14 // 删除计划
+	OperationOperateRunScene     = 15 // 运行场景
+	OperationOperateRunPlan      = 16 // 运行计划
 )

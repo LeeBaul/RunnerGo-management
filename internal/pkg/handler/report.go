@@ -49,7 +49,7 @@ func DeleteReport(ctx *gin.Context) {
 		return
 	}
 
-	if err := report.DeleteReport(ctx, req.TeamID, req.ReportID); err != nil {
+	if err := report.DeleteReport(ctx, req.TeamID, req.ReportID, jwt.GetUserIDByCtx(ctx)); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
