@@ -27,6 +27,14 @@ func RegisterRouter(r *gin.Engine) {
 
 	r.Use(ginzap.RecoveryWithZap(proof.Logger.Z, true))
 
+	// 独立报告页面接口
+	html := r.Group("/html/api/v1/report")
+	html.GET("/debug", handler.GetDebug)
+	html.GET("/debug/detail", handler.DebugDetail)
+	html.GET("/detail", handler.ReportDetail)
+	html.GET("/machine", handler.ListMachines)
+	html.GET("/task_detail", handler.GetReportTaskDetail)
+
 	// routers
 	api := r.Group("/management/api")
 
