@@ -9,6 +9,7 @@ import (
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/jwt"
 	"kp-management/internal/pkg/biz/mail"
+	"kp-management/internal/pkg/biz/record"
 	"kp-management/internal/pkg/biz/response"
 	"kp-management/internal/pkg/conf"
 	"kp-management/internal/pkg/dal"
@@ -36,6 +37,18 @@ func RunPlan(ctx *gin.Context) {
 
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrHttpFailed, err.Error())
+		return
+	}
+
+	px := dal.GetQuery().Plan
+	p, err := px.WithContext(ctx).Where(px.ID.Eq(req.PlanID)).First()
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	if err := record.InsertRun(ctx, req.TeamID, jwt.GetUserIDByCtx(ctx), record.OperationOperateRunPlan, p.Name); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
