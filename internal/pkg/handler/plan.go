@@ -279,7 +279,7 @@ func DeletePlan(ctx *gin.Context) {
 		return
 	}
 
-	if err := plan.DeleteByPlanID(ctx, req.TeamID, req.PlanID); err != nil {
+	if err := plan.DeleteByPlanID(ctx, req.TeamID, req.PlanID, jwt.GetUserIDByCtx(ctx)); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
