@@ -194,7 +194,8 @@ func SendPlanEmail(ctx context.Context, toEmail string, planName, teamName, user
 
 	var r string
 	for _, report := range reports {
-		r += fmt.Sprintf(reportListHTMLTemplate, conf.Conf.Base.Domain+"#/login?report_id="+fmt.Sprintf("%d", report.ID)+"&email="+toEmail, report.SceneName, memo[report.RunUserID].Nickname, report.CreatedAt.Format("2006-01-02 15:04:05"))
+
+		r += fmt.Sprintf(reportListHTMLTemplate, conf.Conf.Base.Domain+"#/email/report?report_id="+fmt.Sprintf("%d", report.ID)+"&email="+toEmail+"&team_id="+fmt.Sprintf("%d", report.TeamID), report.SceneName, memo[report.RunUserID].Nickname, report.CreatedAt.Format("2006-01-02 15:04:05"))
 	}
 	body := fmt.Sprintf(planHTMLTemplate, teamName, planName, userName, r)
 	message := ""
