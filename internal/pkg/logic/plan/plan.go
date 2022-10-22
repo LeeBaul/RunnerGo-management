@@ -287,19 +287,22 @@ func GetByPlanID(ctx context.Context, teamID, planID int64) (*rao.Plan, error) {
 	return packer.TransTaskToRaoPlan(p, t, user), nil
 }
 
-func DeleteByPlanID(ctx context.Context, teamID, planID int64) error {
+func DeleteByPlanID(ctx context.Context, teamID, planID, userID int64) error {
 	return dal.GetQuery().Transaction(func(tx *query.Query) error {
-		_, err := tx.Plan.WithContext(ctx).Where(tx.Plan.TeamID.Eq(teamID), tx.Plan.ID.Eq(planID)).Delete()
+		p, err := tx.Plan.WithContext(ctx).Where(tx.Plan.ID.Eq(planID)).First()
 		if err != nil {
 			return err
 		}
 
-		_, err = tx.Target.WithContext(ctx).Where(tx.Target.TeamID.Eq(teamID), tx.Target.PlanID.Eq(planID)).Delete()
-		if err != nil {
+		if _, err := tx.Plan.WithContext(ctx).Where(tx.Plan.TeamID.Eq(teamID), tx.Plan.ID.Eq(planID)).Delete(); err != nil {
 			return err
 		}
 
-		return nil
+		if _, err = tx.Target.WithContext(ctx).Where(tx.Target.TeamID.Eq(teamID), tx.Target.PlanID.Eq(planID)).Delete(); err != nil {
+			return err
+		}
+
+		return record.InsertDelete(ctx, teamID, userID, record.OperationOperateDeletePlan, p.Name)
 	})
 }
 

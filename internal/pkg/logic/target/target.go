@@ -8,6 +8,7 @@ import (
 	"gorm.io/gen"
 
 	"kp-management/internal/pkg/biz/consts"
+	"kp-management/internal/pkg/biz/record"
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/mao"
 	"kp-management/internal/pkg/dal/query"
@@ -54,7 +55,7 @@ func SendSceneAPI(ctx context.Context, teamID, sceneID int64, nodeID string) (st
 	return "", nil
 }
 
-func SendScene(ctx context.Context, teamID, sceneID int64) (string, error) {
+func SendScene(ctx context.Context, teamID, sceneID, userID int64) (string, error) {
 	tx := dal.GetQuery().Target
 	t, err := tx.WithContext(ctx).Where(tx.ID.Eq(sceneID), tx.TargetType.Eq(consts.TargetTypeScene)).First()
 	if err != nil {
@@ -82,6 +83,10 @@ func SendScene(ctx context.Context, teamID, sceneID int64) (string, error) {
 
 	variables, err := sv.WithContext(ctx).Where(sv.TeamID.Eq(teamID)).Find()
 	if err != nil {
+		return "", err
+	}
+
+	if err := record.InsertRun(ctx, teamID, userID, record.OperationOperateRunScene, t.Name); err != nil {
 		return "", err
 	}
 
@@ -214,19 +219,42 @@ func ListTrashFolderAPI(ctx context.Context, teamID int64, limit, offset int) ([
 	return packer.TransTargetToRaoFolderAPIList(targets), cnt, nil
 }
 
-func Trash(ctx context.Context, targetID int64) error {
-	t := query.Use(dal.DB()).Target
-	_, err := t.WithContext(ctx).Where(t.ID.Eq(targetID)).UpdateColumn(t.Status, consts.TargetStatusTrash)
-	if err != nil {
-		return err
-	}
+func Trash(ctx context.Context, targetID, userID int64) error {
+	//t := query.Use(dal.DB()).Target
+	//_, err := t.WithContext(ctx).Where(t.ID.Eq(targetID)).UpdateColumn(t.Status, consts.TargetStatusTrash)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//_, err = t.WithContext(ctx).Where(t.ParentID.Eq(targetID)).UpdateColumn(t.Status, consts.TargetStatusTrash)
+	//if err != nil {
+	//	return err
+	//}
 
-	_, err = t.WithContext(ctx).Where(t.ParentID.Eq(targetID)).UpdateColumn(t.Status, consts.TargetStatusTrash)
-	if err != nil {
-		return err
-	}
+	//return nil
 
-	return nil
+	return dal.GetQuery().Transaction(func(tx *query.Query) error {
+		t, err := tx.Target.WithContext(ctx).Where(tx.Target.ID.Eq(targetID)).First()
+		if err != nil {
+			return err
+		}
+
+		if _, err := tx.Target.WithContext(ctx).Where(tx.Target.ID.Eq(targetID)).UpdateColumn(tx.Target.Status, consts.TargetStatusTrash); err != nil {
+			return err
+		}
+
+		if _, err = tx.Target.WithContext(ctx).Where(tx.Target.ParentID.Eq(targetID)).UpdateColumn(tx.Target.Status, consts.TargetStatusTrash); err != nil {
+			return err
+		}
+
+		if t.TargetType == consts.TargetTypeScene {
+			if err := record.InsertDelete(ctx, t.TeamID, userID, record.OperationOperateDeleteScene, t.Name); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
 }
 
 func Recall(ctx context.Context, targetID int64) error {
