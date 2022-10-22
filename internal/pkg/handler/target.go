@@ -109,7 +109,7 @@ func TrashTarget(ctx *gin.Context) {
 		return
 	}
 
-	if err := target.Trash(ctx, req.TargetID); err != nil {
+	if err := target.Trash(ctx, req.TargetID, jwt.GetUserIDByCtx(ctx)); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
