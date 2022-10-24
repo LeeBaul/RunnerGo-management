@@ -102,7 +102,7 @@ func GetInviteMemberURL(ctx *gin.Context) {
 	}
 
 	k := fmt.Sprintf("invite:url:%d:%d", req.TeamID, req.RoleID)
-	_, err = dal.GetRDB().Set(ctx, k, fmt.Sprintf("%d", jwt.GetUserIDByCtx(ctx)), time.Hour*24).Result()
+	_, err = dal.GetRDB().Set(ctx, k, fmt.Sprintf("%d", jwt.GetUserIDByCtx(ctx)), 24*time.Hour).Result()
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrRedisFailed, err.Error())
 		return
@@ -125,7 +125,7 @@ func CheckInviteMemberURL(ctx *gin.Context) {
 	k := fmt.Sprintf("invite:url:%d:%d", req.TeamID, req.RoleID)
 	inviteUserID, err := dal.GetRDB().Get(ctx, k).Result()
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrRedisFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrURLExpired, err.Error())
 		return
 	}
 	if inviteUserID == "" {
@@ -140,7 +140,7 @@ func CheckInviteMemberURL(ctx *gin.Context) {
 		return
 	}
 	if cnt > 0 {
-		response.ErrorWithMsg(ctx, errno.ErrExistsTeam, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrExistsTeam, "")
 		return
 	}
 
