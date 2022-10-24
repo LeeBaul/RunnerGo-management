@@ -125,7 +125,7 @@ func CheckInviteMemberURL(ctx *gin.Context) {
 	k := fmt.Sprintf("invite:url:%d:%d", req.TeamID, req.RoleID)
 	inviteUserID, err := dal.GetRDB().Get(ctx, k).Result()
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrRedisFailed, err.Error())
+		response.ErrorWithMsg(ctx, errno.ErrURLExpired, err.Error())
 		return
 	}
 	if inviteUserID == "" {
