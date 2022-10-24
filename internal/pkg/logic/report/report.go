@@ -4,21 +4,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
-	"os"
+	"github.com/shopspring/decimal"
 	"strconv"
 	"time"
 
-	"github.com/shopspring/decimal"
 	"gorm.io/gen/field"
 
-	"kp-management/internal/pkg/biz/record"
-	"kp-management/internal/pkg/conf"
-
 	"github.com/go-omnibus/proof"
-	"github.com/olivere/elastic/v7"
 	"go.mongodb.org/mongo-driver/bson"
 	"gorm.io/gen"
+	"kp-management/internal/pkg/biz/record"
 
 	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/dal"
@@ -316,144 +311,279 @@ func GetReportDebugLog(ctx context.Context, report rao.GetReportReq) (err error,
 	return
 }
 
+// GetReportDetail 从redis获取测试数据
 func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, password string) (err error, resultData ResultData) {
-	reportId := strconv.FormatInt(report.ReportID, 10)
-	//index := strconv.FormatInt(report.TeamID, 10)
-
-	queryEs := elastic.NewBoolQuery()
-	queryEs = queryEs.Must(elastic.NewMatchQuery("report_id", reportId))
-
-	client, err := elastic.NewClient(
-		elastic.SetURL(host),
-		elastic.SetSniff(false),
-		elastic.SetBasicAuth(user, password),
-		elastic.SetErrorLog(log.New(os.Stdout, "APP", log.Lshortfile)),
-		elastic.SetHealthcheckInterval(30*time.Second),
-	)
+	dataBase := fmt.Sprintf("%d_%d", report.TeamID, report.ReportID)
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(dataBase)
+	filter := bson.D{{"report_id", fmt.Sprintf("%d", report.ReportID)}}
+	var resultMsg SceneTestResultDataMsg
+	cur, err := collection.FindOne(ctx, filter).DecodeBytes()
 	if err != nil {
-		if err != nil {
-			proof.Error("创建es客户端失败", proof.WithError(err))
+		rdb := dal.GetRDB()
+		key := fmt.Sprintf("%d:%d:reportData", report.PlanId, report.ReportID)
+		dataList := rdb.LRange(ctx, key, 0, -1).Val()
+		if len(dataList) < 0 {
 			return
 		}
-	}
-	_, _, err = client.Ping(host).Do(ctx)
-	if err != nil {
-		proof.Error("es连接失败", proof.WithError(err))
-		return
-	}
-	res, err := client.Search(reportId).Query(queryEs).Sort("time_stamp", true).Size(conf.Conf.ES.Size).Pretty(true).Do(ctx)
-	if err != nil {
-		proof.Error("获取报告详情失败", proof.WithError(err))
-		return
-	}
-	if res == nil {
-		proof.Error("报告详情为空")
-		return
-	}
+		for _, resultMsgString := range dataList {
+			err = json.Unmarshal([]byte(resultMsgString), &resultMsg)
+			if err != nil {
+				proof.Error("json转换格式错误：", proof.WithError(err))
+			}
+			if resultData.Results == nil {
+				resultData.Results = make(map[string]*ResultDataMsg)
+			}
+			resultData.ReportId = resultMsg.ReportId
+			resultData.End = resultMsg.End
+			resultData.ReportName = resultMsg.ReportName
+			resultData.PlanId = resultMsg.PlanId
+			resultData.PlanName = resultMsg.PlanName
+			resultData.SceneId = resultMsg.SceneId
+			resultData.SceneName = resultMsg.SceneName
+			resultData.TimeStamp = resultMsg.TimeStamp
+			if resultMsg.Results != nil && len(resultMsg.Results) > 0 {
+				for k, apiResult := range resultMsg.Results {
+					if resultData.Results[k] == nil {
+						resultData.Results[k] = new(ResultDataMsg)
+					}
+					resultData.Results[k].ApiName = apiResult.Name
+					resultData.Results[k].Concurrency = apiResult.Concurrency
+					resultData.Results[k].TotalRequestNum = apiResult.TotalRequestNum
+					resultData.Results[k].TotalRequestTime, _ = decimal.NewFromFloat(float64(apiResult.TotalRequestTime) / float64(time.Second)).Round(2).Float64()
+					resultData.Results[k].SuccessNum = apiResult.SuccessNum
+					resultData.Results[k].ErrorNum = apiResult.ErrorNum
+					if resultData.Results[k].ErrorNum != 0 && apiResult.TotalRequestNum != 0 {
+						errRate := float64(apiResult.ErrorNum) / float64(apiResult.TotalRequestNum)
+						resultData.Results[k].ErrorRate, _ = decimal.NewFromFloat(errRate).Round(4).Float64()
+					}
 
-	var resultMsg SceneTestResultDataMsg // 从es中获取得数据结构
+					resultData.Results[k].AvgRequestTime, _ = decimal.NewFromFloat(apiResult.AvgRequestTime / float64(time.Millisecond)).Round(1).Float64()
+					resultData.Results[k].MaxRequestTime, _ = decimal.NewFromFloat(apiResult.MaxRequestTime / float64(time.Millisecond)).Round(1).Float64()
+					resultData.Results[k].MinRequestTime, _ = decimal.NewFromFloat(apiResult.MinRequestTime / float64(time.Millisecond)).Round(1).Float64()
+					resultData.Results[k].CustomRequestTimeLine = apiResult.CustomRequestTimeLine
+					resultData.Results[k].CustomRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.CustomRequestTimeLineValue / float64(time.Millisecond)).Round(1).Float64()
+					resultData.Results[k].NinetyRequestTimeLine = apiResult.NinetyRequestTimeLine
+					resultData.Results[k].NinetyRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.NinetyRequestTimeLineValue / float64(time.Millisecond)).Round(1).Float64()
+					resultData.Results[k].NinetyFiveRequestTimeLine = apiResult.NinetyFiveRequestTimeLine
+					resultData.Results[k].NinetyFiveRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.NinetyFiveRequestTimeLineValue / float64(time.Millisecond)).Round(1).Float64()
+					resultData.Results[k].NinetyNineRequestTimeLine = apiResult.NinetyNineRequestTimeLine
+					resultData.Results[k].NinetyNineRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.NinetyNineRequestTimeLineValue / float64(time.Millisecond)).Round(1).Float64()
+					resultData.Results[k].SendBytes, _ = decimal.NewFromFloat(apiResult.SendBytes).Round(1).Float64()
+					resultData.Results[k].ReceivedBytes, _ = decimal.NewFromFloat(apiResult.ReceivedBytes).Round(1).Float64()
+					resultData.Results[k].Qps = apiResult.Qps
+					if resultData.Results[k].QpsList == nil {
+						resultData.Results[k].QpsList = []TimeValue{}
+					}
+					var timeValue = TimeValue{}
+					timeValue.TimeStamp = resultData.TimeStamp
+					// qps列表
+					timeValue.Value = resultData.Results[k].Qps
+					resultData.Results[k].QpsList = append(resultData.Results[k].QpsList, timeValue)
+					timeValue.Value = resultData.Results[k].ErrorNum
+					if resultData.Results[k].ErrorNumList == nil {
+						resultData.Results[k].ErrorNumList = []TimeValue{}
+					}
+					// 错误数列表
+					resultData.Results[k].ErrorNumList = append(resultData.Results[k].ErrorNumList, timeValue)
+					timeValue.Value = resultData.Results[k].Concurrency
+					if resultData.Results[k].ConcurrencyList == nil {
+						resultData.Results[k].ConcurrencyList = []TimeValue{}
+					}
+					// 并发数列表
+					resultData.Results[k].ConcurrencyList = append(resultData.Results[k].ConcurrencyList, timeValue)
 
-	for _, item := range res.Hits.Hits {
-		err = json.Unmarshal(item.Source, &resultMsg)
-		if err != nil {
-			proof.Error("json转换格式错误：", proof.WithError(err))
-		}
-		if resultData.Results == nil {
-			resultData.Results = make(map[string]*ResultDataMsg)
-		}
-		resultData.ReportId = resultMsg.ReportId
-		resultData.End = resultMsg.End
-		resultData.ReportName = resultMsg.ReportName
-		resultData.PlanId = resultMsg.PlanId
-		resultData.PlanName = resultMsg.PlanName
-		resultData.SceneId = resultMsg.SceneId
-		resultData.SceneName = resultMsg.SceneName
-		resultData.TimeStamp = resultMsg.TimeStamp
-		if resultMsg.Results != nil && len(resultMsg.Results) > 0 {
-			for k, apiResult := range resultMsg.Results {
-				if resultData.Results[k] == nil {
-					resultData.Results[k] = new(ResultDataMsg)
-				}
-				resultData.Results[k].ApiName = apiResult.Name
-				resultData.Results[k].Concurrency = apiResult.Concurrency
-				resultData.Results[k].TotalRequestNum = apiResult.TotalRequestNum
-				resultData.Results[k].TotalRequestTime, _ = decimal.NewFromFloat(float64(apiResult.TotalRequestTime) / float64(time.Second)).Round(2).Float64()
-				resultData.Results[k].SuccessNum = apiResult.SuccessNum
-				resultData.Results[k].ErrorNum = apiResult.ErrorNum
-				if resultData.Results[k].ErrorNum != 0 && apiResult.TotalRequestNum != 0 {
-					errRate := float64(apiResult.ErrorNum) / float64(apiResult.TotalRequestNum)
-					resultData.Results[k].ErrorRate, _ = decimal.NewFromFloat(errRate).Round(4).Float64()
-				}
+					// 平均响应时间列表
+					timeValue.Value = resultData.Results[k].AvgRequestTime
+					if resultData.Results[k].AvgList == nil {
+						resultData.Results[k].AvgList = []TimeValue{}
+					}
+					resultData.Results[k].AvgList = append(resultData.Results[k].AvgList, timeValue)
 
-				resultData.Results[k].AvgRequestTime, _ = decimal.NewFromFloat(apiResult.AvgRequestTime / float64(time.Millisecond)).Round(1).Float64()
-				resultData.Results[k].MaxRequestTime, _ = decimal.NewFromFloat(apiResult.MaxRequestTime / float64(time.Millisecond)).Round(1).Float64()
-				resultData.Results[k].MinRequestTime, _ = decimal.NewFromFloat(apiResult.MinRequestTime / float64(time.Millisecond)).Round(1).Float64()
-				resultData.Results[k].CustomRequestTimeLine = apiResult.CustomRequestTimeLine
-				resultData.Results[k].CustomRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.CustomRequestTimeLineValue / float64(time.Millisecond)).Round(1).Float64()
-				resultData.Results[k].NinetyRequestTimeLine = apiResult.NinetyRequestTimeLine
-				resultData.Results[k].NinetyRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.NinetyRequestTimeLineValue / float64(time.Millisecond)).Round(1).Float64()
-				resultData.Results[k].NinetyFiveRequestTimeLine = apiResult.NinetyFiveRequestTimeLine
-				resultData.Results[k].NinetyFiveRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.NinetyFiveRequestTimeLineValue / float64(time.Millisecond)).Round(1).Float64()
-				resultData.Results[k].NinetyNineRequestTimeLine = apiResult.NinetyNineRequestTimeLine
-				resultData.Results[k].NinetyNineRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.NinetyNineRequestTimeLineValue / float64(time.Millisecond)).Round(1).Float64()
-				resultData.Results[k].SendBytes, _ = decimal.NewFromFloat(apiResult.SendBytes).Round(1).Float64()
-				resultData.Results[k].ReceivedBytes, _ = decimal.NewFromFloat(apiResult.ReceivedBytes).Round(1).Float64()
-				resultData.Results[k].Qps = apiResult.Qps
-				if resultData.Results[k].QpsList == nil {
-					resultData.Results[k].QpsList = []TimeValue{}
-				}
-				var timeValue = TimeValue{}
-				timeValue.TimeStamp = resultData.TimeStamp
-				// qps列表
-				timeValue.Value = resultData.Results[k].Qps
-				resultData.Results[k].QpsList = append(resultData.Results[k].QpsList, timeValue)
-				timeValue.Value = resultData.Results[k].ErrorNum
-				if resultData.Results[k].ErrorNumList == nil {
-					resultData.Results[k].ErrorNumList = []TimeValue{}
-				}
-				// 错误数列表
-				resultData.Results[k].ErrorNumList = append(resultData.Results[k].ErrorNumList, timeValue)
-				timeValue.Value = resultData.Results[k].Concurrency
-				if resultData.Results[k].ConcurrencyList == nil {
-					resultData.Results[k].ConcurrencyList = []TimeValue{}
-				}
-				// 并发数列表
-				resultData.Results[k].ConcurrencyList = append(resultData.Results[k].ConcurrencyList, timeValue)
+					// 90响应时间列表
+					timeValue.Value = resultData.Results[k].NinetyNineRequestTimeLineValue
+					if resultData.Results[k].NinetyList == nil {
+						resultData.Results[k].NinetyList = []TimeValue{}
+					}
+					resultData.Results[k].NinetyList = append(resultData.Results[k].NinetyList, timeValue)
 
-				// 平均响应时间列表
-				timeValue.Value = resultData.Results[k].AvgRequestTime
-				if resultData.Results[k].AvgList == nil {
-					resultData.Results[k].AvgList = []TimeValue{}
-				}
-				resultData.Results[k].AvgList = append(resultData.Results[k].AvgList, timeValue)
+					// 95响应时间列表
+					timeValue.Value = resultData.Results[k].NinetyFiveRequestTimeLineValue
+					if resultData.Results[k].NinetyFiveList == nil {
+						resultData.Results[k].NinetyFiveList = []TimeValue{}
+					}
+					resultData.Results[k].NinetyFiveList = append(resultData.Results[k].NinetyFiveList, timeValue)
 
-				// 90响应时间列表
-				timeValue.Value = resultData.Results[k].NinetyNineRequestTimeLineValue
-				if resultData.Results[k].NinetyList == nil {
-					resultData.Results[k].NinetyList = []TimeValue{}
+					// 99响应时间列表
+					timeValue.Value = resultData.Results[k].NinetyNineRequestTimeLineValue
+					if resultData.Results[k].NinetyNineList == nil {
+						resultData.Results[k].NinetyNineList = []TimeValue{}
+					}
+					resultData.Results[k].NinetyNineList = append(resultData.Results[k].NinetyNineList, timeValue)
 				}
-				resultData.Results[k].NinetyList = append(resultData.Results[k].NinetyList, timeValue)
-
-				// 95响应时间列表
-				timeValue.Value = resultData.Results[k].NinetyFiveRequestTimeLineValue
-				if resultData.Results[k].NinetyFiveList == nil {
-					resultData.Results[k].NinetyFiveList = []TimeValue{}
+			}
+			if resultMsg.End {
+				_, err = collection.InsertOne(ctx, resultData)
+				if err != nil {
+					proof.Error("测试数据写入mongo失败：    ", proof.WithError(err))
+					return
 				}
-				resultData.Results[k].NinetyFiveList = append(resultData.Results[k].NinetyFiveList, timeValue)
-
-				// 99响应时间列表
-				timeValue.Value = resultData.Results[k].NinetyNineRequestTimeLineValue
-				if resultData.Results[k].NinetyNineList == nil {
-					resultData.Results[k].NinetyNineList = []TimeValue{}
+				err = rdb.Del(ctx, key).Err()
+				if err != nil {
+					proof.Error(fmt.Sprintf("删除redis的key：%s:    ", key), proof.WithError(err))
+					return
 				}
-				resultData.Results[k].NinetyNineList = append(resultData.Results[k].NinetyNineList, timeValue)
-
 			}
 		}
+	} else {
+		err = json.Unmarshal(cur, &resultMsg)
+		if err != nil {
+			proof.Error(fmt.Sprintf("mongo数据转测试数据失败:    "), proof.WithError(err))
+			return
+		}
+		return
 	}
 	return
-
 }
+
+// 从es获取测试数据
+//func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, password string) (err error, resultData ResultData) {
+//	reportId := strconv.FormatInt(report.ReportID, 10)
+//	//index := strconv.FormatInt(report.TeamID, 10)
+//
+//	queryEs := elastic.NewBoolQuery()
+//	queryEs = queryEs.Must(elastic.NewMatchQuery("report_id", reportId))
+//
+//	client, err := elastic.NewClient(
+//		elastic.SetURL(host),
+//		elastic.SetSniff(false),
+//		elastic.SetBasicAuth(user, password),
+//		elastic.SetErrorLog(log.New(os.Stdout, "APP", log.Lshortfile)),
+//		elastic.SetHealthcheckInterval(30*time.Second),
+//	)
+//	if err != nil {
+//		if err != nil {
+//			proof.Error("创建es客户端失败", proof.WithError(err))
+//			return
+//		}
+//	}
+//	_, _, err = client.Ping(host).Do(ctx)
+//	if err != nil {
+//		proof.Error("es连接失败", proof.WithError(err))
+//		return
+//	}
+//	res, err := client.Search(reportId).Query(queryEs).Sort("time_stamp", true).Size(conf.Conf.ES.Size).Pretty(true).Do(ctx)
+//	if err != nil {
+//		proof.Error("获取报告详情失败", proof.WithError(err))
+//		return
+//	}
+//	if res == nil {
+//		proof.Error("报告详情为空")
+//		return
+//	}
+//
+//	var resultMsg SceneTestResultDataMsg // 从es中获取得数据结构
+//
+//	for _, item := range res.Hits.Hits {
+//		err = json.Unmarshal(item.Source, &resultMsg)
+//		if err != nil {
+//			proof.Error("json转换格式错误：", proof.WithError(err))
+//		}
+//		if resultData.Results == nil {
+//			resultData.Results = make(map[string]*ResultDataMsg)
+//		}
+//		resultData.ReportId = resultMsg.ReportId
+//		resultData.End = resultMsg.End
+//		resultData.ReportName = resultMsg.ReportName
+//		resultData.PlanId = resultMsg.PlanId
+//		resultData.PlanName = resultMsg.PlanName
+//		resultData.SceneId = resultMsg.SceneId
+//		resultData.SceneName = resultMsg.SceneName
+//		resultData.TimeStamp = resultMsg.TimeStamp
+//		if resultMsg.Results != nil && len(resultMsg.Results) > 0 {
+//			for k, apiResult := range resultMsg.Results {
+//				if resultData.Results[k] == nil {
+//					resultData.Results[k] = new(ResultDataMsg)
+//				}
+//				resultData.Results[k].ApiName = apiResult.Name
+//				resultData.Results[k].Concurrency = apiResult.Concurrency
+//				resultData.Results[k].TotalRequestNum = apiResult.TotalRequestNum
+//				resultData.Results[k].TotalRequestTime, _ = decimal.NewFromFloat(float64(apiResult.TotalRequestTime) / float64(time.Second)).Round(2).Float64()
+//				resultData.Results[k].SuccessNum = apiResult.SuccessNum
+//				resultData.Results[k].ErrorNum = apiResult.ErrorNum
+//				if resultData.Results[k].ErrorNum != 0 && apiResult.TotalRequestNum != 0 {
+//					errRate := float64(apiResult.ErrorNum) / float64(apiResult.TotalRequestNum)
+//					resultData.Results[k].ErrorRate, _ = decimal.NewFromFloat(errRate).Round(4).Float64()
+//				}
+//
+//				resultData.Results[k].AvgRequestTime, _ = decimal.NewFromFloat(apiResult.AvgRequestTime / float64(time.Millisecond)).Round(1).Float64()
+//				resultData.Results[k].MaxRequestTime, _ = decimal.NewFromFloat(apiResult.MaxRequestTime / float64(time.Millisecond)).Round(1).Float64()
+//				resultData.Results[k].MinRequestTime, _ = decimal.NewFromFloat(apiResult.MinRequestTime / float64(time.Millisecond)).Round(1).Float64()
+//				resultData.Results[k].CustomRequestTimeLine = apiResult.CustomRequestTimeLine
+//				resultData.Results[k].CustomRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.CustomRequestTimeLineValue / float64(time.Millisecond)).Round(1).Float64()
+//				resultData.Results[k].NinetyRequestTimeLine = apiResult.NinetyRequestTimeLine
+//				resultData.Results[k].NinetyRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.NinetyRequestTimeLineValue / float64(time.Millisecond)).Round(1).Float64()
+//				resultData.Results[k].NinetyFiveRequestTimeLine = apiResult.NinetyFiveRequestTimeLine
+//				resultData.Results[k].NinetyFiveRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.NinetyFiveRequestTimeLineValue / float64(time.Millisecond)).Round(1).Float64()
+//				resultData.Results[k].NinetyNineRequestTimeLine = apiResult.NinetyNineRequestTimeLine
+//				resultData.Results[k].NinetyNineRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.NinetyNineRequestTimeLineValue / float64(time.Millisecond)).Round(1).Float64()
+//				resultData.Results[k].SendBytes, _ = decimal.NewFromFloat(apiResult.SendBytes).Round(1).Float64()
+//				resultData.Results[k].ReceivedBytes, _ = decimal.NewFromFloat(apiResult.ReceivedBytes).Round(1).Float64()
+//				resultData.Results[k].Qps = apiResult.Qps
+//				if resultData.Results[k].QpsList == nil {
+//					resultData.Results[k].QpsList = []TimeValue{}
+//				}
+//				var timeValue = TimeValue{}
+//				timeValue.TimeStamp = resultData.TimeStamp
+//				// qps列表
+//				timeValue.Value = resultData.Results[k].Qps
+//				resultData.Results[k].QpsList = append(resultData.Results[k].QpsList, timeValue)
+//				timeValue.Value = resultData.Results[k].ErrorNum
+//				if resultData.Results[k].ErrorNumList == nil {
+//					resultData.Results[k].ErrorNumList = []TimeValue{}
+//				}
+//				// 错误数列表
+//				resultData.Results[k].ErrorNumList = append(resultData.Results[k].ErrorNumList, timeValue)
+//				timeValue.Value = resultData.Results[k].Concurrency
+//				if resultData.Results[k].ConcurrencyList == nil {
+//					resultData.Results[k].ConcurrencyList = []TimeValue{}
+//				}
+//				// 并发数列表
+//				resultData.Results[k].ConcurrencyList = append(resultData.Results[k].ConcurrencyList, timeValue)
+//
+//				// 平均响应时间列表
+//				timeValue.Value = resultData.Results[k].AvgRequestTime
+//				if resultData.Results[k].AvgList == nil {
+//					resultData.Results[k].AvgList = []TimeValue{}
+//				}
+//				resultData.Results[k].AvgList = append(resultData.Results[k].AvgList, timeValue)
+//
+//				// 90响应时间列表
+//				timeValue.Value = resultData.Results[k].NinetyNineRequestTimeLineValue
+//				if resultData.Results[k].NinetyList == nil {
+//					resultData.Results[k].NinetyList = []TimeValue{}
+//				}
+//				resultData.Results[k].NinetyList = append(resultData.Results[k].NinetyList, timeValue)
+//
+//				// 95响应时间列表
+//				timeValue.Value = resultData.Results[k].NinetyFiveRequestTimeLineValue
+//				if resultData.Results[k].NinetyFiveList == nil {
+//					resultData.Results[k].NinetyFiveList = []TimeValue{}
+//				}
+//				resultData.Results[k].NinetyFiveList = append(resultData.Results[k].NinetyFiveList, timeValue)
+//
+//				// 99响应时间列表
+//				timeValue.Value = resultData.Results[k].NinetyNineRequestTimeLineValue
+//				if resultData.Results[k].NinetyNineList == nil {
+//					resultData.Results[k].NinetyNineList = []TimeValue{}
+//				}
+//				resultData.Results[k].NinetyNineList = append(resultData.Results[k].NinetyNineList, timeValue)
+//
+//			}
+//		}
+//	}
+//	return
+//
+//}
 
 type SceneTestResultDataMsg struct {
 	End        bool                             `json:"end" bson:"end"`
