@@ -10,7 +10,7 @@ type TeamMemberCount struct {
 	Cnt    int64
 }
 
-func TransTeamsModelToRaoTeam(teams []*model.Team, userTeams []*model.UserTeam, teamCnt []*TeamMemberCount) []*rao.Team {
+func TransTeamsModelToRaoTeam(teams []*model.Team, userTeams []*model.UserTeam, teamCnt []*TeamMemberCount, users []*model.User) []*rao.Team {
 	ret := make([]*rao.Team, 0)
 
 	memo := make(map[int64]*model.UserTeam)
@@ -23,6 +23,11 @@ func TransTeamsModelToRaoTeam(teams []*model.Team, userTeams []*model.UserTeam, 
 		cntMemo[count.TeamID] = count.Cnt
 	}
 
+	userMemo := make(map[int64]*model.User)
+	for _, user := range users {
+		userMemo[user.ID] = user
+	}
+
 	for _, t := range teams {
 		ret = append(ret, &rao.Team{
 			Name:            t.Name,
@@ -31,7 +36,7 @@ func TransTeamsModelToRaoTeam(teams []*model.Team, userTeams []*model.UserTeam, 
 			TeamID:          t.ID,
 			RoleID:          memo[t.ID].RoleID,
 			CreatedUserID:   t.CreatedUserID,
-			CreatedUserName: "", // todo user name
+			CreatedUserName: userMemo[t.CreatedUserID].Nickname,
 			CreatedTimeSec:  t.CreatedAt.Unix(),
 			Cnt:             cntMemo[t.ID],
 		})
