@@ -78,5 +78,5 @@ var CodeAlertMap = map[int]string{
 	ErrAuthFailed:      "用户名或密码错误",
 	ErrYetRegister:     "用户已注册",
 	ErrURLExpired:      "邀请链接已过期",
-	ErrExistsTeam:      "用户已存在团队",
+	ErrExistsTeam:      "用户已在此团队",
 }
