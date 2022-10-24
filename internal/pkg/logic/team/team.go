@@ -61,7 +61,17 @@ func ListByUserID(ctx context.Context, userID int64) ([]*rao.Team, error) {
 		return nil, err
 	}
 
-	return packer.TransTeamsModelToRaoTeam(teams, userTeams, teamCnt), nil
+	var userIDs []int64
+	for _, team := range teams {
+		userIDs = append(userIDs, team.CreatedUserID)
+	}
+	u := dal.GetQuery().User
+	users, err := u.WithContext(ctx).Where(u.ID.In(userIDs...)).Find()
+	if err != nil {
+		return nil, err
+	}
+
+	return packer.TransTeamsModelToRaoTeam(teams, userTeams, teamCnt, users), nil
 }
 
 func ListMembersByTeamID(ctx context.Context, teamID int64) ([]*rao.Member, error) {
