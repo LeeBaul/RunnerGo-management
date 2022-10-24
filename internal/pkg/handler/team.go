@@ -134,6 +134,16 @@ func CheckInviteMemberURL(ctx *gin.Context) {
 	}
 
 	tx := dal.GetQuery().UserTeam
+	cnt, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(req.TeamID), tx.UserID.Eq(jwt.GetUserIDByCtx(ctx))).Count()
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+	if cnt > 0 {
+		response.ErrorWithMsg(ctx, errno.ErrExistsTeam, err.Error())
+		return
+	}
+
 	err = tx.WithContext(ctx).Create(&model.UserTeam{
 		UserID:       jwt.GetUserIDByCtx(ctx),
 		TeamID:       req.TeamID,
