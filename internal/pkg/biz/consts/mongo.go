@@ -14,6 +14,7 @@ const (
 	CollectSceneDebug  = "scene_debug"
 	CollectStressDebug = "stress_debug"
 	CollectDebugStatus = "debug_status"
+	CollectReportData  = "report_data"
 
 	All         = "all"
 	OnlyError   = "only_error"

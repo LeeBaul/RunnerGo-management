@@ -312,9 +312,8 @@ func GetReportDebugLog(ctx context.Context, report rao.GetReportReq) (err error,
 }
 
 // GetReportDetail 从redis获取测试数据
-func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, password string) (err error, resultData ResultData) {
-	dataBase := fmt.Sprintf("%d_%d", report.TeamID, report.ReportID)
-	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(dataBase)
+func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, resultData ResultData) {
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectReportData)
 	filter := bson.D{{"report_id", fmt.Sprintf("%d", report.ReportID)}}
 	var resultMsg SceneTestResultDataMsg
 	cur, err := collection.FindOne(ctx, filter).DecodeBytes()
@@ -325,7 +324,8 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq, host, user, p
 		if len(dataList) < 0 {
 			return
 		}
-		for _, resultMsgString := range dataList {
+		for i := len(dataList) - 1; i == 0; i-- {
+			resultMsgString := dataList[i]
 			err = json.Unmarshal([]byte(resultMsgString), &resultMsg)
 			if err != nil {
 				proof.Error("json转换格式错误：", proof.WithError(err))
