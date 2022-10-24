@@ -76,7 +76,7 @@ func ListByUserID(ctx context.Context, userID int64) ([]*rao.Team, error) {
 
 func ListMembersByTeamID(ctx context.Context, teamID int64) ([]*rao.Member, error) {
 	ut := query.Use(dal.DB()).UserTeam
-	userTeams, err := ut.WithContext(ctx).Where(ut.TeamID.Eq(teamID)).Find()
+	userTeams, err := ut.WithContext(ctx).Where(ut.TeamID.Eq(teamID)).Order(ut.RoleID).Find()
 	if err != nil {
 		return nil, err
 	}
