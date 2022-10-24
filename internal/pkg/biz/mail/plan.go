@@ -184,7 +184,7 @@ func SendPlanEmail(ctx context.Context, toEmail string, planName, teamName, user
 	header := make(map[string]string)
 	header["From"] = "RunnerGo" + "<" + email + ">"
 	header["To"] = toEmail
-	header["Subject"] = "计划列表"
+	header["Subject"] = fmt.Sprintf("测试报告 【%s】的【%s】给您发送了【%s】的测试报告，点击查看", teamName, userName, planName)
 	header["Content-Type"] = "text/html; charset=UTF-8"
 
 	memo := make(map[int64]*model.User, 0)
