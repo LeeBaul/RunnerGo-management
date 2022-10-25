@@ -326,6 +326,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 		}
 		for i := len(dataList) - 1; i >= 0; i-- {
 			resultMsgString := dataList[i]
+
 			err = json.Unmarshal([]byte(resultMsgString), &resultMsg)
 			if err != nil {
 				proof.Error("json转换格式错误：", proof.WithError(err))

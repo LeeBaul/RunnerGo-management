@@ -65,7 +65,7 @@ func ReportDetail(ctx *gin.Context) {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
 	}
-	err, result := report.GetReportDetail(ctx, req, conf.Conf.ES.Host, conf.Conf.ES.Username, conf.Conf.ES.Password)
+	err, result := report.GetReportDetail(ctx, req, nil, nil)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
