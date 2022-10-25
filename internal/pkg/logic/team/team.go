@@ -15,9 +15,9 @@ import (
 	"kp-management/internal/pkg/packer"
 )
 
-func SaveTeam(ctx context.Context, teamID, userID int64, name string) error {
+func SaveTeam(ctx context.Context, teamID, userID int64, name string) (int64, error) {
 
-	return dal.GetQuery().Transaction(func(tx *query.Query) error {
+	err := dal.GetQuery().Transaction(func(tx *query.Query) error {
 		team, err := tx.Team.WithContext(ctx).Where(tx.Team.ID.Eq(teamID)).Assign(
 			tx.Team.ID.Value(teamID),
 			tx.Team.Name.Value(name),
@@ -28,6 +28,7 @@ func SaveTeam(ctx context.Context, teamID, userID int64, name string) error {
 			return err
 		}
 
+		teamID = team.ID
 		_, err = tx.UserTeam.WithContext(ctx).Where(tx.UserTeam.TeamID.Eq(team.ID), tx.UserTeam.UserID.Eq(userID)).Assign(
 			tx.UserTeam.TeamID.Value(team.ID),
 			tx.UserTeam.UserID.Value(userID),
@@ -36,6 +37,12 @@ func SaveTeam(ctx context.Context, teamID, userID int64, name string) error {
 
 		return err
 	})
+
+	if err != nil {
+		return 0, err
+	}
+
+	return teamID, nil
 }
 
 func ListByUserID(ctx context.Context, userID int64) ([]*rao.Team, error) {

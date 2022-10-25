@@ -6,6 +6,7 @@ type SaveTeamReq struct {
 }
 
 type SaveTeamResp struct {
+	TeamID int64 `json:"team_id"`
 }
 
 type ListTeamReq struct {

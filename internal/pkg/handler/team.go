@@ -26,12 +26,15 @@ func SaveTeam(ctx *gin.Context) {
 		return
 	}
 
-	if err := team.SaveTeam(ctx, req.TeamID, jwt.GetUserIDByCtx(ctx), req.Name); err != nil {
+	teamID, err := team.SaveTeam(ctx, req.TeamID, jwt.GetUserIDByCtx(ctx), req.Name)
+	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
-	response.Success(ctx)
+	response.SuccessWithData(ctx, rao.SaveTeamResp{
+		TeamID: teamID,
+	})
 	return
 }
 
