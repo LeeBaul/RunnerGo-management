@@ -23,10 +23,9 @@ func TestGetReportDetail(t *testing.T) {
 	//collection := mongoClient.Database("kunpeng").Collection("report_data")
 	//
 	//var report rao.GetReportReq
-	//report.ReportID = 1665
+	//report.ReportID = 1759
 	//report.TeamID = 0
 	//report.PlanId = 301
-	//fmt.Println("123..................")
 	//err, result := GetReportDetail(ctx, report, collection, rdb)
 	//if err != nil {
 	//	fmt.Println("err1:         ", err)
@@ -35,6 +34,7 @@ func TestGetReportDetail(t *testing.T) {
 	//if err != nil {
 	//	fmt.Println("err2:        ", err)
 	//}
+	//fmt.Println("data..................;          ", string(data))
 	//fmt.Println(string(data))
 	//client, _ := elastic.NewClient(
 	//	elastic.SetURL("http://172.17.101.191:9200"),

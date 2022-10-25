@@ -326,6 +326,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 		if len(dataList) < 0 {
 			return
 		}
+		fmt.Println(len(dataList))
 		for i := len(dataList) - 1; i >= 0; i-- {
 			resultMsgString := dataList[i]
 			err = json.Unmarshal([]byte(resultMsgString), &resultMsg)
@@ -443,7 +444,6 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 					return
 				}
 			}
-			return
 		}
 	} else {
 		data := dataMap["data"]
