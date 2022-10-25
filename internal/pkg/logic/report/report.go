@@ -450,6 +450,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 		json.Unmarshal([]byte(data), &resultData)
 		return
 	}
+	err = nil
 	return
 }
 
