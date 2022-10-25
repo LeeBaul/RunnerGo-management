@@ -443,6 +443,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 					return
 				}
 			}
+			return
 		}
 	} else {
 		data := dataMap["data"]
