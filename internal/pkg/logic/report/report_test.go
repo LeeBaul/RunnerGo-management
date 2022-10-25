@@ -19,7 +19,23 @@ func TestGetReportDetail(t *testing.T) {
 	//	Password: "apipost",
 	//	DB:       0,
 	//})
+	//
 	//collection := mongoClient.Database("kunpeng").Collection("report_data")
+	//
+	//var report rao.GetReportReq
+	//report.ReportID = 1759
+	//report.TeamID = 0
+	//report.PlanId = 301
+	//err, result := GetReportDetail(ctx, report, collection, rdb)
+	//if err != nil {
+	//	fmt.Println("err1:         ", err)
+	//}
+	//data, err := json.Marshal(result)
+	//if err != nil {
+	//	fmt.Println("err2:        ", err)
+	//}
+	//fmt.Println("data..................;          ", string(data))
+	//fmt.Println(string(data))
 	//client, _ := elastic.NewClient(
 	//	elastic.SetURL("http://172.17.101.191:9200"),
 	//	elastic.SetSniff(false),
@@ -31,11 +47,6 @@ func TestGetReportDetail(t *testing.T) {
 	//if err != nil {
 	//	panic(fmt.Sprintf("es连接失败: %s", err))
 	//}
-	//var report rao.GetReportReq
-	//report.ReportID = 1667
-	//report.TeamID = 0
-	//report.PlanId = 301
-	//err, result := GetReportDetail(ctx, report, collection, rdb)
 	//if err != nil {
 	//	fmt.Println(err)
 	//}

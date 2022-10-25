@@ -316,9 +316,11 @@ func GetReportDebugLog(ctx context.Context, report rao.GetReportReq) (err error,
 // GetReportDetail 从redis获取测试数据
 func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, resultData ResultData) {
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectReportData)
-	filter := bson.D{{"report_id", fmt.Sprintf("%d", report.ReportID)}}
+	filter := bson.D{{"reportid", fmt.Sprintf("%d", report.ReportID)}}
 	var resultMsg SceneTestResultDataMsg
-	cur, err := collection.FindOne(ctx, filter).DecodeBytes()
+
+	var dataMap = make(map[string]string)
+	err = collection.FindOne(ctx, filter).Decode(dataMap)
 	if err != nil {
 		rdb := dal.GetRDB()
 		key := fmt.Sprintf("%d:%d:reportData", report.PlanId, report.ReportID)
@@ -326,9 +328,9 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 		if len(dataList) < 0 {
 			return
 		}
+		fmt.Println(len(dataList))
 		for i := len(dataList) - 1; i >= 0; i-- {
 			resultMsgString := dataList[i]
-
 			err = json.Unmarshal([]byte(resultMsgString), &resultMsg)
 			if err != nil {
 				proof.Error("json转换格式错误：", proof.WithError(err))
@@ -425,7 +427,15 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 				}
 			}
 			if resultMsg.End {
-				_, err = collection.InsertOne(ctx, resultData)
+				var by []byte
+				by, err = json.Marshal(resultData)
+				if err != nil {
+					proof.Error("resultData转字节失败：：    ", proof.WithError(err))
+					return
+				}
+				dataMap["reportid"] = resultData.ReportId
+				dataMap["data"] = string(by)
+				_, err = collection.InsertOne(ctx, dataMap)
 				if err != nil {
 					proof.Error("测试数据写入mongo失败：    ", proof.WithError(err))
 					return
@@ -438,13 +448,11 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 			}
 		}
 	} else {
-		err = json.Unmarshal(cur, &resultData)
-		if err != nil {
-			proof.Error(fmt.Sprintf("mongo数据转测试数据失败:    "), proof.WithError(err))
-			return
-		}
+		data := dataMap["data"]
+		json.Unmarshal([]byte(data), &resultData)
 		return
 	}
+	err = nil
 	return
 }
 
