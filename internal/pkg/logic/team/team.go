@@ -201,7 +201,7 @@ func RoleUser(ctx context.Context, teamID, userID, roleID int64) error {
 			return err
 		}
 
-		_, err = tx.UserTeam.WithContext(ctx).Where(tx.UserTeam.ID.Eq(u.ID)).UpdateColumn(tx.UserTeam.RoleID, roleID)
+		_, err = tx.UserTeam.WithContext(ctx).Where(tx.UserTeam.UserID.Eq(u.ID)).UpdateColumn(tx.UserTeam.RoleID, roleID)
 
 		return err
 	})
