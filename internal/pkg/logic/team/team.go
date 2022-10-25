@@ -115,6 +115,7 @@ func InviteMember(ctx context.Context, inviteUserID, teamID int64, members []*ra
 	for _, user := range users {
 		registerEmail = append(registerEmail, user.Email)
 	}
+	registerEmail = omnibus.StringArrayUnique(registerEmail)
 
 	var userIDs []int64
 	for _, user := range users {
@@ -167,7 +168,7 @@ func InviteMember(ctx context.Context, inviteUserID, teamID int64, members []*ra
 		}
 	}
 
-	unRegisterEmail := omnibus.StringArrayDiff(emails, registerEmail)
+	unRegisterEmail := omnibus.StringArrayUnique(omnibus.StringArrayDiff(emails, registerEmail))
 	if len(unRegisterEmail) > 0 {
 		var userQueue []*model.TeamUserQueue
 		for _, e := range unRegisterEmail {
