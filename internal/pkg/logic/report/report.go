@@ -315,8 +315,8 @@ func GetReportDebugLog(ctx context.Context, report rao.GetReportReq) (err error,
 func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, resultData ResultData) {
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectReportData)
 	filter := bson.D{{"reportid", fmt.Sprintf("%d", report.ReportID)}}
+	proof.Debug("12312312312312                         ", proof.With("report:                           ", report))
 	var resultMsg SceneTestResultDataMsg
-
 	var dataMap = make(map[string]string)
 	err = collection.FindOne(ctx, filter).Decode(dataMap)
 	if err != nil {
@@ -447,7 +447,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 		}
 	} else {
 		data := dataMap["data"]
-		json.Unmarshal([]byte(data), &resultData)
+		err = json.Unmarshal([]byte(data), &resultData)
 		return
 	}
 	err = nil
