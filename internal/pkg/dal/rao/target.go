@@ -134,6 +134,7 @@ type GroupScene struct {
 	Version       int32  `json:"version"`
 	CreatedUserID int64  `json:"created_user_id"`
 	RecentUserID  int64  `json:"recent_user_id"`
+	Description   string `json:"description"`
 }
 
 type BatchGetDetailReq struct {

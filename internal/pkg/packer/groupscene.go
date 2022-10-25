@@ -20,6 +20,7 @@ func TransTargetsToRaoGroupSceneList(targets []*model.Target) []*rao.GroupScene 
 			Version:       t.Version,
 			CreatedUserID: t.CreatedUserID,
 			RecentUserID:  t.RecentUserID,
+			Description:   t.Description,
 		})
 	}
 	return ret
