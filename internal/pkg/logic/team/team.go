@@ -196,12 +196,12 @@ func InviteMember(ctx context.Context, inviteUserID, teamID int64, members []*ra
 
 func RoleUser(ctx context.Context, teamID, userID, roleID int64) error {
 	return dal.GetQuery().Transaction(func(tx *query.Query) error {
-		u, err := tx.UserTeam.WithContext(ctx).Where(tx.UserTeam.TeamID.Eq(teamID), tx.UserTeam.UserID.Eq(userID)).First()
+		_, err := tx.UserTeam.WithContext(ctx).Where(tx.UserTeam.TeamID.Eq(teamID), tx.UserTeam.UserID.Eq(userID)).First()
 		if err != nil {
 			return err
 		}
 
-		_, err = tx.UserTeam.WithContext(ctx).Where(tx.UserTeam.UserID.Eq(u.ID)).UpdateColumn(tx.UserTeam.RoleID, roleID)
+		_, err = tx.UserTeam.WithContext(ctx).Where(tx.UserTeam.TeamID.Eq(teamID), tx.UserTeam.UserID.Eq(userID)).UpdateColumn(tx.UserTeam.RoleID, roleID)
 
 		return err
 	})
