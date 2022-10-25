@@ -299,6 +299,23 @@ func DisbandTeam(ctx context.Context, teamID, userID int64) error {
 			return err
 		}
 
+		settings, err := tx.Setting.WithContext(ctx).Where(tx.Setting.TeamID.Eq(teamID)).Find()
+		if err != nil {
+			return err
+		}
+
+		for _, s := range settings {
+			pt, err := tx.Team.WithContext(ctx).Where(tx.Team.CreatedUserID.Eq(s.UserID), tx.Team.Type.Eq(consts.TeamTypePrivate)).First()
+			if err != nil {
+				return err
+			}
+
+			_, err = tx.Setting.WithContext(ctx).Where(tx.Setting.ID.Eq(s.ID)).UpdateColumn(tx.Setting.TeamID, pt.ID)
+			if err != nil {
+				return err
+			}
+		}
+
 		return nil
 	})
 }
