@@ -82,6 +82,7 @@ type Metric struct {
 
 type GetReportReq struct {
 	TeamID   int64 `form:"team_id"`
+	PlanId   int64 `json:"plan_id"`
 	ReportID int64 `form:"report_id"`
 }
 
