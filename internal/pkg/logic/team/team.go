@@ -116,14 +116,34 @@ func InviteMember(ctx context.Context, inviteUserID, teamID int64, members []*ra
 		registerEmail = append(registerEmail, user.Email)
 	}
 
+	var userIDs []int64
+	for _, user := range users {
+		userIDs = append(userIDs, user.ID)
+	}
+	utt := dal.GetQuery().UserTeam
+	existUser, err := utt.WithContext(ctx).Where(utt.UserID.In(userIDs...)).Find()
+	if err != nil {
+		return nil, err
+	}
+
+	for i, user := range users {
+		for _, eu := range existUser {
+			if eu.UserID == user.ID {
+				users[i] = nil
+			}
+		}
+	}
+
 	var ut []*model.UserTeam
 	for _, user := range users {
-		ut = append(ut, &model.UserTeam{
-			UserID:       user.ID,
-			TeamID:       teamID,
-			InviteUserID: inviteUserID,
-			RoleID:       memo[user.Email],
-		})
+		if user != nil {
+			ut = append(ut, &model.UserTeam{
+				UserID:       user.ID,
+				TeamID:       teamID,
+				InviteUserID: inviteUserID,
+				RoleID:       memo[user.Email],
+			})
+		}
 	}
 
 	if err := query.Use(dal.DB()).UserTeam.WithContext(ctx).CreateInBatches(ut, 5); err != nil {
