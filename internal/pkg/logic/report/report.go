@@ -324,7 +324,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 		if len(dataList) < 0 {
 			return
 		}
-		for i := len(dataList) - 1; i == 0; i-- {
+		for i := len(dataList) - 1; i >= 0; i-- {
 			resultMsgString := dataList[i]
 			err = json.Unmarshal([]byte(resultMsgString), &resultMsg)
 			if err != nil {
@@ -435,7 +435,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 			}
 		}
 	} else {
-		err = json.Unmarshal(cur, &resultMsg)
+		err = json.Unmarshal(cur, &resultData)
 		if err != nil {
 			proof.Error(fmt.Sprintf("mongo数据转测试数据失败:    "), proof.WithError(err))
 			return
