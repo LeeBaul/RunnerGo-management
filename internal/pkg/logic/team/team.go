@@ -122,7 +122,7 @@ func InviteMember(ctx context.Context, inviteUserID, teamID int64, members []*ra
 		userIDs = append(userIDs, user.ID)
 	}
 	utt := dal.GetQuery().UserTeam
-	existUser, err := utt.WithContext(ctx).Where(utt.UserID.In(userIDs...)).Find()
+	existUser, err := utt.WithContext(ctx).Where(utt.TeamID.Eq(teamID), utt.UserID.In(userIDs...)).Find()
 	if err != nil {
 		return nil, err
 	}
