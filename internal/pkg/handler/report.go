@@ -76,7 +76,7 @@ func ReportDetail(ctx *gin.Context) {
 
 // GetReportTaskDetail 获取报告任务详情
 func GetReportTaskDetail(ctx *gin.Context) {
-	var req rao.GetReportReq
+	var req rao.GetReportTaskDetailReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
@@ -88,7 +88,7 @@ func GetReportTaskDetail(ctx *gin.Context) {
 		return
 	}
 
-	response.SuccessWithData(ctx, rao.GetReportResp{Report: ret})
+	response.SuccessWithData(ctx, rao.GetReportTaskDetailResp{Report: ret})
 	return
 }
 

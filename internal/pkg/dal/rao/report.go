@@ -90,6 +90,15 @@ type GetReportResp struct {
 	Report *ReportTask `json:"report"`
 }
 
+type GetReportTaskDetailReq struct {
+	TeamID   int64 `form:"team_id"`
+	ReportID int64 `form:"report_id"`
+}
+
+type GetReportTaskDetailResp struct {
+	Report *ReportTask `json:"report"`
+}
+
 type ReportTask struct {
 	UserID         int64     `json:"user_id"`
 	UserName       string    `json:"user_name"`

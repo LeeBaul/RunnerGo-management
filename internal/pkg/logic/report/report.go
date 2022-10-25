@@ -4,15 +4,17 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/shopspring/decimal"
 	"strconv"
 	"time"
+
+	"github.com/shopspring/decimal"
 
 	"gorm.io/gen/field"
 
 	"github.com/go-omnibus/proof"
 	"go.mongodb.org/mongo-driver/bson"
 	"gorm.io/gen"
+
 	"kp-management/internal/pkg/biz/record"
 
 	"kp-management/internal/pkg/biz/consts"
@@ -212,7 +214,7 @@ func DeleteReport(ctx context.Context, teamID, reportID, userID int64) error {
 	})
 }
 
-func GetTaskDetail(ctx context.Context, req rao.GetReportReq) (*rao.ReportTask, error) {
+func GetTaskDetail(ctx context.Context, req rao.GetReportTaskDetailReq) (*rao.ReportTask, error) {
 	var detail mao.ReportTask
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectReportTask)
 
