@@ -213,11 +213,9 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 				if i > 0 {
 					if t.TaskType != planType {
 						planType = consts.PlanTaskTypeMix
-						break
 					}
 					if t.TaskMode != planMode {
 						planMode = consts.PlanModeMix
-						break
 					}
 				}
 			}
