@@ -2,7 +2,11 @@ package report
 
 import (
 	"context"
+	"fmt"
+	"strconv"
 	"time"
+
+	"github.com/go-omnibus/omnibus"
 
 	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/dal"
@@ -55,6 +59,18 @@ func ListMachines(ctx context.Context, reportID int64) (*rao.ListMachineResp, er
 		disk, err := prometheus.GetDiskRangeUsage(machine.IP, startTimeSec, endTimeSec)
 		if err != nil {
 			return nil, err
+		}
+
+		for _, c := range cpu {
+			c[1], _ = strconv.ParseFloat(fmt.Sprintf("%.2f", omnibus.DefiniteFloat64(c[1])*100), 64)
+		}
+
+		for _, m := range mem {
+			m[1], _ = strconv.ParseFloat(fmt.Sprintf("%.2f", omnibus.DefiniteFloat64(m[1])*100), 64)
+		}
+
+		for _, d := range disk {
+			d[1], _ = strconv.ParseFloat(fmt.Sprintf("%.2f", omnibus.DefiniteFloat64(d[1])*100), 64)
 		}
 
 		resp.Metrics = append(resp.Metrics, &rao.Metric{
