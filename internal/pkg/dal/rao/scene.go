@@ -35,17 +35,18 @@ type GetSendSceneResultResp struct {
 }
 
 type SaveSceneReq struct {
-	TeamID      int64  `json:"team_id" binding:"required,gt=0"`
-	TargetID    int64  `json:"target_id"`
-	ParentID    int64  `json:"parent_id"`
-	Name        string `json:"name" binding:"required,min=1"`
-	Method      string `json:"method"`
-	Sort        int32  `json:"sort"`
-	TypeSort    int32  `json:"type_sort"`
-	Version     int32  `json:"version"`
-	Source      int32  `json:"source"`
-	PlanID      int64  `json:"plan_id"`
-	Description string `json:"description"`
+	ImportSceneID int64  `json:"import_scene_id"`
+	TeamID        int64  `json:"team_id" binding:"required,gt=0"`
+	TargetID      int64  `json:"target_id"`
+	ParentID      int64  `json:"parent_id"`
+	Name          string `json:"name" binding:"required,min=1"`
+	Method        string `json:"method"`
+	Sort          int32  `json:"sort"`
+	TypeSort      int32  `json:"type_sort"`
+	Version       int32  `json:"version"`
+	Source        int32  `json:"source"`
+	PlanID        int64  `json:"plan_id"`
+	Description   string `json:"description"`
 	//Request  *Request `json:"request"`
 	//Script   *Script  `json:"script"`
 }
