@@ -23,8 +23,7 @@ func TestGetReportDetail(t *testing.T) {
 	//collection := mongoClient.Database("kunpeng").Collection("report_data")
 	//
 	//var report rao.GetReportReq
-	//report.ReportID = 1759
-	//report.TeamID = 0
+	//report.ReportID = 1794
 	//report.PlanId = 301
 	//err, result := GetReportDetail(ctx, report, collection, rdb)
 	//if err != nil {
