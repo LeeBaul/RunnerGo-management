@@ -33,6 +33,7 @@ func main() {
 		g.GenerateModel("variable_import"),
 		g.GenerateModel("plan_email"),
 		g.GenerateModel("team_user_queue"),
+		g.GenerateModel("machine"),
 	)
 
 	g.Execute()
