@@ -69,6 +69,10 @@ func ListMachines(ctx context.Context, reportID int64) (*rao.ListMachineResp, er
 			m[1], _ = strconv.ParseFloat(fmt.Sprintf("%.2f", omnibus.DefiniteFloat64(m[1])*100), 64)
 		}
 
+		for _, n := range net {
+			n[1], _ = strconv.ParseFloat(fmt.Sprintf("%.2f", omnibus.DefiniteFloat64(n[1])), 64)
+		}
+
 		for _, d := range disk {
 			d[1], _ = strconv.ParseFloat(fmt.Sprintf("%.2f", omnibus.DefiniteFloat64(d[1])*100), 64)
 		}
