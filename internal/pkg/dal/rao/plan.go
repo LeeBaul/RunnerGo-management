@@ -158,6 +158,14 @@ type PlanEmailReq struct {
 type PlanEmailResp struct {
 }
 
+type ImportSceneReq struct {
+	PlanID       int64   `json:"plan_id"`
+	TargetIDList []int64 `json:"target_id_list"`
+}
+
+type ImportSceneResp struct {
+}
+
 type SetPreinstallReq struct {
 	TeamID   int64     `json:"team_id" binding:"required,gt=0"`
 	PlanID   int64     `json:"plan_id" binding:"required,gt=0"`

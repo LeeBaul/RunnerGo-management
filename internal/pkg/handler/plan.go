@@ -301,6 +301,22 @@ func DeletePlan(ctx *gin.Context) {
 	return
 }
 
+func ImportScene(ctx *gin.Context) {
+	var req rao.ImportSceneReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	if err := plan.ImportScene(ctx, jwt.GetUserIDByCtx(ctx), req.PlanID, req.TargetIDList); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
+}
+
 func PlanEmail(ctx *gin.Context) {
 	var req rao.PlanEmailReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
