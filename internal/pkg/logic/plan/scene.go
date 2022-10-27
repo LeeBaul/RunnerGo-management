@@ -9,8 +9,10 @@ import (
 	"kp-management/internal/pkg/dal/query"
 )
 
-func ImportScene(ctx context.Context, userID, planID int64, targetIDList []int64) error {
-	return dal.GetQuery().Transaction(func(tx *query.Query) error {
+func ImportScene(ctx context.Context, userID, planID int64, targetIDList []int64) ([]int64, error) {
+	retID := make([]int64, 0)
+
+	err := dal.GetQuery().Transaction(func(tx *query.Query) error {
 
 		targets, err := tx.Target.WithContext(ctx).Where(tx.Target.ID.In(targetIDList...)).Find()
 		if err != nil {
@@ -64,6 +66,10 @@ func ImportScene(ctx context.Context, userID, planID int64, targetIDList []int64
 					}
 				}
 
+				if t.TargetType == consts.TargetTypeScene {
+					retID = append(retID, t.ID)
+				}
+
 			}
 		}
 
@@ -111,4 +117,6 @@ func ImportScene(ctx context.Context, userID, planID int64, targetIDList []int64
 		return nil
 
 	})
+
+	return retID, err
 }
