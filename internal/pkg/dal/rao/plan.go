@@ -1,5 +1,7 @@
 package rao
 
+import "kp-management/internal/pkg/dal/model"
+
 type Plan struct {
 	PlanID   int64  `json:"plan_id"`
 	Rank     int64  `json:"rank"`
@@ -164,7 +166,7 @@ type ImportSceneReq struct {
 }
 
 type ImportSceneResp struct {
-	SceneIDList []int64 `json:"scene_id_list"`
+	Scenes []*model.Target `json:"scenes"`
 }
 
 type SetPreinstallReq struct {

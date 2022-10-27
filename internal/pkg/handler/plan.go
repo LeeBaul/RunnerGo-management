@@ -308,14 +308,14 @@ func ImportScene(ctx *gin.Context) {
 		return
 	}
 
-	sceneIDs, err := plan.ImportScene(ctx, jwt.GetUserIDByCtx(ctx), req.PlanID, req.TargetIDList)
+	scenes, err := plan.ImportScene(ctx, jwt.GetUserIDByCtx(ctx), req.PlanID, req.TargetIDList)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
 	response.SuccessWithData(ctx, rao.ImportSceneResp{
-		SceneIDList: sceneIDs,
+		Scenes: scenes,
 	})
 	return
 }
