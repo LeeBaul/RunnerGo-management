@@ -69,7 +69,7 @@ func AuthLogin(ctx *gin.Context) {
 		return
 	}
 
-	d := 2 * time.Hour
+	d := 7 * 24 * time.Hour
 	if req.IsAutoLogin {
 		d = 30 * 24 * time.Hour
 	}

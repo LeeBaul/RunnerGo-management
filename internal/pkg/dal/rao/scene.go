@@ -35,6 +35,7 @@ type GetSendSceneResultResp struct {
 }
 
 type SaveSceneReq struct {
+	//ImportSceneID int64  `json:"import_scene_id"`
 	TeamID      int64  `json:"team_id" binding:"required,gt=0"`
 	TargetID    int64  `json:"target_id"`
 	ParentID    int64  `json:"parent_id"`
