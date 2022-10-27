@@ -33,8 +33,10 @@ func ImportScene(ctx context.Context, userID, planID int64, targetIDList []int64
 
 					memo[oldID] = t.ID
 
-					if i >= len(targets)-1 {
+					if i >= len(targets) {
 						targets = targets[:len(targets)-1]
+					} else if i == 0 {
+						targets = targets[1:]
 					} else {
 						targets = append(targets[:i], targets[i+1:]...)
 					}
@@ -53,8 +55,10 @@ func ImportScene(ctx context.Context, userID, planID int64, targetIDList []int64
 					}
 					memo[oldID] = t.ID
 
-					if i >= len(targets)-1 {
+					if i >= len(targets) {
 						targets = targets[:len(targets)-1]
+					} else if i == 0 {
+						targets = targets[1:]
 					} else {
 						targets = append(targets[:i], targets[i+1:]...)
 					}
