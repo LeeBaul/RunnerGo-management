@@ -164,6 +164,7 @@ type ImportSceneReq struct {
 }
 
 type ImportSceneResp struct {
+	SceneIDList []int64 `json:"scene_id_list"`
 }
 
 type SetPreinstallReq struct {
