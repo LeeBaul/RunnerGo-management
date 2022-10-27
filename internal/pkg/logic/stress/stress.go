@@ -3,31 +3,34 @@ package stress
 import (
 	"bufio"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
-	"io/ioutil"
-	"net/http"
-	"os"
-	"path"
-	"strconv"
-	"sync"
-	"time"
-
 	"github.com/go-omnibus/omnibus"
 	"github.com/go-omnibus/proof"
 	"github.com/go-resty/resty/v2"
 	"go.mongodb.org/mongo-driver/bson"
 	"gorm.io/gen"
+	"io"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"os"
+	"path"
+	"sort"
+	"strconv"
+	"strings"
+	"sync"
+	"time"
 
-	"kp-controller/internal/pkg/conf"
-	"kp-controller/internal/pkg/consts"
-	"kp-controller/internal/pkg/dal"
-	"kp-controller/internal/pkg/dal/mao"
-	"kp-controller/internal/pkg/dal/model"
-	"kp-controller/internal/pkg/dal/prometheus"
-	"kp-controller/internal/pkg/dal/query"
-	"kp-controller/internal/pkg/dal/rao"
+	"kp-management/internal/pkg/conf"
+	"kp-management/internal/pkg/consts"
+	"kp-management/internal/pkg/dal"
+	"kp-management/internal/pkg/dal/mao"
+	"kp-management/internal/pkg/dal/model"
+	"kp-management/internal/pkg/dal/query"
+	//"kp-management/internal/pkg/dal/rao"
+	"kp-management/internal/pkg/dal/run_plan"
 )
 
 type Baton struct {
@@ -46,7 +49,27 @@ type Baton struct {
 	importVariables []*model.VariableImport
 	reports         []*model.Report
 	balance         *WeightRoundRobinBalance
-	stress          []*rao.Stress
+	stress          []*run_plan.Stress
+}
+
+type RunnerMachineInfo struct {
+	IP                string // IP地址(包含端口号)
+	Region            string // 机器所属区域
+	CpuUsage          int64  // CPU使用率
+	MemoryUsage       int64  // 内存使用率
+	NetIoUsage        int64  // 网络IO使用率
+	DiskIoUsage       int64  // 磁盘IO使用率
+	MaxGoroutines     int64  // 机器最大协程数
+	CurrentGoroutines int64  // 当前已用协程数
+	ServerType        int64  // 压力机类型：0-主力机器，1-备用机器
+	CreateTime        int64  // 数据上报时间（时间戳）
+}
+
+type UsableMachineMap struct {
+	IP               string // IP地址(包含端口号)
+	Region           string // 机器所属区域
+	Weight           int64  // 权重
+	UsableGoroutines int64  // 可用协程数
 }
 
 type Stress interface {
@@ -59,58 +82,77 @@ type CheckIdleMachine struct {
 }
 
 func (s *CheckIdleMachine) Execute(baton *Baton) error {
-	tx := query.Use(dal.DB()).Machine
-	machines, err := tx.WithContext(baton.Ctx).Where(tx.Status.Eq(consts.MachineStatusIdle), tx.UpdatedAt.Between(time.Now().Add(-15*time.Second), time.Now())).Find()
-	if err != nil {
-		return err
-	}
-	if len(machines) == 0 {
-		return fmt.Errorf("not idle machine")
+	// 从Redis获取压力机列表
+	machineListRes := dal.RDB.HGetAll(consts.MachineListRedisKey)
+	if len(machineListRes.Val()) == 0 || machineListRes.Err() != nil {
+		// todo 后面可能增加兜底策略
+		return fmt.Errorf("empty idle machine")
 	}
 
-	baton.balance = &WeightRoundRobinBalance{}
-	for _, machine := range machines {
-		// 过滤cpu
-		c, err := prometheus.GetCPUUsage(baton.Ctx, machine.IP)
+	var usableMachineSlice []UsableMachineMap
+	var usableMachineMap UsableMachineMap
+
+	var allWeight []int
+
+	// 查到了机器列表，然后判断可用性
+	var runnerMachineInfo RunnerMachineInfo
+	for machineAddr, machineDetail := range machineListRes.Val() {
+		// 把机器详情信息解析成格式化数据
+		err := json.Unmarshal([]byte(machineDetail), &runnerMachineInfo)
 		if err != nil {
-			proof.Errorf("prometheus get cpu err: %s", err.Error())
-			continue
-		}
-		if c > conf.Conf.Machine.Threshold.CPU || c == 0 {
+			log.Println("runner_machine_detail 解析失败 err：", err)
 			continue
 		}
 
-		// 过滤内存
-		//m, err := prometheus.GetMemUsage(baton.Ctx, machine.IP)
-		//if err != nil {
-		//	proof.Errorf("prometheus get mem err: %s", err.Error())
-		//	continue
-		//}
-		//if m > conf.Conf.Machine.Threshold.MEM || m == 0 {
-		//	continue
-		//}
+		// 压力机数据上报时间超过5秒，则认为服务不可用，不参与本次压力测试
+		nowTime := time.Now().Unix()
+		if nowTime-int64(runnerMachineInfo.CreateTime) > 5 {
+			log.Println("runner_machine heartbeat Timeout err：", err)
+			continue
+		}
 
-		// 过滤磁盘io
-		//d, err := prometheus.GetDiskIOUsage(baton.Ctx, machine.IP)
-		//if err != nil {
-		//	proof.Errorf("prometheus get disk io err: %s", err.Error())
-		//	continue
-		//}
-		//if d > conf.Conf.Machine.Threshold.Disk || d == 0 {
-		//	continue
-		//}
+		// 判断当前压力机性能是否爆满,如果某个指标爆满，则不参与本次压力测试
+		if runnerMachineInfo.CpuUsage >= 65 || runnerMachineInfo.MemoryUsage >= 65 || runnerMachineInfo.NetIoUsage >= 55 || runnerMachineInfo.DiskIoUsage >= 55 {
+			continue
+		}
 
-		// 过滤网络io
-		//n, err := prometheus.GetNetIOUsage(baton.Ctx, machine.IP)
-		//if err != nil {
-		//	proof.Errorf("prometheus get net io err: %s", err.Error())
-		//	continue
-		//}
-		//if n > conf.Conf.Machine.Threshold.Net || n == 0 {
-		//	continue
-		//}
+		machineAddrSlice := strings.Split(machineAddr, "_")
+		if len(machineAddrSlice) != 3 {
+			continue
+		}
 
-		baton.balance.Add(fmt.Sprintf("%s:%d", machine.IP, machine.Port), omnibus.DefiniteString(machine.Weight))
+		// 当前机器可用协程数
+		usableGoroutines := runnerMachineInfo.MaxGoroutines - runnerMachineInfo.CurrentGoroutines
+
+		usableMachineMap.IP = machineAddrSlice[0] + ":" + machineAddrSlice[1]
+		usableMachineMap.UsableGoroutines = usableGoroutines
+		usableMachineMap.Weight = usableGoroutines
+		usableMachineSlice = append(usableMachineSlice, usableMachineMap)
+
+		// 所有机器权重的切片
+		allWeight = append(allWeight, int(usableGoroutines))
+	}
+
+	// 获取所有机器里面最小的权重
+	sort.Ints(allWeight)
+	minWeight := allWeight[0]
+
+	for _, machineInfo := range usableMachineSlice {
+		// 获取当前机器是否使用当中
+		machineUseStateKey := consts.MachineUseStatePrefix + machineInfo.IP
+		useStateVal, _ := dal.RDB.Get(machineUseStateKey).Result()
+		if useStateVal != "" {
+			machineInfo.UsableGoroutines = int64(minWeight) - 10
+			if machineInfo.UsableGoroutines <= 0 {
+				machineInfo.UsableGoroutines = 1
+			}
+		}
+
+		// 把可用压力机以及权重，加入到可用服务列表当中
+		addErr := baton.balance.Add(fmt.Sprintf("%s", machineInfo.IP), omnibus.DefiniteString(machineInfo.UsableGoroutines))
+		if addErr != nil {
+			continue
+		}
 	}
 
 	if len(baton.balance.rss) == 0 {
@@ -325,8 +367,8 @@ func (s *MakeReport) Execute(baton *Baton) error {
 			PlanName:  baton.plan.Name,
 			SceneID:   scene.ID,
 			SceneName: scene.Name,
-			TaskType:  baton.plan.TaskType,
-			TaskMode:  baton.plan.Mode,
+			TaskType:  baton.task[scene.ID].TaskType,
+			TaskMode:  baton.task[scene.ID].TaskMode,
 			Status:    consts.ReportStatusNormal,
 			RanAt:     time.Now(),
 			RunUserID: baton.UserID,
@@ -384,23 +426,23 @@ func (s *MakeStress) Execute(baton *Baton) error {
 
 				if scene.ID == report.SceneID && scene.ID == flow.SceneID {
 
-					globalVariables := make([]*rao.Variable, 0)
+					globalVariables := make([]*run_plan.Variable, 0)
 					for _, v := range baton.globalVariables {
-						globalVariables = append(globalVariables, &rao.Variable{
+						globalVariables = append(globalVariables, &run_plan.Variable{
 							Var: v.Var,
 							Val: v.Val,
 						})
 					}
 
-					var nodes rao.Nodes
+					var nodes run_plan.Nodes
 					if err := bson.Unmarshal(flow.Nodes, &nodes); err != nil {
 						proof.Errorf("node bson unmarshal err:%v", err)
 						continue
 					}
 
-					sceneVariables := make([]*rao.Variable, 0)
+					sceneVariables := make([]*run_plan.Variable, 0)
 					for _, v := range baton.sceneVariables {
-						sceneVariables = append(sceneVariables, &rao.Variable{
+						sceneVariables = append(sceneVariables, &run_plan.Variable{
 							Var: v.Var,
 							Val: v.Val,
 						})
@@ -411,18 +453,18 @@ func (s *MakeStress) Execute(baton *Baton) error {
 						importVariables = append(importVariables, v.URL)
 					}
 
-					req := rao.Stress{
+					req := run_plan.Stress{
 						PlanID:     baton.plan.ID,
 						PlanName:   baton.plan.Name,
 						ReportID:   omnibus.DefiniteString(report.ID),
 						TeamID:     baton.TeamID,
 						ReportName: baton.plan.Name,
-						ConfigTask: &rao.ConfigTask{
+						ConfigTask: &run_plan.ConfigTask{
 							TaskType: baton.plan.TaskType,
 							Mode:     baton.plan.Mode,
 							Remark:   baton.plan.Remark,
 							CronExpr: baton.plan.CronExpr,
-							ModeConf: &rao.ModeConf{
+							ModeConf: &run_plan.ModeConf{
 								ReheatTime:       baton.task[scene.ID].ModeConf.ReheatTime,
 								RoundNum:         baton.task[scene.ID].ModeConf.RoundNum,
 								Concurrency:      baton.task[scene.ID].ModeConf.Concurrency,
@@ -435,14 +477,14 @@ func (s *MakeStress) Execute(baton *Baton) error {
 							},
 						},
 						Variable: globalVariables,
-						Scene: &rao.Scene{
+						Scene: &run_plan.Scene{
 							SceneID:                 scene.ID,
 							EnablePlanConfiguration: false,
 							SceneName:               scene.Name,
 							TeamID:                  baton.TeamID,
 							Nodes:                   nodes.Nodes,
-							Configuration: &rao.SceneConfiguration{
-								ParameterizedFile: &rao.SceneVariablePath{
+							Configuration: &run_plan.SceneConfiguration{
+								ParameterizedFile: &run_plan.SceneVariablePath{
 									Path: importVariables,
 								},
 								Variable: sceneVariables,
@@ -636,8 +678,18 @@ func (s *RunMachineStress) Execute(baton *Baton) error {
 		_, err = resty.New().R().SetBody(stress).Post(fmt.Sprintf("http://%s/runner/run_plan", t))
 		proof.Infof("runner err %+v req %+v", err, proof.Render("req", stress))
 		if err != nil {
+			// 如果调用施压接口失败，则删除掉当前的这个报告id
+			reportTable := query.Use(dal.DB()).Report
+			_, err2 := reportTable.WithContext(baton.Ctx).Where(reportTable.ID.Eq(omnibus.DefiniteInt64(stress.ReportID))).Delete()
+			if err2 != nil {
+				return err2
+			}
 			return err
 		}
+
+		// 把当前压力机使用状态设置到redis当中
+		machineUseStateKey := consts.MachineUseStatePrefix + t
+		dal.RDB.SetNX(machineUseStateKey, 1, 3600*24)
 
 		p := query.Use(dal.DB()).Plan
 		_, err = p.WithContext(baton.Ctx).Where(p.ID.Eq(baton.PlanID)).UpdateColumn(p.Status, consts.PlanStatusUnderway)

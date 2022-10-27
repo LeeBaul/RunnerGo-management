@@ -1,6 +1,7 @@
 base:
   is_debug: false
   domain: "https://kp-test-fe.apipost.cn/"
+  max_concurrency: 5000
 
 http:
   port: 20123
