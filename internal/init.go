@@ -10,7 +10,7 @@ func InitProjects() {
 	conf.MustInitConf()
 	dal.MustInitMySQL()
 	dal.MustInitMongo()
-	dal.MustInitElasticSearch()
+	//dal.MustInitElasticSearch()
 	proof.MustInitProof()
 	dal.MustInitGRPC()
 	dal.MustInitRedis()
