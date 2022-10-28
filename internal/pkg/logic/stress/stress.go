@@ -112,10 +112,10 @@ func (s *CheckIdleMachine) Execute(baton *Baton) error {
 		return fmt.Errorf("empty idle machine")
 	}
 
-	var usableMachineMap UsableMachineMap     // 单个压力机基本数据
-	var usableMachineSlice []UsableMachineMap // 所有上报过来的压力机切片
-	var minWeight int64                       // 所有可用压力机里面最小的权重的值
-	var inUseMachineNum int                   // 所有有任务在运行的压力机数量
+	var usableMachineMap *UsableMachineMap     // 单个压力机基本数据
+	var usableMachineSlice []*UsableMachineMap // 所有上报过来的压力机切片
+	var minWeight int64                        // 所有可用压力机里面最小的权重的值
+	var inUseMachineNum int                    // 所有有任务在运行的压力机数量
 
 	var breakFor = false
 
@@ -198,6 +198,7 @@ func (s *CheckIdleMachine) Execute(baton *Baton) error {
 				}
 			}
 		}
+		proof.Errorf("%+v", proof.Render("machineInfo 排查", machineInfo))
 		// 把可用压力机以及权重，加入到可用服务列表当中
 		addErr := baton.balance.Add(fmt.Sprintf("%s", machineInfo.IP), omnibus.DefiniteString(machineInfo.UsableGoroutines))
 		if addErr != nil {

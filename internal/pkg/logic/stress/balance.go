@@ -28,19 +28,13 @@ func (r *WeightRoundRobinBalance) Add(params ...string) error {
 	if err != nil {
 		return err
 	}
-
-	weightNode := new(WeightNode)
-	weightNode.weight = weight
-	weightNode.effectiveWeight = weight
-	weightNode.currentWeight = weight
-	weightNode.addr = addr
-	r.rss = append(r.rss, weightNode)
-	//r.rss = append(r.rss, &aaa{
-	//	weight:          weight,
-	//	effectiveWeight: weight, // 初始化時有效权重 = 配置权重值
-	//	currentWeight:   weight, // 初始化時当前权重 = 配置权重值
-	//	addr:            addr,
-	//})
+	
+	r.rss = append(r.rss, &WeightNode{
+		weight:          weight,
+		effectiveWeight: weight, // 初始化時有效权重 = 配置权重值
+		currentWeight:   weight, // 初始化時当前权重 = 配置权重值
+		addr:            addr,
+	})
 
 	return nil
 }
