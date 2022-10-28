@@ -40,16 +40,16 @@ func ImportScene(ctx context.Context, userID, planID int64, targetIDList []int64
 
 					memo[oldID] = t.ID
 
-					var flow mao.Flow
-					if err := collection.FindOne(ctx, bson.D{{"scene_id", oldID}}).Decode(&flow); err != nil {
-						return err
-					}
-					flow.SceneID = t.ID
-					if _, err := collection.InsertOne(ctx, flow); err != nil {
-						return err
-					}
-
 					if t.TargetType == consts.TargetTypeScene {
+						var flow mao.Flow
+						if err := collection.FindOne(ctx, bson.D{{"scene_id", oldID}}).Decode(&flow); err != nil {
+							return err
+						}
+						flow.SceneID = t.ID
+						if _, err := collection.InsertOne(ctx, flow); err != nil {
+							return err
+						}
+
 						retID = append(retID, t)
 					}
 
@@ -75,16 +75,16 @@ func ImportScene(ctx context.Context, userID, planID int64, targetIDList []int64
 					}
 					memo[oldID] = t.ID
 
-					var flow mao.Flow
-					if err := collection.FindOne(ctx, bson.D{{"scene_id", oldID}}).Decode(&flow); err != nil {
-						return err
-					}
-					flow.SceneID = t.ID
-					if _, err := collection.InsertOne(ctx, flow); err != nil {
-						return err
-					}
-
 					if t.TargetType == consts.TargetTypeScene {
+						var flow mao.Flow
+						if err := collection.FindOne(ctx, bson.D{{"scene_id", oldID}}).Decode(&flow); err != nil {
+							return err
+						}
+						flow.SceneID = t.ID
+						if _, err := collection.InsertOne(ctx, flow); err != nil {
+							return err
+						}
+
 						retID = append(retID, t)
 					}
 
