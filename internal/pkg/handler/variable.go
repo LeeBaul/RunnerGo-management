@@ -70,7 +70,14 @@ func SyncGlobalVariables(ctx *gin.Context) {
 		return
 	}
 
-	if err := variable.SyncGlobalVariables(ctx, req.TeamID, req.Variables); err != nil {
+	variables := make([]*rao.Variable, 0)
+	for _, v := range req.Variables {
+		if v.Var != "" && v.Val != "" {
+			variables = append(variables, v)
+		}
+	}
+
+	if err := variable.SyncGlobalVariables(ctx, req.TeamID, variables); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
