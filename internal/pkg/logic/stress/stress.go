@@ -202,7 +202,7 @@ func (s *CheckIdleMachine) Execute(baton *Baton) error {
 		}
 
 		// 把可用压力机以及权重，加入到可用服务列表当中
-		addErr := baton.balance.Add(fmt.Sprintf("%s", machineInfo.IP), omnibus.DefiniteString(machineInfo.UsableGoroutines))
+		addErr := baton.balance.Add(fmt.Sprintf("%s", machineInfo.IP), omnibus.DefiniteString(machineInfo.UsableGoroutines), omnibus.DefiniteString(minWeight))
 		if addErr != nil {
 			proof.Errorf("%+v", proof.Render("machineInfo 排查", machineInfo))
 			continue
@@ -749,6 +749,14 @@ func (s *RunMachineStress) Execute(baton *Baton) error {
 		_, err = p.WithContext(baton.Ctx).Where(p.ID.Eq(baton.PlanID)).UpdateColumn(p.Status, consts.PlanStatusUnderway)
 		if err != nil {
 			return err
+		}
+
+		// 发起一次任务以后，立马把权重降到最低值
+		tmpWeight := baton.balance.minWeight - 1
+		if tmpWeight <= 0 {
+			baton.balance.rss[baton.balance.curIndex].effectiveWeight = 1
+		} else {
+			baton.balance.rss[baton.balance.curIndex].effectiveWeight = baton.balance.minWeight - 1
 		}
 	}
 
