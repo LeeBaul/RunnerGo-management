@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 
 	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/dal"
@@ -42,12 +43,15 @@ func ImportScene(ctx context.Context, userID, planID int64, targetIDList []int64
 
 					if t.TargetType == consts.TargetTypeScene {
 						var flow mao.Flow
-						if err := collection.FindOne(ctx, bson.D{{"scene_id", oldID}}).Decode(&flow); err != nil {
+						err := collection.FindOne(ctx, bson.D{{"scene_id", oldID}}).Decode(&flow)
+						if err != nil && err != mongo.ErrNoDocuments {
 							return err
 						}
-						flow.SceneID = t.ID
-						if _, err := collection.InsertOne(ctx, flow); err != nil {
-							return err
+						if err != mongo.ErrNoDocuments {
+							flow.SceneID = t.ID
+							if _, err := collection.InsertOne(ctx, flow); err != nil {
+								return err
+							}
 						}
 
 						retID = append(retID, t)
@@ -77,12 +81,15 @@ func ImportScene(ctx context.Context, userID, planID int64, targetIDList []int64
 
 					if t.TargetType == consts.TargetTypeScene {
 						var flow mao.Flow
-						if err := collection.FindOne(ctx, bson.D{{"scene_id", oldID}}).Decode(&flow); err != nil {
+						err := collection.FindOne(ctx, bson.D{{"scene_id", oldID}}).Decode(&flow)
+						if err != nil && err != mongo.ErrNoDocuments {
 							return err
 						}
-						flow.SceneID = t.ID
-						if _, err := collection.InsertOne(ctx, flow); err != nil {
-							return err
+						if err != mongo.ErrNoDocuments {
+							flow.SceneID = t.ID
+							if _, err := collection.InsertOne(ctx, flow); err != nil {
+								return err
+							}
 						}
 
 						retID = append(retID, t)
