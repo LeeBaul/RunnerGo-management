@@ -3,8 +3,8 @@ package rao
 type SaveVariableReq struct {
 	VarID       int64  `json:"var_id"`
 	TeamID      int64  `json:"team_id" binding:"required,gt=0"`
-	Var         string `json:"var" binding:"required"`
-	Val         string `json:"val" binding:"required"`
+	Var         string `json:"var" binding:"required,min=1"`
+	Val         string `json:"val" binding:"required,min=1"`
 	Description string `json:"description"`
 }
 
