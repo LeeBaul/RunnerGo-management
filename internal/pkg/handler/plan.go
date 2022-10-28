@@ -515,7 +515,7 @@ func NotifyStopStress(ctx *gin.Context) {
 		rp := tx.ReportMachine
 		rpInfo, err := rp.WithContext(ctx).Where(rp.ReportID.Eq(req.ReportID)).First()
 		if err == nil {
-			machineUseStateKey := consts2.MachineUseStatePrefix + rpInfo.IP
+			machineUseStateKey := consts2.MachineUseStatePrefix + rpInfo.IP + ":8002"
 			dal.RDB.Del(machineUseStateKey)
 		}
 

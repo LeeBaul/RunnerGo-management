@@ -178,7 +178,7 @@ func (s *CheckIdleMachine) Execute(baton *Baton) error {
 		}
 
 		// 获取当前机器是否使用当中
-		machineUseStateKey := consts.MachineUseStatePrefix + machineAddrSlice[0]
+		machineUseStateKey := consts.MachineUseStatePrefix + machineAddrSlice[0] + ":" + machineAddrSlice[1]
 		useStateVal, _ := dal.RDB.Get(machineUseStateKey).Result()
 		if useStateVal != "" {
 			inUseMachineNum++
