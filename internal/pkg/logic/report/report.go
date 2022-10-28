@@ -404,6 +404,13 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 					}
 					resultData.Results[k].AvgList = append(resultData.Results[k].AvgList, timeValue)
 
+					// 50响应时间列表
+					timeValue.Value = resultData.Results[k].FiftyRequestTimelineValue
+					if resultData.Results[k].FiftyList == nil {
+						resultData.Results[k].FiftyList = []TimeValue{}
+					}
+					resultData.Results[k].FiftyList = append(resultData.Results[k].FiftyList, timeValue)
+
 					// 90响应时间列表
 					timeValue.Value = resultData.Results[k].NinetyNineRequestTimeLineValue
 					if resultData.Results[k].NinetyList == nil {
@@ -647,20 +654,23 @@ type ResultDataMsg struct {
 	MaxRequestTime                 float64     `json:"max_request_time" bson:"max_request_time"`
 	MinRequestTime                 float64     `json:"min_request_time" bson:"min_request_time"` // 毫秒
 	CustomRequestTimeLine          int64       `json:"custom_request_time_line" bson:"custom_request_time_line"`
+	FiftyRequestTimeline           int64       `json:"fifty_request_timeline" bson:"fifty_request_timeline"`
 	NinetyRequestTimeLine          int64       `json:"ninety_request_time_line" bson:"ninety_request_time_line"`
 	NinetyFiveRequestTimeLine      int64       `json:"ninety_five_request_time_line" bson:"ninety_five_request_time_line"`
 	NinetyNineRequestTimeLine      int64       `json:"ninety_nine_request_time_line" bson:"ninety_nine_request_time_line"`
 	CustomRequestTimeLineValue     float64     `json:"custom_request_time_line_value" bson:"custom_request_time_line_value"`
+	FiftyRequestTimelineValue      int64       `json:"fifty_request_timeline_value" bson:"fifty_request_timeline_value"`
 	NinetyRequestTimeLineValue     float64     `json:"ninety_request_time_line_value" bson:"ninety_request_time_line_value"`
 	NinetyFiveRequestTimeLineValue float64     `json:"ninety_five_request_time_line_value" bson:"ninety_five_request_time_line_value"`
 	NinetyNineRequestTimeLineValue float64     `json:"ninety_nine_request_time_line_value" bson:"ninety_nine_request_time_line_value"`
 	SendBytes                      float64     `json:"send_bytes" bson:"send_bytes"`         // 发送字节数
 	ReceivedBytes                  float64     `json:"received_bytes" bson:"received_bytes"` // 接收字节数
 	Qps                            float64     `json:"qps" bson:"qps"`
-	ConcurrencyList                []TimeValue `json:"concurrency_list"`
+	ConcurrencyList                []TimeValue `json:"concurrency_list" bson:"concurrency_list"`
 	QpsList                        []TimeValue `json:"qps_list" bson:"qps_list"`
 	ErrorNumList                   []TimeValue `json:"error_num_list" bson:"error_num_list"`
 	AvgList                        []TimeValue `json:"avg_list" bson:"avg_list"`
+	FiftyList                      []TimeValue `json:"fifty_list" bson:"fifty_list"`
 	NinetyList                     []TimeValue `json:"ninety_list" bson:"ninety_list"`
 	NinetyFiveList                 []TimeValue `json:"ninety_five_list" bson:"ninety_five_list"`
 	NinetyNineList                 []TimeValue `json:"ninety_nine_list" bson:"ninety_nine_list"`
