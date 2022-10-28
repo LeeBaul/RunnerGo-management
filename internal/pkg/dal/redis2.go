@@ -1,8 +1,9 @@
 package dal
 
 import (
-	"github.com/go-redis/redis"
 	"time"
+
+	"github.com/go-redis/redis"
 )
 
 var (

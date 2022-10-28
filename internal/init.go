@@ -12,7 +12,7 @@ func InitProjects() {
 	dal.MustInitMongo()
 	//dal.MustInitElasticSearch()
 	proof.MustInitProof()
-	dal.MustInitGRPC()
+	//dal.MustInitGRPC()
 	dal.MustInitRedis()
 	dal.MustInitBigCache()
 }
