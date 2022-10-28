@@ -22,6 +22,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/shirou/gopsutil/load"
 	"kp-management/internal/pkg/conf"
 	"kp-management/internal/pkg/consts"
 	"kp-management/internal/pkg/dal"
@@ -51,24 +52,47 @@ type Baton struct {
 	stress          []*run_plan.Stress
 }
 
-type RunnerMachineInfo struct {
-	IP                string // IP地址(包含端口号)
-	Region            string // 机器所属区域
-	CpuUsage          int64  // CPU使用率
-	MemoryUsage       int64  // 内存使用率
-	NetIoUsage        int64  // 网络IO使用率
-	DiskIoUsage       int64  // 磁盘IO使用率
-	MaxGoroutines     int64  // 机器最大协程数
-	CurrentGoroutines int64  // 当前已用协程数
-	ServerType        int64  // 压力机类型：0-主力机器，1-备用机器
-	CreateTime        int64  // 数据上报时间（时间戳）
-}
-
 type UsableMachineMap struct {
 	IP               string // IP地址(包含端口号)
 	Region           string // 机器所属区域
 	Weight           int64  // 权重
 	UsableGoroutines int64  // 可用协程数
+}
+
+// 压力机心跳上报数据
+type HeartBeat struct {
+	Name              string        `json:"name"`               // 机器名称
+	CpuUsage          float64       `json:"cpu_usage"`          // CPU使用率
+	CpuLoad           *load.AvgStat `json:"cpu_load"`           // CPU负载信息
+	MemInfo           []MemInfo     `json:"mem_info"`           // 内存使用情况
+	Networks          []Network     `json:"networks"`           // 网络连接情况
+	DiskInfos         []DiskInfo    `json:"disk_infos"`         // 磁盘IO情况
+	MaxGoroutines     int64         `json:"max_goroutines"`     // 当前机器支持最大协程数
+	CurrentGoroutines int64         `json:"current_goroutines"` // 当前已用协程数
+	ServerType        int64         `json:"server_type"`        // 压力机类型：0-主力机器，1-备用机器
+	CreateTime        int64         `json:"create_time"`        // 数据上报时间（时间戳）
+}
+
+type MemInfo struct {
+	Total       uint64  `json:"total"`
+	Used        uint64  `json:"used"`
+	Free        uint64  `json:"free"`
+	UsedPercent float64 `json:"usedPercent"`
+}
+
+type DiskInfo struct {
+	Total       uint64  `json:"total"`
+	Free        uint64  `json:"free"`
+	Used        uint64  `json:"used"`
+	UsedPercent float64 `json:"usedPercent"`
+}
+
+type Network struct {
+	Name        string `json:"name"`
+	BytesSent   uint64 `json:"bytesSent"`
+	BytesRecv   uint64 `json:"bytesRecv"`
+	PacketsSent uint64 `json:"packetsSent"`
+	PacketsRecv uint64 `json:"packetsRecv"`
 }
 
 type Stress interface {
@@ -93,8 +117,10 @@ func (s *CheckIdleMachine) Execute(baton *Baton) error {
 	var minWeight int64                       // 所有可用压力机里面最小的权重的值
 	var inUseMachineNum int                   // 所有有任务在运行的压力机数量
 
+	var breakFor = false
+
 	// 查到了机器列表，然后判断可用性
-	var runnerMachineInfo RunnerMachineInfo
+	var runnerMachineInfo HeartBeat
 	for machineAddr, machineDetail := range machineListRes.Val() {
 		// 把机器详情信息解析成格式化数据
 		err := json.Unmarshal([]byte(machineDetail), &runnerMachineInfo)
@@ -111,7 +137,24 @@ func (s *CheckIdleMachine) Execute(baton *Baton) error {
 		}
 
 		// 判断当前压力机性能是否爆满,如果某个指标爆满，则不参与本次压力测试
-		if runnerMachineInfo.CpuUsage >= 65 || runnerMachineInfo.MemoryUsage >= 65 || runnerMachineInfo.NetIoUsage >= 55 || runnerMachineInfo.DiskIoUsage >= 55 {
+		if runnerMachineInfo.CpuUsage >= 65 { // CPU使用判断
+			continue
+		}
+		for _, memInfo := range runnerMachineInfo.MemInfo { // 内存使用判断
+			if memInfo.UsedPercent >= 65 {
+				breakFor = true
+				break
+			}
+		}
+		for _, diskInfo := range runnerMachineInfo.DiskInfos { // 磁盘使用判断
+			if diskInfo.UsedPercent >= 55 {
+				breakFor = true
+				break
+			}
+		}
+
+		// 最后判断是否结束当前循环
+		if breakFor {
 			continue
 		}
 
@@ -140,6 +183,7 @@ func (s *CheckIdleMachine) Execute(baton *Baton) error {
 		if useStateVal != "" {
 			inUseMachineNum++
 		}
+
 	}
 
 	for _, machineInfo := range usableMachineSlice {
