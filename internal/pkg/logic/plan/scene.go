@@ -48,7 +48,20 @@ func ImportScene(ctx context.Context, userID, planID int64, targetIDList []int64
 							return err
 						}
 						if err != mongo.ErrNoDocuments {
+							var ns *mao.Node
+							if err := bson.Unmarshal(flow.Nodes, &ns); err != nil {
+								return err
+							}
+							for _, n := range ns.Nodes {
+								n.Data.From = "plan"
+							}
+							nodes, err := bson.Marshal(ns)
+							if err != nil {
+								return err
+							}
+
 							flow.SceneID = t.ID
+							flow.Nodes = nodes
 							if _, err := collection.InsertOne(ctx, flow); err != nil {
 								return err
 							}
@@ -86,7 +99,20 @@ func ImportScene(ctx context.Context, userID, planID int64, targetIDList []int64
 							return err
 						}
 						if err != mongo.ErrNoDocuments {
+							var ns *mao.Node
+							if err := bson.Unmarshal(flow.Nodes, &ns); err != nil {
+								return err
+							}
+							for _, n := range ns.Nodes {
+								n.Data.From = "plan"
+							}
+							nodes, err := bson.Marshal(ns)
+							if err != nil {
+								return err
+							}
+
 							flow.SceneID = t.ID
+							flow.Nodes = nodes
 							if _, err := collection.InsertOne(ctx, flow); err != nil {
 								return err
 							}
