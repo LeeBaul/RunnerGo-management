@@ -112,6 +112,8 @@ func (s *CheckIdleMachine) Execute(baton *Baton) error {
 		return fmt.Errorf("empty idle machine")
 	}
 
+	baton.balance = &WeightRoundRobinBalance{}
+
 	var usableMachineMap *UsableMachineMap     // 单个压力机基本数据
 	var usableMachineSlice []*UsableMachineMap // 所有上报过来的压力机切片
 	var minWeight int64                        // 所有可用压力机里面最小的权重的值
