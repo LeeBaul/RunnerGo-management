@@ -15,4 +15,13 @@ func InitProjects() {
 	dal.MustInitGRPC()
 	dal.MustInitRedis()
 	dal.MustInitBigCache()
+	
+	// 初始化redis客户端
+	if err := dal.InitRedisClient(
+		conf.Conf.Redis.Address,
+		conf.Conf.Redis.Password,
+		int64(conf.Conf.Redis.DB),
+	); err != nil {
+		panic("redis 连接失败")
+	}
 }
