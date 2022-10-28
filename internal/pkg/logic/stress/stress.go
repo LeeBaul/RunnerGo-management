@@ -202,7 +202,7 @@ func (s *CheckIdleMachine) Execute(baton *Baton) error {
 		}
 
 		// 把可用压力机以及权重，加入到可用服务列表当中
-		addErr := baton.balance.Add(fmt.Sprintf("%s", machineInfo.IP), omnibus.DefiniteString(machineInfo.UsableGoroutines), omnibus.DefiniteString(minWeight))
+		addErr := baton.balance.Add(fmt.Sprintf("%s", machineInfo.IP), omnibus.DefiniteString(machineInfo.UsableGoroutines))
 		if addErr != nil {
 			proof.Errorf("%+v", proof.Render("machineInfo 排查", machineInfo))
 			continue

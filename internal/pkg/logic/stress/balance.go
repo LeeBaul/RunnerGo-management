@@ -8,7 +8,6 @@ import (
 type WeightRoundRobinBalance struct {
 	curIndex  int
 	rss       []*WeightNode
-	minWeight int64
 }
 
 type WeightNode struct {
@@ -19,7 +18,7 @@ type WeightNode struct {
 }
 
 func (r *WeightRoundRobinBalance) Add(params ...string) error {
-	if len(params) != 3 {
+	if len(params) != 2 {
 		return errors.New("WeightRoundRobinBalance Add params len need 2")
 	}
 
@@ -36,11 +35,6 @@ func (r *WeightRoundRobinBalance) Add(params ...string) error {
 		currentWeight:   weight, // 初始化時当前权重 = 配置权重值
 		addr:            addr,
 	})
-	minWeight, err := strconv.ParseInt(params[3], 10, 64)
-	if err != nil {
-		return err
-	}
-	r.minWeight = minWeight
 
 	return nil
 }
@@ -68,16 +62,7 @@ func (r *WeightRoundRobinBalance) Next() string {
 	}
 
 	// 更新选中节点的currentWeight
-	//maxWeightNode.currentWeight -= totalWeight
-	tmpWeight := r.minWeight - 1
-	if tmpWeight <= 0 {
-		maxWeightNode.effectiveWeight = 1
-		maxWeightNode.currentWeight = 1
-	} else {
-		maxWeightNode.effectiveWeight = tmpWeight
-		maxWeightNode.currentWeight = tmpWeight
-	}
-	r.minWeight = tmpWeight
+	maxWeightNode.currentWeight -= totalWeight
 
 	// 返回addr
 	return maxWeightNode.addr
