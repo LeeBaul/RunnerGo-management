@@ -751,13 +751,6 @@ func (s *RunMachineStress) Execute(baton *Baton) error {
 			return err
 		}
 
-		// 发起一次任务以后，立马把权重降到最低值
-		tmpWeight := baton.balance.minWeight - 1
-		if tmpWeight <= 0 {
-			baton.balance.rss[baton.balance.curIndex].effectiveWeight = 1
-		} else {
-			baton.balance.rss[baton.balance.curIndex].effectiveWeight = baton.balance.minWeight - 1
-		}
 	}
 
 	return nil

@@ -68,7 +68,16 @@ func (r *WeightRoundRobinBalance) Next() string {
 	}
 
 	// 更新选中节点的currentWeight
-	maxWeightNode.currentWeight -= totalWeight
+	//maxWeightNode.currentWeight -= totalWeight
+	tmpWeight := r.minWeight - 1
+	if tmpWeight <= 0 {
+		maxWeightNode.effectiveWeight = 1
+		maxWeightNode.currentWeight = 1
+	} else {
+		maxWeightNode.effectiveWeight = tmpWeight
+		maxWeightNode.currentWeight = tmpWeight
+	}
+	r.minWeight = tmpWeight
 
 	// 返回addr
 	return maxWeightNode.addr
