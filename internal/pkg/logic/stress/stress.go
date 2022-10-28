@@ -133,7 +133,7 @@ func (s *CheckIdleMachine) Execute(baton *Baton) error {
 
 		// 压力机数据上报时间超过5秒，则认为服务不可用，不参与本次压力测试
 		nowTime := time.Now().Unix()
-		if nowTime-runnerMachineInfo.CreateTime > 5 {
+		if nowTime-runnerMachineInfo.CreateTime > 3 {
 			log.Println("runner_machine heartbeat Timeout err：", err)
 			continue
 		}
