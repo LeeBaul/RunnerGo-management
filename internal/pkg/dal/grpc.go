@@ -3,9 +3,9 @@ package dal
 import (
 	"crypto/tls"
 	"crypto/x509"
+	"fmt"
 
 	"github.com/go-omnibus/proof"
-	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 
@@ -20,7 +20,7 @@ var (
 func MustInitGRPC() {
 	systemRoots, err := x509.SystemCertPool()
 	if err != nil {
-		panic(errors.Wrap(err, "cannot load root CA certs"))
+		panic(fmt.Errorf("cannot load root CA certs, %w", err))
 	}
 	creds := credentials.NewTLS(&tls.Config{
 		RootCAs: systemRoots,
