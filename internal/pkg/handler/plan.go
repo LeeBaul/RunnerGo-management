@@ -87,7 +87,7 @@ func RunPlan(ctx *gin.Context) {
 
 	if len(emails) > 0 {
 		px := dal.GetQuery().Plan
-		plan, err := px.WithContext(ctx).Where(px.ID.Eq(req.PlanID)).First()
+		planInfo, err := px.WithContext(ctx).Where(px.ID.Eq(req.PlanID)).First()
 		if err != nil {
 			response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 			return
@@ -125,7 +125,7 @@ func RunPlan(ctx *gin.Context) {
 		}
 
 		for _, email := range emails {
-			if err := mail.SendPlanEmail(ctx, email.Email, plan.Name, team.Name, user.Nickname, reports, runUsers); err != nil {
+			if err := mail.SendPlanEmail(ctx, email.Email, planInfo.Name, team.Name, user.Nickname, reports, runUsers); err != nil {
 				response.ErrorWithMsg(ctx, errno.ErrHttpFailed, err.Error())
 				return
 			}
