@@ -55,9 +55,16 @@ func SyncGlobalVariables(ctx context.Context, teamID int64, variables []*rao.Var
 }
 
 func ListSceneVariables(ctx context.Context, teamID, sceneID int64, limit, offset int) ([]*rao.Variable, int64, error) {
-	tx := query.Use(dal.DB()).Variable
+	tx := dal.GetQuery().Variable
 
-	v, cnt, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID), tx.SceneID.Eq(sceneID), tx.Type.Eq(consts.VariableTypeScene)).FindByPage(offset, limit)
+	v, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID), tx.SceneID.Eq(sceneID), tx.Type.Eq(consts.VariableTypeScene)).Limit(limit).Offset(offset).Find()
+
+	//v, cnt, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID), tx.SceneID.Eq(sceneID), tx.Type.Eq(consts.VariableTypeScene)).FindByPage(offset, limit)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	cnt, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID), tx.SceneID.Eq(sceneID), tx.Type.Eq(consts.VariableTypeScene)).Count()
 	if err != nil {
 		return nil, 0, err
 	}
