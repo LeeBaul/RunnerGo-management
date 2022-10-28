@@ -26,8 +26,9 @@ type Config struct {
 }
 
 type Base struct {
-	IsDebug bool   `mapstructure:"is_debug"`
-	Domain  string `mapstructure:"domain"`
+	IsDebug        bool   `mapstructure:"is_debug"`
+	Domain         string `mapstructure:"domain"`
+	MaxConcurrency int64  `mapstructure:"max_concurrency"`
 }
 
 type Http struct {
