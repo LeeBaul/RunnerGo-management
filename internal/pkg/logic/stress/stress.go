@@ -114,10 +114,10 @@ func (s *CheckIdleMachine) Execute(baton *Baton) error {
 
 	baton.balance = &WeightRoundRobinBalance{}
 
-	var usableMachineMap *UsableMachineMap     // 单个压力机基本数据
-	var usableMachineSlice []*UsableMachineMap // 所有上报过来的压力机切片
-	var minWeight int64                        // 所有可用压力机里面最小的权重的值
-	var inUseMachineNum int                    // 所有有任务在运行的压力机数量
+	usableMachineMap := new(UsableMachineMap)                                     // 单个压力机基本数据
+	usableMachineSlice := make([]*UsableMachineMap, 0, len(machineListRes.Val())) // 所有上报过来的压力机切片
+	var minWeight int64                                                           // 所有可用压力机里面最小的权重的值
+	var inUseMachineNum int                                                       // 所有有任务在运行的压力机数量
 
 	var breakFor = false
 
