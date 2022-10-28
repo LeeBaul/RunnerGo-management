@@ -17,7 +17,6 @@ import (
 	"net/http"
 	"os"
 	"path"
-	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -89,10 +88,10 @@ func (s *CheckIdleMachine) Execute(baton *Baton) error {
 		return fmt.Errorf("empty idle machine")
 	}
 
-	var usableMachineSlice []UsableMachineMap
-	var usableMachineMap UsableMachineMap
-
-	var allWeight []int
+	var usableMachineMap UsableMachineMap     // 单个压力机基本数据
+	var usableMachineSlice []UsableMachineMap // 所有上报过来的压力机切片
+	var minWeight int64                       // 所有可用压力机里面最小的权重的值
+	var inUseMachineNum int                   // 所有有任务在运行的压力机数量
 
 	// 查到了机器列表，然后判断可用性
 	var runnerMachineInfo RunnerMachineInfo
@@ -106,7 +105,7 @@ func (s *CheckIdleMachine) Execute(baton *Baton) error {
 
 		// 压力机数据上报时间超过5秒，则认为服务不可用，不参与本次压力测试
 		nowTime := time.Now().Unix()
-		if nowTime-int64(runnerMachineInfo.CreateTime) > 5 {
+		if nowTime-runnerMachineInfo.CreateTime > 5 {
 			log.Println("runner_machine heartbeat Timeout err：", err)
 			continue
 		}
@@ -124,30 +123,37 @@ func (s *CheckIdleMachine) Execute(baton *Baton) error {
 		// 当前机器可用协程数
 		usableGoroutines := runnerMachineInfo.MaxGoroutines - runnerMachineInfo.CurrentGoroutines
 
+		// 组装可用机器结构化数据
 		usableMachineMap.IP = machineAddrSlice[0] + ":" + machineAddrSlice[1]
 		usableMachineMap.UsableGoroutines = usableGoroutines
 		usableMachineMap.Weight = usableGoroutines
 		usableMachineSlice = append(usableMachineSlice, usableMachineMap)
 
-		// 所有机器权重的切片
-		allWeight = append(allWeight, int(usableGoroutines))
-	}
-
-	// 获取所有机器里面最小的权重
-	sort.Ints(allWeight)
-	minWeight := allWeight[0]
-
-	for _, machineInfo := range usableMachineSlice {
-		// 获取当前机器是否使用当中
-		machineUseStateKey := consts.MachineUseStatePrefix + machineInfo.IP
-		useStateVal, _ := dal.RDB.Get(machineUseStateKey).Result()
-		if useStateVal != "" {
-			machineInfo.UsableGoroutines = int64(minWeight) - 10
-			if machineInfo.UsableGoroutines <= 0 {
-				machineInfo.UsableGoroutines = 1
-			}
+		// 获取当前压力机当中最小的权重值
+		if minWeight == 0 || minWeight > usableGoroutines {
+			minWeight = usableGoroutines
 		}
 
+		// 获取当前机器是否使用当中
+		machineUseStateKey := consts.MachineUseStatePrefix + machineAddrSlice[0]
+		useStateVal, _ := dal.RDB.Get(machineUseStateKey).Result()
+		if useStateVal != "" {
+			inUseMachineNum++
+		}
+	}
+
+	for _, machineInfo := range usableMachineSlice {
+		if inUseMachineNum < len(usableMachineSlice) {
+			// 获取当前机器是否使用当中
+			machineUseStateKey := consts.MachineUseStatePrefix + machineInfo.IP
+			useStateVal, _ := dal.RDB.Get(machineUseStateKey).Result()
+			if useStateVal != "" {
+				machineInfo.UsableGoroutines = int64(minWeight) - 1
+				if machineInfo.UsableGoroutines <= 0 {
+					machineInfo.UsableGoroutines = 1
+				}
+			}
+		}
 		// 把可用压力机以及权重，加入到可用服务列表当中
 		addErr := baton.balance.Add(fmt.Sprintf("%s", machineInfo.IP), omnibus.DefiniteString(machineInfo.UsableGoroutines))
 		if addErr != nil {
