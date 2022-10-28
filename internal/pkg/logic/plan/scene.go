@@ -3,14 +3,20 @@ package plan
 import (
 	"context"
 
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+
 	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/dal"
+	"kp-management/internal/pkg/dal/mao"
 	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/query"
 )
 
 func ImportScene(ctx context.Context, userID, planID int64, targetIDList []int64) ([]*model.Target, error) {
 	retID := make([]*model.Target, 0)
+
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectFlow)
 
 	err := dal.GetQuery().Transaction(func(tx *query.Query) error {
 
@@ -36,6 +42,18 @@ func ImportScene(ctx context.Context, userID, planID int64, targetIDList []int64
 					memo[oldID] = t.ID
 
 					if t.TargetType == consts.TargetTypeScene {
+						var flow mao.Flow
+						err := collection.FindOne(ctx, bson.D{{"scene_id", oldID}}).Decode(&flow)
+						if err != nil && err != mongo.ErrNoDocuments {
+							return err
+						}
+						if err != mongo.ErrNoDocuments {
+							flow.SceneID = t.ID
+							if _, err := collection.InsertOne(ctx, flow); err != nil {
+								return err
+							}
+						}
+
 						retID = append(retID, t)
 					}
 
@@ -62,6 +80,18 @@ func ImportScene(ctx context.Context, userID, planID int64, targetIDList []int64
 					memo[oldID] = t.ID
 
 					if t.TargetType == consts.TargetTypeScene {
+						var flow mao.Flow
+						err := collection.FindOne(ctx, bson.D{{"scene_id", oldID}}).Decode(&flow)
+						if err != nil && err != mongo.ErrNoDocuments {
+							return err
+						}
+						if err != mongo.ErrNoDocuments {
+							flow.SceneID = t.ID
+							if _, err := collection.InsertOne(ctx, flow); err != nil {
+								return err
+							}
+						}
+
 						retID = append(retID, t)
 					}
 
