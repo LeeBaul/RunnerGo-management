@@ -1,6 +1,7 @@
 base:
   is_debug: true
   domain: "https://kp-test-fe.apipost.cn/"
+  max_concurrency: 250
 
 http:
   port: 8080

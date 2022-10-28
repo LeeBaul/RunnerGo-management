@@ -147,6 +147,7 @@ func RegisterRouter(r *gin.Engine) {
 	plan.GET("/task/detail", handler.GetPlanTask)
 	plan.POST("/delete", handler.DeletePlan)
 	plan.POST("/email_notify", handler.PlanEmail)
+	plan.POST("/notify_stop_stress", handler.NotifyStopStress)
 	plan.POST("/import_scene", handler.ImportScene)
 	// 计划预设配置
 	plan.POST("/preinstall/save", handler.SetPreinstall)

@@ -1,10 +1,9 @@
 package handler
 
 import (
+	"context"
 	"github.com/go-omnibus/omnibus"
 	"github.com/go-resty/resty/v2"
-
-	services "kp-management/api"
 	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/jwt"
@@ -17,9 +16,20 @@ import (
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/dal/runner"
 	"kp-management/internal/pkg/logic/plan"
+	"kp-management/internal/pkg/logic/stress"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	consts2 "kp-management/internal/pkg/consts"
+	"kp-management/internal/pkg/dal/query"
 )
+
+type RunStressReq struct {
+	PlanID  int64   `json:"plan_id"`
+	TeamID  int64   `json:"team_id"`
+	SceneID []int64 `json:"scene_id"`
+	UserID  int64   `json:"user_id"`
+}
 
 func RunPlan(ctx *gin.Context) {
 	var req rao.RunPlanReq
@@ -28,17 +38,33 @@ func RunPlan(ctx *gin.Context) {
 		return
 	}
 
-	_, err := dal.ClientGRPC().RunStress(ctx, &services.RunStressReq{
+	//_, err := dal.ClientGRPC().RunStress(ctx, &services.RunStressReq{
+	//	PlanID:  req.PlanID,
+	//	TeamID:  req.TeamID,
+	//	SceneID: req.SceneID,
+	//	UserID:  jwt.GetUserIDByCtx(ctx),
+	//})
+	//
+	//if err != nil {
+	//	response.ErrorWithMsg(ctx, errno.ErrHttpFailed, err.Error())
+	//	return
+	//}
+
+	// todo 调用controller方法改成本地
+	runStressParams := RunStressReq{
 		PlanID:  req.PlanID,
 		TeamID:  req.TeamID,
 		SceneID: req.SceneID,
 		UserID:  jwt.GetUserIDByCtx(ctx),
-	})
+	}
 
-	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrHttpFailed, err.Error())
+	runErr := RunStress(ctx, runStressParams)
+	if runErr != nil {
+		response.ErrorWithMsg(ctx, errno.ErrHttpFailed, runErr.Error())
 		return
 	}
+
+	// todo 以上是新代码入口
 
 	px := dal.GetQuery().Plan
 	p, err := px.WithContext(ctx).Where(px.ID.Eq(req.PlanID)).First()
@@ -61,7 +87,7 @@ func RunPlan(ctx *gin.Context) {
 
 	if len(emails) > 0 {
 		px := dal.GetQuery().Plan
-		plan, err := px.WithContext(ctx).Where(px.ID.Eq(req.PlanID)).First()
+		planInfo, err := px.WithContext(ctx).Where(px.ID.Eq(req.PlanID)).First()
 		if err != nil {
 			response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 			return
@@ -99,7 +125,7 @@ func RunPlan(ctx *gin.Context) {
 		}
 
 		for _, email := range emails {
-			if err := mail.SendPlanEmail(ctx, email.Email, plan.Name, team.Name, user.Nickname, reports, runUsers); err != nil {
+			if err := mail.SendPlanEmail(ctx, email.Email, planInfo.Name, team.Name, user.Nickname, reports, runUsers); err != nil {
 				response.ErrorWithMsg(ctx, errno.ErrHttpFailed, err.Error())
 				return
 			}
@@ -388,4 +414,118 @@ func GetPreinstall(ctx *gin.Context) {
 	}
 
 	response.SuccessWithData(ctx, rao.GetPreinstallResp{Preinstall: p})
+}
+
+// 调度压力测试机进行压测的方法
+func RunStress(ctx context.Context, req RunStressReq) error {
+	rms := &stress.RunMachineStress{}
+
+	siv := &stress.SplitImportVariable{}
+	siv.SetNext(rms)
+
+	ss := &stress.SplitStress{}
+	ss.SetNext(siv)
+
+	ms := &stress.MakeStress{}
+	ms.SetNext(ss)
+
+	mr := &stress.MakeReport{}
+	mr.SetNext(ms)
+
+	iv := &stress.AssembleImportVariables{}
+	iv.SetNext(mr)
+
+	sv := &stress.AssembleSceneVariables{}
+	sv.SetNext(iv)
+
+	f := &stress.AssembleFlows{}
+	f.SetNext(sv)
+
+	v := &stress.AssembleGlobalVariables{}
+	v.SetNext(f)
+
+	t := &stress.AssembleTask{}
+	t.SetNext(v)
+
+	s := &stress.AssembleScenes{}
+	s.SetNext(t)
+
+	p := &stress.AssemblePlan{}
+	p.SetNext(s)
+
+	m := &stress.CheckIdleMachine{}
+	m.SetNext(p)
+
+	err := m.Execute(&stress.Baton{
+		Ctx:      ctx,
+		PlanID:   req.PlanID,
+		TeamID:   req.TeamID,
+		SceneIDs: req.SceneID,
+		UserID:   req.UserID,
+	})
+
+	return err
+}
+
+type notifyStopStressReq struct {
+	ReportID int64 `json:"report_id"`
+}
+
+// 压力机回调压测状态和结果
+func NotifyStopStress(ctx *gin.Context) {
+	var req notifyStopStressReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	err := query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
+		r := tx.Report
+		// 修改报告状态
+		_, err := r.WithContext(ctx).Where(r.ID.Eq(req.ReportID)).UpdateSimple(r.Status.Value(consts.ReportStatusFinish), r.UpdatedAt.Value(time.Now()))
+		if err != nil {
+			return err
+		}
+
+		// 查找报告对应计划
+		report, err := r.WithContext(ctx).Where(r.ID.Eq(req.ReportID)).First()
+		if err != nil {
+			return err
+		}
+
+		// 统计报告是否全部完成
+		reportCnt, err := r.WithContext(ctx).Where(r.PlanID.Eq(report.PlanID)).Count()
+		if err != nil {
+			return err
+		}
+		finishReportCnt, err := r.WithContext(ctx).Where(r.PlanID.Eq(report.PlanID), r.Status.Eq(consts.ReportStatusFinish)).Count()
+		if err != nil {
+			return err
+		}
+
+		if finishReportCnt == reportCnt { // 报告全部完成则计划也完成
+			p := tx.Plan
+			_, err := p.WithContext(ctx).Where(p.ID.Eq(report.PlanID)).UpdateSimple(p.Status.Value(consts.PlanStatusNormal), p.UpdatedAt.Value(time.Now()))
+			if err != nil {
+				return err
+			}
+		}
+
+		// 任务结束，把压测机使用状态的redis数据删掉
+		rp := tx.ReportMachine
+		rpInfo, err := rp.WithContext(ctx).Where(rp.ReportID.Eq(req.ReportID)).First()
+		if err == nil {
+			machineUseStateKey := consts2.MachineUseStatePrefix + rpInfo.IP + ":8002"
+			dal.RDB.Del(machineUseStateKey)
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		response.SuccessWithData(ctx, err)
+	}
+
+	response.Success(ctx)
+	return
 }
