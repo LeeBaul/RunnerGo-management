@@ -6,8 +6,8 @@ import (
 )
 
 type WeightRoundRobinBalance struct {
-	curIndex int
-	rss      []*WeightNode
+	curIndex  int
+	rss       []*WeightNode
 }
 
 type WeightNode struct {
@@ -28,7 +28,7 @@ func (r *WeightRoundRobinBalance) Add(params ...string) error {
 	if err != nil {
 		return err
 	}
-	
+
 	r.rss = append(r.rss, &WeightNode{
 		weight:          weight,
 		effectiveWeight: weight, // 初始化時有效权重 = 配置权重值

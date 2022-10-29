@@ -414,6 +414,9 @@ func (s *MakeReport) Execute(baton *Baton) error {
 
 	reports := make([]*model.Report, 0)
 	for i, scene := range baton.scenes {
+		if _, ok := baton.task[scene.ID]; !ok {
+			return errors.New("当前场景没有配置任务类型或任务模式，场景id：" + strconv.Itoa(int(scene.ID)))
+		}
 		reports = append(reports, &model.Report{
 			Rank:      cnt + 1 + omnibus.DefiniteInt64(i),
 			TeamID:    scene.TeamID,
@@ -750,6 +753,7 @@ func (s *RunMachineStress) Execute(baton *Baton) error {
 		if err != nil {
 			return err
 		}
+
 	}
 
 	return nil
