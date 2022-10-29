@@ -25,6 +25,7 @@ const (
 	ErrYetRegister     = 20005
 	ErrURLExpired      = 20006
 	ErrExistsTeam      = 20007
+	ErrMustTaskInit    = 20008
 )
 
 // CodeMsgMap 错误码映射错误信息，不展示给用户
@@ -52,6 +53,7 @@ var CodeMsgMap = map[int]string{
 	ErrYetRegister:     "email yet register",
 	ErrURLExpired:      "invite url expired",
 	ErrExistsTeam:      "invite user exists team",
+	ErrMustTaskInit:    "fill in the task allocation and save it",
 }
 
 // CodeAlertMap 错图码映射错误提示，展示给用户
@@ -79,4 +81,5 @@ var CodeAlertMap = map[int]string{
 	ErrYetRegister:     "用户已注册",
 	ErrURLExpired:      "邀请链接已过期",
 	ErrExistsTeam:      "用户已在此团队",
+	ErrMustTaskInit:    "请填写任务配置并保存",
 }

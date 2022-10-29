@@ -112,10 +112,12 @@ func (s *CheckIdleMachine) Execute(baton *Baton) error {
 		return fmt.Errorf("empty idle machine")
 	}
 
-	var usableMachineMap UsableMachineMap     // 单个压力机基本数据
-	var usableMachineSlice []UsableMachineMap // 所有上报过来的压力机切片
-	var minWeight int64                       // 所有可用压力机里面最小的权重的值
-	var inUseMachineNum int                   // 所有有任务在运行的压力机数量
+	baton.balance = &WeightRoundRobinBalance{}
+
+	usableMachineMap := new(UsableMachineMap)                                     // 单个压力机基本数据
+	usableMachineSlice := make([]*UsableMachineMap, 0, len(machineListRes.Val())) // 所有上报过来的压力机切片
+	var minWeight int64                                                           // 所有可用压力机里面最小的权重的值
+	var inUseMachineNum int                                                       // 所有有任务在运行的压力机数量
 
 	var breakFor = false
 
@@ -131,7 +133,7 @@ func (s *CheckIdleMachine) Execute(baton *Baton) error {
 
 		// 压力机数据上报时间超过5秒，则认为服务不可用，不参与本次压力测试
 		nowTime := time.Now().Unix()
-		if nowTime-runnerMachineInfo.CreateTime > 5 {
+		if nowTime-runnerMachineInfo.CreateTime > 3 {
 			log.Println("runner_machine heartbeat Timeout err：", err)
 			continue
 		}
@@ -198,9 +200,11 @@ func (s *CheckIdleMachine) Execute(baton *Baton) error {
 				}
 			}
 		}
+
 		// 把可用压力机以及权重，加入到可用服务列表当中
 		addErr := baton.balance.Add(fmt.Sprintf("%s", machineInfo.IP), omnibus.DefiniteString(machineInfo.UsableGoroutines))
 		if addErr != nil {
+			proof.Errorf("%+v", proof.Render("machineInfo 排查", machineInfo))
 			continue
 		}
 	}
@@ -410,6 +414,9 @@ func (s *MakeReport) Execute(baton *Baton) error {
 
 	reports := make([]*model.Report, 0)
 	for i, scene := range baton.scenes {
+		if _, ok := baton.task[scene.ID]; !ok {
+			return errors.New("当前场景没有配置任务类型或任务模式，场景id：" + strconv.Itoa(int(scene.ID)))
+		}
 		reports = append(reports, &model.Report{
 			Rank:      cnt + 1 + omnibus.DefiniteInt64(i),
 			TeamID:    scene.TeamID,
@@ -746,6 +753,7 @@ func (s *RunMachineStress) Execute(baton *Baton) error {
 		if err != nil {
 			return err
 		}
+
 	}
 
 	return nil
