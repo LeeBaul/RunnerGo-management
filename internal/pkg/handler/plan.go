@@ -61,7 +61,7 @@ func RunPlan(ctx *gin.Context) {
 
 	runErr := RunStress(ctx, runStressParams)
 	if runErr != nil {
-		response.ErrorWithMsg(ctx, errno.ErrMustTaskInit, runErr.Error())
+		response.ErrorWithMsg(ctx, errno.Ok, runErr.Error())
 		return
 	}
 
