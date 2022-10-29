@@ -50,7 +50,7 @@ func RunPlan(ctx *gin.Context) {
 	//	return
 	//}
 
-	// todo 调用controller方法改成本地
+	// 调用controller方法改成本地
 	runStressParams := RunStressReq{
 		PlanID:  req.PlanID,
 		TeamID:  req.TeamID,
@@ -63,8 +63,6 @@ func RunPlan(ctx *gin.Context) {
 		response.ErrorWithMsg(ctx, errno.ErrMustTaskInit, runErr.Error())
 		return
 	}
-
-	// todo 以上是新代码入口
 
 	px := dal.GetQuery().Plan
 	p, err := px.WithContext(ctx).Where(px.ID.Eq(req.PlanID)).First()
