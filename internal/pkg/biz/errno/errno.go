@@ -14,18 +14,18 @@ const (
 	ErrMustDID         = 10011
 	ErrMustSN          = 10012
 	ErrHttpFailed      = 10013
-	ErrRedisFailed    = 10100
-	ErrMongoFailed    = 10101
-	ErrMysqlFailed    = 10102
-	ErrRecordNotFound = 10103
-	ErrSignError      = 20001
-	ErrRepeatRequest  = 20002
-	ErrMustLogin      = 20003
-	ErrAuthFailed     = 20004
-	ErrYetRegister    = 20005
-	ErrURLExpired     = 20006
-	ErrExistsTeam     = 20007
-	ErrMustTaskInit   = 20008
+	ErrRedisFailed     = 10100
+	ErrMongoFailed     = 10101
+	ErrMysqlFailed     = 10102
+	ErrRecordNotFound  = 10103
+	ErrSignError       = 20001
+	ErrRepeatRequest   = 20002
+	ErrMustLogin       = 20003
+	ErrAuthFailed      = 20004
+	ErrYetRegister     = 20005
+	ErrURLExpired      = 20006
+	ErrExistsTeam      = 20007
+	ErrMustTaskInit    = 20008
 )
 
 // CodeMsgMap 错误码映射错误信息，不展示给用户
@@ -53,7 +53,7 @@ var CodeMsgMap = map[int]string{
 	ErrYetRegister:     "email yet register",
 	ErrURLExpired:      "invite url expired",
 	ErrExistsTeam:      "invite user exists team",
-	ErrMustTaskInit:    "Fill in the Task allocation and save it",
+	ErrMustTaskInit:    "fill in the task allocation and save it",
 }
 
 // CodeAlertMap 错图码映射错误提示，展示给用户
