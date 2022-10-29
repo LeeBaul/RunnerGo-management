@@ -317,7 +317,6 @@ func GetReportDebugLog(ctx context.Context, report rao.GetReportReq) (err error,
 func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, resultData ResultData) {
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectReportData)
 	filter := bson.D{{"reportid", fmt.Sprintf("%d", report.ReportID)}}
-	proof.Debug("12312312312312                         ", proof.With("report:                           ", report))
 	var resultMsg SceneTestResultDataMsg
 	var dataMap = make(map[string]string)
 	err = collection.FindOne(ctx, filter).Decode(dataMap)
@@ -328,7 +327,6 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 		if len(dataList) < 0 {
 			return
 		}
-		fmt.Println(len(dataList))
 		for i := len(dataList) - 1; i >= 0; i-- {
 			resultMsgString := dataList[i]
 			err = json.Unmarshal([]byte(resultMsgString), &resultMsg)
@@ -370,6 +368,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 					resultData.Results[k].MinRequestTime, _ = decimal.NewFromFloat(apiResult.MinRequestTime / float64(time.Millisecond)).Round(1).Float64()
 					resultData.Results[k].CustomRequestTimeLine = apiResult.CustomRequestTimeLine
 					resultData.Results[k].CustomRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.CustomRequestTimeLineValue / float64(time.Millisecond)).Round(1).Float64()
+					resultData.Results[k].FiftyRequestTimelineValue, _ = decimal.NewFromFloat(apiResult.FiftyRequestTimelineValue / float64(time.Millisecond)).Round(1).Float64()
 					resultData.Results[k].NinetyRequestTimeLine = apiResult.NinetyRequestTimeLine
 					resultData.Results[k].NinetyRequestTimeLineValue, _ = decimal.NewFromFloat(apiResult.NinetyRequestTimeLineValue / float64(time.Millisecond)).Round(1).Float64()
 					resultData.Results[k].NinetyFiveRequestTimeLine = apiResult.NinetyFiveRequestTimeLine
@@ -671,7 +670,7 @@ type ResultDataMsg struct {
 	NinetyFiveRequestTimeLine      int64       `json:"ninety_five_request_time_line" bson:"ninety_five_request_time_line"`
 	NinetyNineRequestTimeLine      int64       `json:"ninety_nine_request_time_line" bson:"ninety_nine_request_time_line"`
 	CustomRequestTimeLineValue     float64     `json:"custom_request_time_line_value" bson:"custom_request_time_line_value"`
-	FiftyRequestTimelineValue      int64       `json:"fifty_request_time_line_value" bson:"fifty_request_time_line_value"`
+	FiftyRequestTimelineValue      float64     `json:"fifty_request_time_line_value" bson:"fifty_request_time_line_value"`
 	NinetyRequestTimeLineValue     float64     `json:"ninety_request_time_line_value" bson:"ninety_request_time_line_value"`
 	NinetyFiveRequestTimeLineValue float64     `json:"ninety_five_request_time_line_value" bson:"ninety_five_request_time_line_value"`
 	NinetyNineRequestTimeLineValue float64     `json:"ninety_nine_request_time_line_value" bson:"ninety_nine_request_time_line_value"`
