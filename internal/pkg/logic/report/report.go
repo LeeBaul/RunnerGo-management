@@ -361,7 +361,10 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 						errRate := float64(apiResult.ErrorNum) / float64(apiResult.TotalRequestNum)
 						resultData.Results[k].ErrorRate, _ = decimal.NewFromFloat(errRate).Round(4).Float64()
 					}
-
+					resultData.Results[k].PercentAge = apiResult.PercentAge
+					resultData.Results[k].ErrorThreshold = apiResult.ErrorThreshold
+					resultData.Results[k].ResponseThreshold = apiResult.ResponseThreshold
+					resultData.Results[k].RequestThreshold = apiResult.RequestThreshold
 					resultData.Results[k].AvgRequestTime, _ = decimal.NewFromFloat(apiResult.AvgRequestTime / float64(time.Millisecond)).Round(1).Float64()
 					resultData.Results[k].MaxRequestTime, _ = decimal.NewFromFloat(apiResult.MaxRequestTime / float64(time.Millisecond)).Round(1).Float64()
 					resultData.Results[k].MinRequestTime, _ = decimal.NewFromFloat(apiResult.MinRequestTime / float64(time.Millisecond)).Round(1).Float64()
@@ -623,9 +626,12 @@ type ApiTestResultDataMsg struct {
 	TotalRequestNum                uint64  `json:"total_request_num" bson:"total_request_num"`   // 总请求数
 	TotalRequestTime               uint64  `json:"total_request_time" bson:"total_request_time"` // 总响应时间
 	SuccessNum                     uint64  `json:"success_num" bson:"success_num"`
-	ErrorNum                       uint64  `json:"error_num" bson:"error_num"`               // 错误数
-	ErrorThreshold                 float64 `json:"error_threshold" bson:"error_threshold"`   // 自定义错误率
-	AvgRequestTime                 float64 `json:"avg_request_time" bson:"avg_request_time"` // 平均响应事件
+	ErrorNum                       uint64  `json:"error_num" bson:"error_num"`                   // 错误数
+	ErrorThreshold                 float64 `json:"error_threshold" bson:"error_threshold"`       // 自定义错误率
+	RequestThreshold               int64   `json:"request_threshold" bson:"request_threshold"`   // Rps（每秒请求数）阈值
+	ResponseThreshold              int64   `json:"response_threshold" bson:"response_threshold"` // 响应时间阈值
+	PercentAge                     int64   `json:"percent_age" bson:"percent_age"`               // 响应时间线
+	AvgRequestTime                 float64 `json:"avg_request_time" bson:"avg_request_time"`     // 平均响应事件
 	MaxRequestTime                 float64 `json:"max_request_time" bson:"max_request_time"`
 	MinRequestTime                 float64 `json:"min_request_time" bson:"min_request_time"` // 毫秒
 	CustomRequestTimeLine          int64   `json:"custom_request_time_line" bson:"custom_request_time_line"`
@@ -654,7 +660,11 @@ type ResultDataMsg struct {
 	ErrorNum                       uint64      `json:"error_num" bson:"error_num"`               // 错误数
 	AvgRequestTime                 float64     `json:"avg_request_time" bson:"avg_request_time"` // 平均响应事件
 	MaxRequestTime                 float64     `json:"max_request_time" bson:"max_request_time"`
-	MinRequestTime                 float64     `json:"min_request_time" bson:"min_request_time"` // 毫秒
+	MinRequestTime                 float64     `json:"min_request_time" bson:"min_request_time"`     // 毫秒
+	PercentAge                     int64       `json:"percent_age" bson:"percent_age"`               // 响应时间线
+	ErrorThreshold                 float64     `json:"error_threshold" bson:"error_threshold"`       // 自定义错误率
+	RequestThreshold               int64       `json:"request_threshold" bson:"request_threshold"`   // Rps（每秒请求数）阈值
+	ResponseThreshold              int64       `json:"response_threshold" bson:"response_threshold"` // 响应时间阈值
 	CustomRequestTimeLine          int64       `json:"custom_request_time_line" bson:"custom_request_time_line"`
 	FiftyRequestTimeline           int64       `json:"fifty_request_time_line" bson:"fifty_request_time_line"`
 	NinetyRequestTimeLine          int64       `json:"ninety_request_time_line" bson:"ninety_request_time_line"`
@@ -679,18 +689,15 @@ type ResultDataMsg struct {
 }
 
 type ResultData struct {
-	End          bool                      `json:"end"`
-	ReportId     string                    `json:"report_id"`
-	ReportName   string                    `json:"report_name"`
-	PlanId       int64                     `json:"plan_id"`   // 任务ID
-	PlanName     string                    `json:"plan_name"` //
-	SceneId      int64                     `json:"scene_id"`  // 场景
-	SceneName    string                    `json:"scene_name"`
-	Results      map[string]*ResultDataMsg `json:"results"`
-	TotalQps     []float64                 `json:"total_qps"`
-	Machine      map[string]int64          `json:"machine"`
-	TotalQpsList []TimeValue               `json:"total_qps_list"`
-	TimeStamp    int64                     `json:"time_stamp"`
+	End        bool                      `json:"end"`
+	ReportId   string                    `json:"report_id"`
+	ReportName string                    `json:"report_name"`
+	PlanId     int64                     `json:"plan_id"`   // 任务ID
+	PlanName   string                    `json:"plan_name"` //
+	SceneId    int64                     `json:"scene_id"`  // 场景
+	SceneName  string                    `json:"scene_name"`
+	Results    map[string]*ResultDataMsg `json:"results"`
+	TimeStamp  int64                     `json:"time_stamp"`
 }
 
 type TimeValue struct {
