@@ -60,7 +60,7 @@ func RunPlan(ctx *gin.Context) {
 
 	runErr := RunStress(ctx, runStressParams)
 	if runErr != nil {
-		response.ErrorWithMsg(ctx, errno.ErrHttpFailed, runErr.Error())
+		response.ErrorWithMsg(ctx, errno.ErrMustTaskInit, runErr.Error())
 		return
 	}
 
