@@ -6,7 +6,7 @@ import (
 
 func TestGetReportDetail(t *testing.T) {
 	//ctx := context.Background()
-	//conf := fmt.Sprintf("mongodb://%s:%s@%s/%s", "kunpeng", "kYjJpU8BYvb4EJ9x", "172.17.18.255:27017", "kunpeng")
+	//conf := fmt.Sprintf("mongodb://%s:%s@%s/%s", "kunpeng", "hello123456", "172.17.79.88:37017", "kunpeng")
 	//
 	//clientOptions := options.Client().ApplyURI(conf)
 	//mongoClient, err := mongo.Connect(ctx, clientOptions)
@@ -15,16 +15,16 @@ func TestGetReportDetail(t *testing.T) {
 	//}
 	//
 	//rdb := redis.NewClient(&redis.Options{
-	//	Addr:     "172.17.101.191:6398",
-	//	Password: "apipost",
+	//	Addr:     "172.17.79.88:63790",
+	//	Password: "mypassword",
 	//	DB:       0,
 	//})
-	//
+	////
 	//collection := mongoClient.Database("kunpeng").Collection("report_data")
-	//
+	////
 	//var report rao.GetReportReq
-	//report.ReportID = 1794
-	//report.PlanId = 301
+	//report.ReportID = 17
+	//report.PlanId = 0
 	//err, result := GetReportDetail(ctx, report, collection, rdb)
 	//if err != nil {
 	//	fmt.Println("err1:         ", err)

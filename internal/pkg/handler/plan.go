@@ -62,9 +62,9 @@ func RunPlan(ctx *gin.Context) {
 		UserID:  jwt.GetUserIDByCtx(ctx),
 	}
 
-	runErr := RunStress(ctx, runStressParams)
+	errnoNum, runErr := RunStress(ctx, runStressParams)
 	if runErr != nil {
-		response.ErrorWithMsg(ctx, errno.ErrMustTaskInit, runErr.Error())
+		response.ErrorWithMsg(ctx, errnoNum, runErr.Error())
 		return
 	}
 
@@ -465,7 +465,7 @@ func GetPreinstall(ctx *gin.Context) {
 }
 
 // 调度压力测试机进行压测的方法
-func RunStress(ctx context.Context, req RunStressReq) error {
+func RunStress(ctx context.Context, req RunStressReq) (int, error) {
 	rms := &stress.RunMachineStress{}
 
 	//siv := &stress.SplitImportVariable{}
@@ -504,7 +504,7 @@ func RunStress(ctx context.Context, req RunStressReq) error {
 	m := &stress.CheckIdleMachine{}
 	m.SetNext(p)
 
-	err := m.Execute(&stress.Baton{
+	errnoNum, err := m.Execute(&stress.Baton{
 		Ctx:      ctx,
 		PlanID:   req.PlanID,
 		TeamID:   req.TeamID,
@@ -512,7 +512,7 @@ func RunStress(ctx context.Context, req RunStressReq) error {
 		UserID:   req.UserID,
 	})
 
-	return err
+	return errnoNum, err
 }
 
 type notifyStopStressReq struct {
