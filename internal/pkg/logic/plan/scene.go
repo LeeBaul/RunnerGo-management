@@ -17,6 +17,7 @@ func ImportScene(ctx context.Context, userID, planID int64, targetIDList []int64
 	retID := make([]*model.Target, 0)
 
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectFlow)
+	collectionTask := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectTask)
 
 	err := dal.GetQuery().Transaction(func(tx *query.Query) error {
 
@@ -63,6 +64,19 @@ func ImportScene(ctx context.Context, userID, planID int64, targetIDList []int64
 							flow.SceneID = t.ID
 							flow.Nodes = nodes
 							if _, err := collection.InsertOne(ctx, flow); err != nil {
+								return err
+							}
+						}
+
+						var task mao.Task
+						err = collectionTask.FindOne(ctx, bson.D{{"scene_id", oldID}}).Decode(&t)
+						if err != nil && err != mongo.ErrNoDocuments {
+							return err
+						}
+						if err != mongo.ErrNoDocuments {
+							task.PlanID = planID
+							task.SceneID = t.ID
+							if _, err := collection.InsertOne(ctx, task); err != nil {
 								return err
 							}
 						}
@@ -114,6 +128,19 @@ func ImportScene(ctx context.Context, userID, planID int64, targetIDList []int64
 							flow.SceneID = t.ID
 							flow.Nodes = nodes
 							if _, err := collection.InsertOne(ctx, flow); err != nil {
+								return err
+							}
+						}
+
+						var task mao.Task
+						err = collectionTask.FindOne(ctx, bson.D{{"scene_id", oldID}}).Decode(&t)
+						if err != nil && err != mongo.ErrNoDocuments {
+							return err
+						}
+						if err != mongo.ErrNoDocuments {
+							task.PlanID = planID
+							task.SceneID = t.ID
+							if _, err := collection.InsertOne(ctx, task); err != nil {
 								return err
 							}
 						}
