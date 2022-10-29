@@ -13,6 +13,7 @@ import (
 	"gorm.io/gen"
 	"io"
 	"io/ioutil"
+	"kp-management/internal/pkg/biz/errno"
 	"log"
 	"net/http"
 	"os"
@@ -95,7 +96,7 @@ type Network struct {
 }
 
 type Stress interface {
-	Execute(baton *Baton) error
+	Execute(baton *Baton) (int, error)
 	SetNext(Stress)
 }
 
@@ -103,12 +104,12 @@ type CheckIdleMachine struct {
 	next Stress
 }
 
-func (s *CheckIdleMachine) Execute(baton *Baton) error {
+func (s *CheckIdleMachine) Execute(baton *Baton) (int, error) {
 	// 从Redis获取压力机列表
 	machineListRes := dal.RDB.HGetAll(consts.MachineListRedisKey)
 	if len(machineListRes.Val()) == 0 || machineListRes.Err() != nil {
 		// todo 后面可能增加兜底策略
-		return fmt.Errorf("empty idle machine")
+		return errno.ErrRPCFailed, fmt.Errorf("没有空闲压力机可用")
 	}
 
 	baton.balance = &WeightRoundRobinBalance{}
@@ -209,7 +210,7 @@ func (s *CheckIdleMachine) Execute(baton *Baton) error {
 	}
 
 	if len(baton.balance.rss) == 0 {
-		return fmt.Errorf("empty idle machine")
+		return errno.ErrRPCFailed, fmt.Errorf("没有空闲压力机可用")
 	}
 
 	return s.next.Execute(baton)
@@ -223,11 +224,11 @@ type AssemblePlan struct {
 	next Stress
 }
 
-func (s *AssemblePlan) Execute(baton *Baton) error {
+func (s *AssemblePlan) Execute(baton *Baton) (int, error) {
 	tx := query.Use(dal.DB()).Plan
 	p, err := tx.WithContext(baton.Ctx).Where(tx.ID.Eq(baton.PlanID)).First()
 	if err != nil {
-		return err
+		return errno.ErrMysqlFailed, err
 	}
 	baton.plan = p
 	return s.next.Execute(baton)
@@ -241,7 +242,7 @@ type AssembleScenes struct {
 	next Stress
 }
 
-func (s *AssembleScenes) Execute(baton *Baton) error {
+func (s *AssembleScenes) Execute(baton *Baton) (int, error) {
 	tx := query.Use(dal.DB()).Target
 
 	conditions := make([]gen.Condition, 0)
@@ -254,7 +255,7 @@ func (s *AssembleScenes) Execute(baton *Baton) error {
 
 	scenes, err := tx.WithContext(baton.Ctx).Where(conditions...).Find()
 	if err != nil {
-		return err
+		return errno.ErrMysqlFailed, err
 	}
 
 	baton.scenes = scenes
@@ -269,16 +270,16 @@ type AssembleTask struct {
 	next Stress
 }
 
-func (s *AssembleTask) Execute(baton *Baton) error {
+func (s *AssembleTask) Execute(baton *Baton) (int, error) {
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectTask)
 	cur, err := collection.Find(baton.Ctx, bson.D{{"plan_id", baton.PlanID}})
 	if err != nil {
-		return err
+		return errno.ErrMongoFailed, err
 	}
 
 	var task []*mao.Task
 	if err := cur.All(baton.Ctx, &task); err != nil {
-		return err
+		return errno.ErrMongoFailed, err
 	}
 
 	memo := make(map[int64]*mao.Task)
@@ -298,7 +299,7 @@ type AssembleGlobalVariables struct {
 	next Stress
 }
 
-func (s *AssembleGlobalVariables) Execute(baton *Baton) error {
+func (s *AssembleGlobalVariables) Execute(baton *Baton) (int, error) {
 	tx := query.Use(dal.DB()).Variable
 	variables, err := tx.WithContext(baton.Ctx).Where(
 		tx.TeamID.Eq(baton.TeamID),
@@ -306,7 +307,7 @@ func (s *AssembleGlobalVariables) Execute(baton *Baton) error {
 	).Find()
 
 	if err != nil {
-		return err
+		return errno.ErrMysqlFailed, err
 	}
 
 	baton.globalVariables = variables
@@ -321,7 +322,7 @@ type AssembleFlows struct {
 	next Stress
 }
 
-func (s *AssembleFlows) Execute(baton *Baton) error {
+func (s *AssembleFlows) Execute(baton *Baton) (int, error) {
 	var sceneIDs []int64
 	for _, scene := range baton.scenes {
 		sceneIDs = append(sceneIDs, scene.ID)
@@ -330,12 +331,12 @@ func (s *AssembleFlows) Execute(baton *Baton) error {
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectFlow)
 	cur, err := collection.Find(baton.Ctx, bson.D{{"scene_id", bson.D{{"$in", sceneIDs}}}})
 	if err != nil {
-		return err
+		return errno.ErrMongoFailed, err
 	}
 
 	var flows []*mao.Flow
 	if err := cur.All(baton.Ctx, &flows); err != nil {
-		return err
+		return errno.ErrMongoFailed, err
 	}
 
 	baton.flows = flows
@@ -350,7 +351,7 @@ type AssembleSceneVariables struct {
 	next Stress
 }
 
-func (s *AssembleSceneVariables) Execute(baton *Baton) error {
+func (s *AssembleSceneVariables) Execute(baton *Baton) (int, error) {
 	var sceneIDs []int64
 	for _, scene := range baton.scenes {
 		sceneIDs = append(sceneIDs, scene.ID)
@@ -364,7 +365,7 @@ func (s *AssembleSceneVariables) Execute(baton *Baton) error {
 	).Find()
 
 	if err != nil {
-		return err
+		return errno.ErrMysqlFailed, err
 	}
 
 	baton.sceneVariables = variables
@@ -379,7 +380,7 @@ type AssembleImportVariables struct {
 	next Stress
 }
 
-func (s *AssembleImportVariables) Execute(baton *Baton) error {
+func (s *AssembleImportVariables) Execute(baton *Baton) (int, error) {
 	var sceneIDs []int64
 	for _, scene := range baton.scenes {
 		sceneIDs = append(sceneIDs, scene.ID)
@@ -388,7 +389,7 @@ func (s *AssembleImportVariables) Execute(baton *Baton) error {
 	tx := query.Use(dal.DB()).VariableImport
 	vis, err := tx.WithContext(baton.Ctx).Where(tx.SceneID.In(sceneIDs...)).Find()
 	if err != nil {
-		return err
+		return errno.ErrMysqlFailed, err
 	}
 
 	baton.importVariables = vis
@@ -403,18 +404,18 @@ type MakeReport struct {
 	next Stress
 }
 
-func (s *MakeReport) Execute(baton *Baton) error {
+func (s *MakeReport) Execute(baton *Baton) (int, error) {
 	tx := query.Use(dal.DB()).Report
 
 	cnt, err := tx.WithContext(baton.Ctx).Unscoped().Where(tx.TeamID.Eq(baton.TeamID)).Count()
 	if err != nil {
-		return err
+		return errno.ErrMysqlFailed, err
 	}
 
 	reports := make([]*model.Report, 0)
 	for i, scene := range baton.scenes {
 		if _, ok := baton.task[scene.ID]; !ok {
-			return errors.New("当前场景没有配置任务类型或任务模式，场景id：" + strconv.Itoa(int(scene.ID)))
+			return errno.ErrMustTaskInit, errors.New("当前场景没有配置任务类型或任务模式，场景id：" + strconv.Itoa(int(scene.ID)))
 		}
 		reports = append(reports, &model.Report{
 			Rank:      cnt + 1 + omnibus.DefiniteInt64(i),
@@ -432,7 +433,7 @@ func (s *MakeReport) Execute(baton *Baton) error {
 	}
 
 	if err := tx.WithContext(baton.Ctx).CreateInBatches(reports, 10); err != nil {
-		return err
+		return errno.ErrMysqlFailed, err
 	}
 
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectReportTask)
@@ -458,7 +459,7 @@ func (s *MakeReport) Execute(baton *Baton) error {
 		})
 
 		if err != nil {
-			return err
+			return errno.ErrMongoFailed, err
 		}
 	}
 
@@ -474,7 +475,7 @@ type MakeStress struct {
 	next Stress
 }
 
-func (s *MakeStress) Execute(baton *Baton) error {
+func (s *MakeStress) Execute(baton *Baton) (int, error) {
 
 	for _, report := range baton.reports {
 		for _, scene := range baton.scenes {
@@ -510,7 +511,7 @@ func (s *MakeStress) Execute(baton *Baton) error {
 					}
 
 					if _, ok := baton.task[scene.ID]; !ok {
-						return errors.New("请填写任务配置并保存")
+						return errno.ErrMustTaskInit, errors.New("请填写任务配置并保存")
 					}
 					req := run_plan.Stress{
 						PlanID:     baton.plan.ID,
@@ -569,7 +570,7 @@ type SplitStress struct {
 	next Stress
 }
 
-func (s *SplitStress) Execute(baton *Baton) error {
+func (s *SplitStress) Execute(baton *Baton) (int, error) {
 	memo := make(map[string]int32)
 	for i, stress := range baton.stress {
 		memo[stress.ReportID]++
@@ -609,13 +610,13 @@ type SplitImportVariable struct {
 	next Stress
 }
 
-func (s *SplitImportVariable) Execute(baton *Baton) error {
+func (s *SplitImportVariable) Execute(baton *Baton) (int, error) {
 
 	reportMemo := make(map[string]int)
 	pathMemo := make(map[string]string)
 	for _, stress := range baton.stress {
-		for _, path := range stress.Scene.Configuration.ParameterizedFile.Path {
-			pathMemo[stress.ReportID] = path
+		for _, pathString := range stress.Scene.Configuration.ParameterizedFile.Path {
+			pathMemo[stress.ReportID] = pathString
 			reportMemo[stress.ReportID] += 1
 		}
 	}
@@ -630,19 +631,19 @@ func (s *SplitImportVariable) Execute(baton *Baton) error {
 
 		resp, err := http.Get(p)
 		if err != nil {
-			return err
+			return errno.ErrHttpFailed, err
 		}
 		defer resp.Body.Close()
 
 		data, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			return err
+			return errno.ErrHttpFailed, err
 		}
 
 		files := omnibus.Explode("/", p)
 		localFilePath := fmt.Sprintf("/tmp/%s", files[len(files)-1])
 		if err := ioutil.WriteFile(localFilePath, data, 0644); err != nil {
-			return err
+			return errno.ErrHttpFailed, err
 		}
 
 		file, _ := os.Open(localFilePath)
@@ -713,7 +714,7 @@ type RunMachineStress struct {
 	next Stress
 }
 
-func (s *RunMachineStress) Execute(baton *Baton) error {
+func (s *RunMachineStress) Execute(baton *Baton) (int, error) {
 	for _, stress := range baton.stress {
 		t := baton.balance.Next()
 
@@ -724,13 +725,13 @@ func (s *RunMachineStress) Execute(baton *Baton) error {
 		).FirstOrCreate()
 
 		if err != nil {
-			return err
+			return errno.ErrMysqlFailed, err
 		}
 
 		// 增加分区字段判断
 		partition := GetPartition()
 		if partition == -1 {
-			return errors.New("当前没有可用的kafka分区")
+			return errno.ErrRPCFailed, errors.New("当前没有可用的kafka分区")
 		}
 		stress.Partition = partition
 
@@ -741,9 +742,9 @@ func (s *RunMachineStress) Execute(baton *Baton) error {
 			reportTable := query.Use(dal.DB()).Report
 			_, err2 := reportTable.WithContext(baton.Ctx).Where(reportTable.ID.Eq(omnibus.DefiniteInt64(stress.ReportID))).Delete()
 			if err2 != nil {
-				return err2
+				return errno.ErrMysqlFailed, err2
 			}
-			return err
+			return errno.ErrRPCFailed, err
 		}
 
 		// 把当前压力机使用状态设置到redis当中
@@ -753,12 +754,12 @@ func (s *RunMachineStress) Execute(baton *Baton) error {
 		p := query.Use(dal.DB()).Plan
 		_, err = p.WithContext(baton.Ctx).Where(p.ID.Eq(baton.PlanID)).UpdateColumn(p.Status, consts.PlanStatusUnderway)
 		if err != nil {
-			return err
+			return errno.ErrMysqlFailed, err
 		}
 
 	}
 
-	return nil
+	return errno.Ok, nil
 }
 
 func (s *RunMachineStress) SetNext(stress Stress) {
