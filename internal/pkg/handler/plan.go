@@ -419,11 +419,11 @@ func GetPreinstall(ctx *gin.Context) {
 func RunStress(ctx context.Context, req RunStressReq) error {
 	rms := &stress.RunMachineStress{}
 
-	siv := &stress.SplitImportVariable{}
-	siv.SetNext(rms)
+	//siv := &stress.SplitImportVariable{}
+	//siv.SetNext(rms)
 
 	ss := &stress.SplitStress{}
-	ss.SetNext(siv)
+	ss.SetNext(rms)
 
 	ms := &stress.MakeStress{}
 	ms.SetNext(ss)
