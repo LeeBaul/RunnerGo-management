@@ -629,9 +629,11 @@ type ApiTestResultDataMsg struct {
 	MaxRequestTime                 float64 `json:"max_request_time" bson:"max_request_time"`
 	MinRequestTime                 float64 `json:"min_request_time" bson:"min_request_time"` // 毫秒
 	CustomRequestTimeLine          int64   `json:"custom_request_time_line" bson:"custom_request_time_line"`
+	FiftyRequestTimeline           int64   `json:"fifty_request_time_line" bson:"fifty_request_time_line"`
 	NinetyRequestTimeLine          int64   `json:"ninety_request_time_line" bson:"ninety_request_time_line"`
 	NinetyFiveRequestTimeLine      int64   `json:"ninety_five_request_time_line" bson:"ninety_five_request_time_line"`
 	NinetyNineRequestTimeLine      int64   `json:"ninety_nine_request_time_line" bson:"ninety_nine_request_time_line"`
+	FiftyRequestTimelineValue      float64 `json:"fifty_request_time_line_value"`
 	CustomRequestTimeLineValue     float64 `json:"custom_request_time_line_value" bson:"custom_request_time_line_value"`
 	NinetyRequestTimeLineValue     float64 `json:"ninety_request_time_line_value" bson:"ninety_request_time_line_value"`
 	NinetyFiveRequestTimeLineValue float64 `json:"ninety_five_request_time_line_value" bson:"ninety_five_request_time_line_value"`
@@ -654,12 +656,12 @@ type ResultDataMsg struct {
 	MaxRequestTime                 float64     `json:"max_request_time" bson:"max_request_time"`
 	MinRequestTime                 float64     `json:"min_request_time" bson:"min_request_time"` // 毫秒
 	CustomRequestTimeLine          int64       `json:"custom_request_time_line" bson:"custom_request_time_line"`
-	FiftyRequestTimeline           int64       `json:"fifty_request_timeline" bson:"fifty_request_timeline"`
+	FiftyRequestTimeline           int64       `json:"fifty_request_time_line" bson:"fifty_request_time_line"`
 	NinetyRequestTimeLine          int64       `json:"ninety_request_time_line" bson:"ninety_request_time_line"`
 	NinetyFiveRequestTimeLine      int64       `json:"ninety_five_request_time_line" bson:"ninety_five_request_time_line"`
 	NinetyNineRequestTimeLine      int64       `json:"ninety_nine_request_time_line" bson:"ninety_nine_request_time_line"`
 	CustomRequestTimeLineValue     float64     `json:"custom_request_time_line_value" bson:"custom_request_time_line_value"`
-	FiftyRequestTimelineValue      int64       `json:"fifty_request_timeline_value" bson:"fifty_request_timeline_value"`
+	FiftyRequestTimelineValue      int64       `json:"fifty_request_time_line_value" bson:"fifty_request_time_line_value"`
 	NinetyRequestTimeLineValue     float64     `json:"ninety_request_time_line_value" bson:"ninety_request_time_line_value"`
 	NinetyFiveRequestTimeLineValue float64     `json:"ninety_five_request_time_line_value" bson:"ninety_five_request_time_line_value"`
 	NinetyNineRequestTimeLineValue float64     `json:"ninety_nine_request_time_line_value" bson:"ninety_nine_request_time_line_value"`
