@@ -6,8 +6,8 @@ import (
 )
 
 type WeightRoundRobinBalance struct {
-	curIndex int
-	rss      []*WeightNode
+	curIndex  int
+	rss       []*WeightNode
 }
 
 type WeightNode struct {
