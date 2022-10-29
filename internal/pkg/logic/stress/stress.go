@@ -509,6 +509,9 @@ func (s *MakeStress) Execute(baton *Baton) error {
 						importVariables = append(importVariables, v.URL)
 					}
 
+					if _, ok := baton.task[scene.ID]; !ok {
+						return errors.New("请填写任务配置并保存")
+					}
 					req := run_plan.Stress{
 						PlanID:     baton.plan.ID,
 						PlanName:   baton.plan.Name,
@@ -516,8 +519,8 @@ func (s *MakeStress) Execute(baton *Baton) error {
 						TeamID:     baton.TeamID,
 						ReportName: baton.plan.Name,
 						ConfigTask: &run_plan.ConfigTask{
-							TaskType: baton.plan.TaskType,
-							Mode:     baton.plan.Mode,
+							TaskType: baton.task[scene.ID].TaskType,
+							Mode:     baton.task[scene.ID].TaskMode,
 							Remark:   baton.plan.Remark,
 							CronExpr: baton.plan.CronExpr,
 							ModeConf: &run_plan.ModeConf{
