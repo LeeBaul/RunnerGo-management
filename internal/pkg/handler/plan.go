@@ -2,8 +2,12 @@ package handler
 
 import (
 	"context"
+	"strings"
+	"time"
+
 	"github.com/go-omnibus/omnibus"
 	"github.com/go-resty/resty/v2"
+
 	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/jwt"
@@ -18,10 +22,9 @@ import (
 	"kp-management/internal/pkg/dal/runner"
 	"kp-management/internal/pkg/logic/plan"
 	"kp-management/internal/pkg/logic/stress"
-	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
+
 	"kp-management/internal/pkg/dal/query"
 )
 
@@ -187,7 +190,7 @@ func ClonePlan(ctx *gin.Context) {
 		return
 	}
 
-	if err := plan.ClonePlan(ctx, req.PlanID, jwt.GetUserIDByCtx(ctx)); err != nil {
+	if err := plan.ClonePlan(ctx, req.PlanID, req.TeamID, jwt.GetUserIDByCtx(ctx)); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
@@ -373,6 +376,52 @@ func PlanEmail(ctx *gin.Context) {
 	}
 
 	if err := tx.WithContext(ctx).CreateInBatches(planEmails, 5); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
+}
+
+func PlanListEmail(ctx *gin.Context) {
+	var req rao.PlanListEmailReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	tx := dal.GetQuery().PlanEmail
+	emails, err := tx.WithContext(ctx).Where(tx.PlanID.Eq(req.PlanID)).Order(tx.CreatedAt).Find()
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	ret := make([]*rao.PlanEmail, 0)
+	for _, e := range emails {
+		ret = append(ret, &rao.PlanEmail{
+			ID:            e.ID,
+			PlanID:        e.PlanID,
+			Email:         e.Email,
+			CreateTimeSec: e.CreatedAt.Unix(),
+		})
+	}
+
+	response.SuccessWithData(ctx, rao.PlanListEmailResp{Emails: ret})
+	return
+}
+
+func PlanDeleteEmail(ctx *gin.Context) {
+	var req rao.PlanDeleteEmailReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	tx := dal.GetQuery().PlanEmail
+	_, err := tx.WithContext(ctx).Where(tx.ID.Eq(req.EmailID)).Delete()
+	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}

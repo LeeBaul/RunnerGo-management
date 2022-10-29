@@ -339,11 +339,16 @@ func GetPreinstall(ctx context.Context, planID int64) (*rao.Preinstall, error) {
 
 }
 
-func ClonePlan(ctx context.Context, planID, userID int64) error {
+func ClonePlan(ctx context.Context, planID, teamID, userID int64) error {
 
 	return dal.GetQuery().Transaction(func(tx *query.Query) error {
 		//克隆计划
 		p, err := tx.Plan.WithContext(ctx).Where(tx.Plan.ID.Eq(planID)).First()
+		if err != nil {
+			return err
+		}
+
+		cnt, err := tx.Plan.WithContext(ctx).Unscoped().Where(tx.Plan.TeamID.Eq(teamID)).Count()
 		if err != nil {
 			return err
 		}
@@ -355,6 +360,7 @@ func ClonePlan(ctx context.Context, planID, userID int64) error {
 		p.Status = consts.PlanStatusNormal
 		p.CreateUserID = userID
 		p.RunUserID = userID
+		p.Rank = cnt + 1
 		if err := tx.Plan.WithContext(ctx).Create(p); err != nil {
 			return err
 		}
@@ -436,16 +442,22 @@ func ClonePlan(ctx context.Context, planID, userID int64) error {
 		}
 
 		// 克隆任务配置
-		var task mao.Task
+		var tasks []*mao.Task
 		c2 := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectTask)
-		err = c2.FindOne(ctx, bson.D{{"plan_id", planID}}).Decode(&task)
+		cur, err = c2.Find(ctx, bson.D{{"plan_id", planID}})
 		if err != nil {
 			return err
 		}
-
-		task.PlanID = p.ID
-		if _, err := c2.InsertOne(ctx, task); err != nil {
+		if err := cur.All(ctx, &tasks); err != nil {
 			return err
+		}
+
+		for _, task := range tasks {
+			task.PlanID = p.ID
+			task.SceneID = targetMemo[task.SceneID]
+			if _, err := c2.InsertOne(ctx, task); err != nil {
+				return err
+			}
 		}
 
 		return record.InsertCreate(ctx, p.TeamID, userID, record.OperationOperateClonePlan, p.Name)

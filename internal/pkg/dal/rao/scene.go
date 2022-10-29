@@ -135,6 +135,7 @@ type Node struct {
 	Var     string `json:"var,omitempty"`
 	Compare string `json:"compare,omitempty"`
 	Val     string `json:"val,omitempty"`
+	Remark  string `json:"remark"`
 }
 
 type Edge struct {
