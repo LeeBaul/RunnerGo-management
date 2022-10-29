@@ -11,16 +11,17 @@ import (
 	"kp-management/internal/pkg/biz/record"
 	"kp-management/internal/pkg/biz/response"
 	"kp-management/internal/pkg/conf"
+	consts2 "kp-management/internal/pkg/consts"
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/dal/runner"
 	"kp-management/internal/pkg/logic/plan"
 	"kp-management/internal/pkg/logic/stress"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	consts2 "kp-management/internal/pkg/consts"
 	"kp-management/internal/pkg/dal/query"
 )
 
@@ -418,11 +419,11 @@ func GetPreinstall(ctx *gin.Context) {
 func RunStress(ctx context.Context, req RunStressReq) error {
 	rms := &stress.RunMachineStress{}
 
-	siv := &stress.SplitImportVariable{}
-	siv.SetNext(rms)
+	//siv := &stress.SplitImportVariable{}
+	//siv.SetNext(rms)
 
 	ss := &stress.SplitStress{}
-	ss.SetNext(siv)
+	ss.SetNext(rms)
 
 	ms := &stress.MakeStress{}
 	ms.SetNext(ss)
@@ -466,7 +467,8 @@ func RunStress(ctx context.Context, req RunStressReq) error {
 }
 
 type notifyStopStressReq struct {
-	ReportID int64 `json:"report_id"`
+	ReportID int64    `json:"report_id"`
+	Machines []string `json:"machines"`
 }
 
 // 压力机回调压测状态和结果
@@ -509,16 +511,17 @@ func NotifyStopStress(ctx *gin.Context) {
 			}
 		}
 
-		// 任务结束，把压测机使用状态的redis数据删掉
-		rp := tx.ReportMachine
-		rpInfo, err := rp.WithContext(ctx).Where(rp.ReportID.Eq(req.ReportID)).First()
-		if err == nil {
-			machineUseStateKey := consts2.MachineUseStatePrefix + rpInfo.IP + ":8002"
-			dal.RDB.Del(machineUseStateKey)
-		}
-
 		return nil
 	})
+
+	for _, machine := range req.Machines {
+		mInfo := strings.Split(machine, "_")
+		if len(mInfo) != 2 {
+			continue
+		}
+		machineUseStateKey := consts2.MachineUseStatePrefix + mInfo[0] + ":" + mInfo[1]
+		dal.RDB.Del(machineUseStateKey)
+	}
 
 	if err != nil {
 		response.SuccessWithData(ctx, err)

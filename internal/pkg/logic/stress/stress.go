@@ -29,7 +29,6 @@ import (
 	"kp-management/internal/pkg/dal/mao"
 	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/query"
-	//"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/dal/run_plan"
 )
 
@@ -127,14 +126,14 @@ func (s *CheckIdleMachine) Execute(baton *Baton) error {
 		// 把机器详情信息解析成格式化数据
 		err := json.Unmarshal([]byte(machineDetail), &runnerMachineInfo)
 		if err != nil {
-			log.Println("runner_machine_detail 解析失败 err：", err)
+			log.Println("runner_machine_detail 数据解析失败 err：", err)
 			continue
 		}
 
 		// 压力机数据上报时间超过5秒，则认为服务不可用，不参与本次压力测试
 		nowTime := time.Now().Unix()
 		if nowTime-runnerMachineInfo.CreateTime > 3 {
-			log.Println("runner_machine heartbeat Timeout err：", err)
+			log.Println("runner_machine 上报心跳数据超时 err：", err)
 			continue
 		}
 
@@ -510,6 +509,9 @@ func (s *MakeStress) Execute(baton *Baton) error {
 						importVariables = append(importVariables, v.URL)
 					}
 
+					if _, ok := baton.task[scene.ID]; !ok {
+						return errors.New("请填写任务配置并保存")
+					}
 					req := run_plan.Stress{
 						PlanID:     baton.plan.ID,
 						PlanName:   baton.plan.Name,
@@ -517,8 +519,8 @@ func (s *MakeStress) Execute(baton *Baton) error {
 						TeamID:     baton.TeamID,
 						ReportName: baton.plan.Name,
 						ConfigTask: &run_plan.ConfigTask{
-							TaskType: baton.plan.TaskType,
-							Mode:     baton.plan.Mode,
+							TaskType: baton.task[scene.ID].TaskType,
+							Mode:     baton.task[scene.ID].TaskMode,
 							Remark:   baton.plan.Remark,
 							CronExpr: baton.plan.CronExpr,
 							ModeConf: &run_plan.ModeConf{
