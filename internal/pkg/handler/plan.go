@@ -190,7 +190,7 @@ func ClonePlan(ctx *gin.Context) {
 		return
 	}
 
-	if err := plan.ClonePlan(ctx, req.PlanID, jwt.GetUserIDByCtx(ctx)); err != nil {
+	if err := plan.ClonePlan(ctx, req.PlanID, req.TeamID, jwt.GetUserIDByCtx(ctx)); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
