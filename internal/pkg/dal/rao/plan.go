@@ -1,6 +1,8 @@
 package rao
 
-import "kp-management/internal/pkg/dal/model"
+import (
+	"kp-management/internal/pkg/dal/model"
+)
 
 type Plan struct {
 	PlanID   int64  `json:"plan_id"`
@@ -158,6 +160,31 @@ type PlanEmailReq struct {
 }
 
 type PlanEmailResp struct {
+}
+
+type PlanListEmailReq struct {
+	TeamID int64 `form:"team_id"`
+	PlanID int64 `form:"plan_id"`
+}
+
+type PlanListEmailResp struct {
+	Emails []*PlanEmail `json:"emails"`
+}
+
+type PlanEmail struct {
+	ID            int64  `json:"id"`
+	PlanID        int64  `json:"plan_id"`
+	Email         string `json:"email"`
+	CreateTimeSec int64  `json:"create_time_sec"`
+}
+
+type PlanDeleteEmailReq struct {
+	PlanID  int64 `json:"plan_id"`
+	TeamID  int64 `json:"team_id"`
+	EmailID int64 `json:"email_id"`
+}
+
+type PlanDeleteEmailResp struct {
 }
 
 type ImportSceneReq struct {
