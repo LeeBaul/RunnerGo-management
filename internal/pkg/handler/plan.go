@@ -525,6 +525,7 @@ func NotifyStopStress(ctx *gin.Context) {
 
 	if err != nil {
 		response.SuccessWithData(ctx, err)
+		return
 	}
 
 	response.Success(ctx)
