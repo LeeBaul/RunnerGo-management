@@ -5,5 +5,5 @@ const (
 	ReportStatusFinish = 2
 
 	// report使用的kafka分区数量
-	KafkaReportPartitionNum = 5
+	KafkaReportPartitionNum = 10
 )
