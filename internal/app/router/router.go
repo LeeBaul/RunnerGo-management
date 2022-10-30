@@ -37,6 +37,7 @@ func RegisterRouter(r *gin.Engine) {
 
 	// routers
 	api := r.Group("/management/api")
+	api.POST("/v1/plan/notify_stop_stress", handler.NotifyStopStress)
 
 	// 用户鉴权
 	auth := api.Group("/v1/auth")
@@ -147,7 +148,6 @@ func RegisterRouter(r *gin.Engine) {
 	plan.GET("/task/detail", handler.GetPlanTask)
 	plan.POST("/delete", handler.DeletePlan)
 	plan.POST("/email_notify", handler.PlanEmail)
-	plan.POST("/notify_stop_stress", handler.NotifyStopStress)
 	plan.POST("/import_scene", handler.ImportScene)
 	// 计划预设配置
 	plan.POST("/preinstall/save", handler.SetPreinstall)
