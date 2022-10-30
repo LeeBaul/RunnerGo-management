@@ -37,6 +37,7 @@ func RegisterRouter(r *gin.Engine) {
 
 	// routers
 	api := r.Group("/management/api")
+	api.POST("/v1/plan/notify_stop_stress", handler.NotifyStopStress)
 
 	// 用户鉴权
 	auth := api.Group("/v1/auth")
