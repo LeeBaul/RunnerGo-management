@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// SendTarget 发送接口
 func SendTarget(ctx *gin.Context) {
 	var req rao.SendTargetReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -28,6 +29,7 @@ func SendTarget(ctx *gin.Context) {
 	return
 }
 
+// GetSendTargetResult 获取发送接口结果
 func GetSendTargetResult(ctx *gin.Context) {
 	var req rao.GetSendTargetResultReq
 	if err := ctx.ShouldBind(&req); err != nil {

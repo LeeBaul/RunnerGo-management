@@ -35,6 +35,7 @@ type RunStressReq struct {
 	UserID  int64   `json:"user_id"`
 }
 
+// RunPlan 启动计划
 func RunPlan(ctx *gin.Context) {
 	var req rao.RunPlanReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -138,6 +139,7 @@ func RunPlan(ctx *gin.Context) {
 	return
 }
 
+// StopPlan 停止计划
 func StopPlan(ctx *gin.Context) {
 	var req rao.StopPlanReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -329,6 +331,7 @@ func DeletePlan(ctx *gin.Context) {
 	return
 }
 
+// ImportScene 导入场景
 func ImportScene(ctx *gin.Context) {
 	var req rao.ImportSceneReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -348,7 +351,8 @@ func ImportScene(ctx *gin.Context) {
 	return
 }
 
-func PlanEmail(ctx *gin.Context) {
+// PlanAddEmail 添加计划收件人
+func PlanAddEmail(ctx *gin.Context) {
 	var req rao.PlanEmailReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
@@ -384,6 +388,7 @@ func PlanEmail(ctx *gin.Context) {
 	return
 }
 
+// PlanListEmail 计划收件人列表
 func PlanListEmail(ctx *gin.Context) {
 	var req rao.PlanListEmailReq
 	if err := ctx.ShouldBind(&req); err != nil {
@@ -412,6 +417,7 @@ func PlanListEmail(ctx *gin.Context) {
 	return
 }
 
+// PlanDeleteEmail 删除计划收件人
 func PlanDeleteEmail(ctx *gin.Context) {
 	var req rao.PlanDeleteEmailReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {

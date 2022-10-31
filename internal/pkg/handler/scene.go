@@ -12,6 +12,7 @@ import (
 	"kp-management/internal/pkg/logic/target"
 )
 
+// SendScene 调试场景
 func SendScene(ctx *gin.Context) {
 	var req rao.SendSceneReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -29,6 +30,7 @@ func SendScene(ctx *gin.Context) {
 	return
 }
 
+// StopScene 停止调试场景
 func StopScene(ctx *gin.Context) {
 	var req rao.StopSceneReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -46,6 +48,7 @@ func StopScene(ctx *gin.Context) {
 	return
 }
 
+// SendSceneAPI 场景调试接口
 func SendSceneAPI(ctx *gin.Context) {
 	var req rao.SendSceneAPIReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -63,6 +66,7 @@ func SendSceneAPI(ctx *gin.Context) {
 	return
 }
 
+// GetSendSceneResult 获取调试场景结果
 func GetSendSceneResult(ctx *gin.Context) {
 	var req rao.GetSendSceneResultReq
 	if err := ctx.ShouldBind(&req); err != nil {
@@ -154,6 +158,7 @@ func GetFlow(ctx *gin.Context) {
 	return
 }
 
+// BatchGetFlow 批量获取场景流程
 func BatchGetFlow(ctx *gin.Context) {
 	var req rao.BatchGetFlowReq
 	if err := ctx.ShouldBind(&req); err != nil {
