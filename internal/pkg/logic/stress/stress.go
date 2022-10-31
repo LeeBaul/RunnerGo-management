@@ -143,8 +143,7 @@ func (s *CheckIdleMachine) Execute(baton *Baton) (int, error) {
 			continue
 		}
 		for _, memInfo := range runnerMachineInfo.MemInfo { // 内存使用判断
-			//if memInfo.UsedPercent >= 65 { // todo 测试使用，记得改回来
-			if memInfo.UsedPercent >= 0 {
+			if memInfo.UsedPercent >= 65 {
 				breakFor = true
 				break
 			}
