@@ -19,6 +19,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// SaveTeam 创建或修改团队
 func SaveTeam(ctx *gin.Context) {
 	var req rao.SaveTeamReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -50,8 +51,8 @@ func ListTeam(ctx *gin.Context) {
 	return
 }
 
-// TeamMembers 团队成员列表
-func TeamMembers(ctx *gin.Context) {
+// ListTeamMembers 团队成员列表
+func ListTeamMembers(ctx *gin.Context) {
 	var req rao.ListMembersReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
@@ -70,7 +71,8 @@ func TeamMembers(ctx *gin.Context) {
 	return
 }
 
-func GetTeamRole(ctx *gin.Context) {
+// GetUserTeamRole 获取用户所在团队的角色
+func GetUserTeamRole(ctx *gin.Context) {
 	var req rao.GetTeamRoleReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
@@ -90,6 +92,7 @@ func GetTeamRole(ctx *gin.Context) {
 	return
 }
 
+// GetInviteMemberURL 获取邀请链接
 func GetInviteMemberURL(ctx *gin.Context) {
 	var req rao.GetInviteMemberURLReq
 	if err := ctx.ShouldBind(&req); err != nil {
@@ -118,6 +121,7 @@ func GetInviteMemberURL(ctx *gin.Context) {
 	return
 }
 
+// CheckInviteMemberURL 检查邀请链接
 func CheckInviteMemberURL(ctx *gin.Context) {
 	var req rao.CheckInviteMemberURLReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -187,7 +191,8 @@ func InviteMember(ctx *gin.Context) {
 	return
 }
 
-func SetTeamRole(ctx *gin.Context) {
+// SetUserTeamRole 设置用户团队角色
+func SetUserTeamRole(ctx *gin.Context) {
 	var req rao.RoleUserReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
@@ -220,6 +225,7 @@ func RemoveMember(ctx *gin.Context) {
 	return
 }
 
+// QuitTeam 退出团队
 func QuitTeam(ctx *gin.Context) {
 	var req rao.QuitTeamReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -236,6 +242,7 @@ func QuitTeam(ctx *gin.Context) {
 	return
 }
 
+// DisbandTeam 解散团队
 func DisbandTeam(ctx *gin.Context) {
 	var req rao.DisbandTeamReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
