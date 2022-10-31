@@ -86,6 +86,7 @@ func SyncGlobalVariables(ctx *gin.Context) {
 	return
 }
 
+// ListSceneVariables 场景变量列表
 func ListSceneVariables(ctx *gin.Context) {
 	var req rao.ListSceneVariablesReq
 	if err := ctx.ShouldBind(&req); err != nil {
@@ -103,6 +104,7 @@ func ListSceneVariables(ctx *gin.Context) {
 	return
 }
 
+// SyncSceneVariables 同步场景变量
 func SyncSceneVariables(ctx *gin.Context) {
 	var req rao.SyncSceneVariablesReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -119,6 +121,7 @@ func SyncSceneVariables(ctx *gin.Context) {
 	return
 }
 
+// ImportSceneVariables 导入场景变量
 func ImportSceneVariables(ctx *gin.Context) {
 	var req rao.ImportVariablesReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -135,6 +138,7 @@ func ImportSceneVariables(ctx *gin.Context) {
 	return
 }
 
+// DeleteImportSceneVariables 删除导入场景变量
 func DeleteImportSceneVariables(ctx *gin.Context) {
 	var req rao.DeleteImportSceneVariablesReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -151,6 +155,7 @@ func DeleteImportSceneVariables(ctx *gin.Context) {
 	return
 }
 
+// ListImportSceneVariables 导入场景变量列表
 func ListImportSceneVariables(ctx *gin.Context) {
 	var req rao.ListImportVariablesReq
 	if err := ctx.ShouldBind(&req); err != nil {
