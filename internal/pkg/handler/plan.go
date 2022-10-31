@@ -573,7 +573,8 @@ func NotifyStopStress(ctx *gin.Context) {
 	}
 
 	if err != nil {
-		response.SuccessWithData(ctx, err)
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
 	}
 
 	response.Success(ctx)
