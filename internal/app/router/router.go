@@ -69,7 +69,7 @@ func RegisterRouter(r *gin.Engine) {
 	team.POST("/invite", handler.InviteMember)
 	team.GET("/invite/url", handler.GetInviteMemberURL)
 	team.POST("/invite/url", handler.CheckInviteMemberURL)
-	team.POST("/role", handler.RoleUser)
+	team.POST("/role", handler.SetTeamRole)
 	team.GET("/role", handler.GetTeamRole)
 	team.POST("/remove", handler.RemoveMember)
 	team.POST("/quit", handler.QuitTeam)

@@ -187,14 +187,14 @@ func InviteMember(ctx *gin.Context) {
 	return
 }
 
-func RoleUser(ctx *gin.Context) {
+func SetTeamRole(ctx *gin.Context) {
 	var req rao.RoleUserReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
 	}
 
-	if err := team.RoleUser(ctx, req.TeamID, req.UserID, req.RoleID); err != nil {
+	if err := team.SetTeamRole(ctx, req.TeamID, req.UserID, req.RoleID); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}

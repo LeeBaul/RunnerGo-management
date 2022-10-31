@@ -201,7 +201,7 @@ func InviteMember(ctx context.Context, inviteUserID, teamID int64, members []*ra
 	}, nil
 }
 
-func RoleUser(ctx context.Context, teamID, userID, roleID int64) error {
+func SetTeamRole(ctx context.Context, teamID, userID, roleID int64) error {
 	return dal.GetQuery().Transaction(func(tx *query.Query) error {
 		_, err := tx.UserTeam.WithContext(ctx).Where(tx.UserTeam.TeamID.Eq(teamID), tx.UserTeam.UserID.Eq(userID)).First()
 		if err != nil {
