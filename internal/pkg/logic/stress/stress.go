@@ -109,7 +109,7 @@ func (s *CheckIdleMachine) Execute(baton *Baton) (int, error) {
 	machineListRes := dal.RDB.HGetAll(consts.MachineListRedisKey)
 	if len(machineListRes.Val()) == 0 || machineListRes.Err() != nil {
 		// todo 后面可能增加兜底策略
-		return errno.ErrRPCFailed, fmt.Errorf("没有空闲压力机可用")
+		return errno.ErrRPCFailed, fmt.Errorf("没有上报上来的空闲压力机可用")
 	}
 
 	baton.balance = &WeightRoundRobinBalance{}
@@ -143,7 +143,8 @@ func (s *CheckIdleMachine) Execute(baton *Baton) (int, error) {
 			continue
 		}
 		for _, memInfo := range runnerMachineInfo.MemInfo { // 内存使用判断
-			if memInfo.UsedPercent >= 65 {
+			//if memInfo.UsedPercent >= 65 { // todo 测试使用，记得改回来
+			if memInfo.UsedPercent >= 0 {
 				breakFor = true
 				break
 			}
