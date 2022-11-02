@@ -14,10 +14,10 @@ import (
 	"io"
 	"io/ioutil"
 	"kp-management/internal/pkg/biz/errno"
-	"log"
 	"net/http"
 	"os"
 	"path"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -48,7 +48,7 @@ type Baton struct {
 	sceneVariables  []*model.Variable
 	importVariables []*model.VariableImport
 	reports         []*model.Report
-	balance         *WeightRoundRobinBalance
+	balance         *DispatchMachineBalance
 	stress          []*run_plan.Stress
 }
 
@@ -109,10 +109,11 @@ func (s *CheckIdleMachine) Execute(baton *Baton) (int, error) {
 	machineListRes := dal.RDB.HGetAll(consts.MachineListRedisKey)
 	if len(machineListRes.Val()) == 0 || machineListRes.Err() != nil {
 		// todo 后面可能增加兜底策略
+		proof.Infof("没有上报上来的空闲压力机可用")
 		return errno.ErrRPCFailed, fmt.Errorf("没有上报上来的空闲压力机可用")
 	}
 
-	baton.balance = &WeightRoundRobinBalance{}
+	baton.balance = &DispatchMachineBalance{}
 
 	usableMachineMap := new(UsableMachineMap)                                     // 单个压力机基本数据
 	usableMachineSlice := make([]*UsableMachineMap, 0, len(machineListRes.Val())) // 所有上报过来的压力机切片
@@ -127,14 +128,14 @@ func (s *CheckIdleMachine) Execute(baton *Baton) (int, error) {
 		// 把机器详情信息解析成格式化数据
 		err := json.Unmarshal([]byte(machineDetail), &runnerMachineInfo)
 		if err != nil {
-			log.Println("runner_machine_detail 数据解析失败 err：", err)
+			proof.Infof("runner_machine_detail 数据解析失败 err：", err)
 			continue
 		}
 
-		// 压力机数据上报时间超过5秒，则认为服务不可用，不参与本次压力测试
+		// 压力机数据上报时间超过3秒，则认为服务不可用，不参与本次压力测试
 		nowTime := time.Now().Unix()
 		if nowTime-runnerMachineInfo.CreateTime > 3 {
-			log.Println("runner_machine 上报心跳数据超时 err：", err)
+			proof.Infof("当前压力机上报心跳数据超时，暂不可用")
 			continue
 		}
 
@@ -200,16 +201,22 @@ func (s *CheckIdleMachine) Execute(baton *Baton) (int, error) {
 				}
 			}
 		}
+	}
 
-		// 把可用压力机以及权重，加入到可用服务列表当中
-		addErr := baton.balance.Add(fmt.Sprintf("%s", machineInfo.IP), omnibus.DefiniteString(machineInfo.UsableGoroutines))
+	sort.Slice(usableMachineSlice, func(i, j int) bool {
+		return usableMachineSlice[i].UsableGoroutines > usableMachineSlice[j].UsableGoroutines
+	})
+
+	// 按当前顺序把机器放到备用列表
+	for _, machineInfo := range usableMachineSlice {
+		addErr := baton.balance.AddMachine(fmt.Sprintf("%s", machineInfo.IP))
 		if addErr != nil {
-			proof.Errorf("%+v", proof.Render("machineInfo 排查", machineInfo))
 			continue
 		}
 	}
 
 	if len(baton.balance.rss) == 0 {
+		proof.Infof("当前没有空闲压力机可用")
 		return errno.ErrRPCFailed, fmt.Errorf("没有空闲压力机可用")
 	}
 
@@ -715,48 +722,83 @@ type RunMachineStress struct {
 }
 
 func (s *RunMachineStress) Execute(baton *Baton) (int, error) {
+	// 当前可用压力机数量
+	machinesNum := len(baton.balance.rss)
+	curIndex := 0 // 当前使用的压力机数组下标
+
 	for _, stress := range baton.stress {
-		t := baton.balance.Next()
-
-		tx := query.Use(dal.DB()).ReportMachine
-		_, err := tx.WithContext(baton.Ctx).Where(tx.ReportID.Eq(omnibus.DefiniteInt64(stress.ReportID))).Assign(
-			tx.ReportID.Value(omnibus.DefiniteInt64(stress.ReportID)),
-			tx.IP.Value(omnibus.Explode(":", t)[0]),
-		).FirstOrCreate()
-
-		if err != nil {
-			return errno.ErrMysqlFailed, err
-		}
-
-		// 增加分区字段判断
-		partition := GetPartition()
-		if partition == -1 {
-			return errno.ErrRPCFailed, errors.New("当前没有可用的kafka分区")
-		}
-		stress.Partition = partition
-
-		_, err = resty.New().R().SetBody(stress).Post(fmt.Sprintf("http://%s/runner/run_plan", t))
-		proof.Infof("runner err %+v req %+v", err, proof.Render("req", stress))
-		if err != nil {
-			// 如果调用施压接口失败，则删除掉当前的这个报告id
-			reportTable := query.Use(dal.DB()).Report
-			_, err2 := reportTable.WithContext(baton.Ctx).Where(reportTable.ID.Eq(omnibus.DefiniteInt64(stress.ReportID))).Delete()
-			if err2 != nil {
-				return errno.ErrMysqlFailed, err2
+		breakState := false
+		forNum := 0
+		for {
+			if forNum == machinesNum {
+				breakState = true
+				break
 			}
-			return errno.ErrRPCFailed, err
+
+			if curIndex == machinesNum-1 {
+				curIndex = 0
+			} else {
+				curIndex++
+			}
+			forNum++
+
+			addr := baton.balance.GetMachine(curIndex) // 获取当前压力机地址
+			if addr == "" {
+				continue
+			}
+			machinesState := GetRunnerMachineState(addr) // 获取当前压力机可用状态
+
+			if machinesState { // 如果当前机器可用
+				// 把当前机器信息写入到数据表当中
+				tx := query.Use(dal.DB()).ReportMachine
+				_, err := tx.WithContext(baton.Ctx).Where(tx.ReportID.Eq(omnibus.DefiniteInt64(stress.ReportID))).Assign(
+					tx.ReportID.Value(omnibus.DefiniteInt64(stress.ReportID)),
+					tx.IP.Value(omnibus.Explode(":", addr)[0]),
+				).FirstOrCreate()
+				if err != nil {
+					return errno.ErrMysqlFailed, err
+				}
+
+				// 增加分区字段判断
+				partition := GetPartition()
+				if partition == -1 {
+					proof.Infof("当前没有可用的kafka分区")
+					return errno.ErrRPCFailed, errors.New("当前没有可用的kafka分区")
+				}
+				stress.Partition = partition
+
+				_, err = resty.New().R().SetBody(stress).Post(fmt.Sprintf("http://%s/runner/run_plan", addr))
+				proof.Infof("请求压力机运行情况，req：%+v。 err： %+v。", proof.Render("req", stress), err)
+				if err != nil {
+					// 如果调用施压接口失败，则删除掉当前的这个报告id
+					reportTable := query.Use(dal.DB()).Report
+					_, err2 := reportTable.WithContext(baton.Ctx).Where(reportTable.ID.Eq(omnibus.DefiniteInt64(stress.ReportID))).Delete()
+					if err2 != nil {
+						return errno.ErrMysqlFailed, err2
+					}
+					return errno.ErrRPCFailed, err
+				}
+
+				// 把当前压力机使用状态设置到redis当中
+				machineUseStateKey := consts.MachineUseStatePrefix + addr
+				dal.RDB.SetNX(machineUseStateKey, 1, 3600*24)
+
+				p := query.Use(dal.DB()).Plan
+				_, err = p.WithContext(baton.Ctx).Where(p.ID.Eq(baton.PlanID)).UpdateColumn(p.Status, consts.PlanStatusUnderway)
+				if err != nil {
+					return errno.ErrMysqlFailed, err
+				}
+				break
+			} else {
+				continue
+			}
 		}
 
-		// 把当前压力机使用状态设置到redis当中
-		machineUseStateKey := consts.MachineUseStatePrefix + t
-		dal.RDB.SetNX(machineUseStateKey, 1, 3600*24)
-
-		p := query.Use(dal.DB()).Plan
-		_, err = p.WithContext(baton.Ctx).Where(p.ID.Eq(baton.PlanID)).UpdateColumn(p.Status, consts.PlanStatusUnderway)
-		if err != nil {
-			return errno.ErrMysqlFailed, err
+		if breakState {
+			// todo 报警
+			proof.Infof("当前没有可用的压力机，或所有压力机状态爆满")
+			return errno.ErrMysqlFailed, errors.New("当前没有可用的压力机，或所有压力机状态爆满")
 		}
-
 	}
 
 	return errno.Ok, nil
@@ -766,11 +808,12 @@ func (s *RunMachineStress) SetNext(stress Stress) {
 	s.next = stress
 }
 
+// 获取可用分区
 func GetPartition() int32 {
 	//默认分区为0
 	var partition int32 = -1 //默认为-1 表示不可用分区锁
 	// kafka全局的报告分区key名
-	partitionLock := "kafka:report:partition"
+	partitionLock := consts.KafkaReportPartition
 	//目前kafka总分有5个分区，随机取出一个
 	totalPartitionNum := consts.KafkaReportPartitionNum
 	for i := 0; i < totalPartitionNum; i++ {
@@ -788,4 +831,80 @@ func GetPartition() int32 {
 		}
 	}
 	return partition
+}
+
+// 获取当前压力机是否可用
+func GetRunnerMachineState(addr string) bool {
+	// 从Redis获取压力机列表
+	machineListRes := dal.RDB.HGetAll(consts.MachineListRedisKey)
+	if len(machineListRes.Val()) == 0 || machineListRes.Err() != nil {
+		proof.Infof("当前没有上报上来的空闲压力机可用")
+		return false
+	}
+
+	// 退出循环的标识
+	var breakFor = false
+	//// 查到了机器列表，然后判断可用性
+	var runnerMachineInfo *HeartBeat
+	// 初始化机器状态map
+	machineStateMap := make(map[string]bool, len(machineListRes.Val()))
+	for machineAddr, machineDetail := range machineListRes.Val() {
+		// 解析hash的field字段
+		machineAddrSlice := strings.Split(machineAddr, "_")
+		if len(machineAddrSlice) != 3 {
+			continue
+		}
+
+		// 组装可用机器map的key
+		addrKey := machineAddrSlice[0] + ":" + machineAddrSlice[1]
+		machineStateMap[addrKey] = false
+
+		// 把机器详情信息解析成格式化数据
+		err := json.Unmarshal([]byte(machineDetail), &runnerMachineInfo)
+		if err != nil {
+			proof.Infof("压力机数据解析失败，err:", err)
+			continue
+		}
+
+		// 压力机数据上报时间超过3秒，则认为服务不可用，不参与本次压力测试
+		nowTime := time.Now().Unix()
+		if runnerMachineInfo.CreateTime < nowTime-3 {
+			continue
+		}
+
+		// 判断当前压力机性能是否爆满,如果某个指标爆满，则不参与本次压力测试
+		if runnerMachineInfo.CpuUsage >= 65 { // CPU使用判断
+			continue
+		}
+		for _, memInfo := range runnerMachineInfo.MemInfo { // 内存使用判断
+			if memInfo.UsedPercent >= 65 {
+				breakFor = true
+				break
+			}
+		}
+		for _, diskInfo := range runnerMachineInfo.DiskInfos { // 磁盘使用判断
+			if diskInfo.UsedPercent >= 55 {
+				breakFor = true
+				break
+			}
+		}
+
+		// 最后判断是否结束当前循环
+		if breakFor {
+			continue
+		}
+
+		// 当前机器可用协程数
+		usableGoroutines := runnerMachineInfo.MaxGoroutines - runnerMachineInfo.CurrentGoroutines
+		if usableGoroutines <= 0 {
+			continue
+		}
+		machineStateMap[addr] = true
+	}
+
+	if machineState, ok := machineStateMap[addr]; !ok {
+		return false
+	} else {
+		return machineState
+	}
 }
