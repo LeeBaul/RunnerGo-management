@@ -357,7 +357,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 					resultData.Results[k].ErrorNum = apiResult.ErrorNum
 					if resultData.Results[k].ErrorNum != 0 && apiResult.TotalRequestNum != 0 {
 						errRate := float64(apiResult.ErrorNum) / float64(apiResult.TotalRequestNum)
-						resultData.Results[k].ErrorRate, _ = decimal.NewFromFloat(errRate).Round(4).Float64()
+						resultData.Results[k].ErrorRate, _ = strconv.ParseFloat(fmt.Sprintf("%0.2f", errRate), 64)
 					}
 					resultData.Results[k].PercentAge = apiResult.PercentAge
 					resultData.Results[k].ErrorThreshold = apiResult.ErrorThreshold
