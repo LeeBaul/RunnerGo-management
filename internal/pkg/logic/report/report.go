@@ -324,7 +324,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 		rdb := dal.GetRDB()
 		key := fmt.Sprintf("%d:%d:reportData", report.PlanId, report.ReportID)
 		dataList := rdb.LRange(ctx, key, 0, -1).Val()
-		if len(dataList) < 0 {
+		if len(dataList) < 1 {
 			return
 		}
 		for i := len(dataList) - 1; i >= 0; i-- {
@@ -378,6 +378,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 					resultData.Results[k].SendBytes, _ = decimal.NewFromFloat(apiResult.SendBytes).Round(1).Float64()
 					resultData.Results[k].ReceivedBytes, _ = decimal.NewFromFloat(apiResult.ReceivedBytes).Round(1).Float64()
 					resultData.Results[k].Qps = apiResult.Qps
+					resultData.Results[k].SRps = apiResult.SRps
 					if resultData.Results[k].QpsList == nil {
 						resultData.Results[k].QpsList = []TimeValue{}
 					}
@@ -646,6 +647,7 @@ type ApiTestResultDataMsg struct {
 	SendBytes                      float64 `json:"send_bytes" bson:"send_bytes"`         // 发送字节数
 	ReceivedBytes                  float64 `json:"received_bytes" bson:"received_bytes"` // 接收字节数
 	Qps                            float64 `json:"qps" bson:"qps"`
+	SRps                           float64 `json:"srps" bson:"srps"`
 }
 
 // ResultDataMsg 前端展示各个api数据
@@ -677,6 +679,7 @@ type ResultDataMsg struct {
 	SendBytes                      float64     `json:"send_bytes" bson:"send_bytes"`         // 发送字节数
 	ReceivedBytes                  float64     `json:"received_bytes" bson:"received_bytes"` // 接收字节数
 	Qps                            float64     `json:"qps" bson:"qps"`
+	SRps                           float64     `json:"srps" bson:"srps"`
 	ConcurrencyList                []TimeValue `json:"concurrency_list" bson:"concurrency_list"`
 	QpsList                        []TimeValue `json:"qps_list" bson:"qps_list"`
 	ErrorNumList                   []TimeValue `json:"error_num_list" bson:"error_num_list"`
