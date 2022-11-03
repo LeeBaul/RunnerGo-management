@@ -181,6 +181,7 @@ type Assert struct {
 	Var          string `json:"var"`
 	Compare      string `json:"compare"`
 	Val          string `json:"val"`
+	IsChecked    int    `json:"is_checked"`
 }
 
 type Regex struct {
