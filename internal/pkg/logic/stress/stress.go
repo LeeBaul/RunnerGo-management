@@ -110,7 +110,7 @@ func (s *CheckIdleMachine) Execute(baton *Baton) (int, error) {
 	if len(machineListRes.Val()) == 0 || machineListRes.Err() != nil {
 		// todo 后面可能增加兜底策略
 		proof.Infof("没有上报上来的空闲压力机可用")
-		return errno.ErrRPCFailed, fmt.Errorf("没有上报上来的空闲压力机可用")
+		return errno.ErrResourceNotEnough, fmt.Errorf("资源不足")
 	}
 
 	baton.balance = &DispatchMachineBalance{}
@@ -217,7 +217,7 @@ func (s *CheckIdleMachine) Execute(baton *Baton) (int, error) {
 
 	if len(baton.balance.rss) == 0 {
 		proof.Infof("当前没有空闲压力机可用")
-		return errno.ErrRPCFailed, fmt.Errorf("没有空闲压力机可用")
+		return errno.ErrResourceNotEnough, fmt.Errorf("资源不足")
 	}
 
 	return s.next.Execute(baton)
@@ -763,7 +763,7 @@ func (s *RunMachineStress) Execute(baton *Baton) (int, error) {
 				partition := GetPartition()
 				if partition == -1 {
 					proof.Infof("当前没有可用的kafka分区")
-					return errno.ErrRPCFailed, errors.New("当前没有可用的kafka分区")
+					return errno.ErrResourceNotEnough, errors.New("资源不足")
 				}
 				stress.Partition = partition
 
@@ -776,7 +776,7 @@ func (s *RunMachineStress) Execute(baton *Baton) (int, error) {
 					if err2 != nil {
 						return errno.ErrMysqlFailed, err2
 					}
-					return errno.ErrRPCFailed, err
+					return errno.ErrHttpFailed, err
 				}
 
 				// 把当前压力机使用状态设置到redis当中
@@ -797,7 +797,7 @@ func (s *RunMachineStress) Execute(baton *Baton) (int, error) {
 		if breakState {
 			// todo 报警
 			proof.Infof("当前没有可用的压力机，或所有压力机状态爆满")
-			return errno.ErrMysqlFailed, errors.New("当前没有可用的压力机，或所有压力机状态爆满")
+			return errno.ErrResourceNotEnough, errors.New("资源不足")
 		}
 	}
 
