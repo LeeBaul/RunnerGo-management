@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"github.com/go-omnibus/proof"
 	"strings"
 	"time"
 
@@ -539,22 +540,26 @@ func NotifyStopStress(ctx *gin.Context) {
 		// 修改报告状态
 		_, err := r.WithContext(ctx).Where(r.ID.Eq(req.ReportID)).UpdateSimple(r.Status.Value(consts.ReportStatusFinish), r.UpdatedAt.Value(time.Now()))
 		if err != nil {
+			proof.Infof("NotifyStopStress修改报告状态失败")
 			return err
 		}
 
 		// 查找报告对应计划
 		report, err := r.WithContext(ctx).Where(r.ID.Eq(req.ReportID)).First()
 		if err != nil {
+			proof.Infof("NotifyStopStress查找报告对应计划失败")
 			return err
 		}
 
 		// 统计报告是否全部完成
 		reportCnt, err := r.WithContext(ctx).Where(r.PlanID.Eq(report.PlanID)).Count()
 		if err != nil {
+			proof.Infof("NotifyStopStress统计当前计划下所有的报告数量--失败")
 			return err
 		}
 		finishReportCnt, err := r.WithContext(ctx).Where(r.PlanID.Eq(report.PlanID), r.Status.Eq(consts.ReportStatusFinish)).Count()
 		if err != nil {
+			proof.Infof("NotifyStopStress统计当前计划下所有成功的报告--失败")
 			return err
 		}
 
@@ -562,6 +567,7 @@ func NotifyStopStress(ctx *gin.Context) {
 			p := tx.Plan
 			_, err := p.WithContext(ctx).Where(p.ID.Eq(report.PlanID)).UpdateSimple(p.Status.Value(consts.PlanStatusNormal), p.UpdatedAt.Value(time.Now()))
 			if err != nil {
+				proof.Infof("NotifyStopStress计划下所有报告并未全部完成")
 				return err
 			}
 		}
@@ -579,10 +585,11 @@ func NotifyStopStress(ctx *gin.Context) {
 	}
 
 	if err != nil {
+		proof.Infof("NotifyStopStress整体事务失败")
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
-
+	proof.Infof("NotifyStopStress整体成功")
 	response.Success(ctx)
 	return
 }
