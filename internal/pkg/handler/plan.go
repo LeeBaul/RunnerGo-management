@@ -535,6 +535,7 @@ func NotifyStopStress(ctx *gin.Context) {
 		return
 	}
 
+	proof.Infof("NotifyStopStress，入参为：", req)
 	err := query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
 		r := tx.Report
 		// 修改报告状态
