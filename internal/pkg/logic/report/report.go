@@ -195,23 +195,36 @@ func KeywordFindUser(ctx context.Context, keyword string) ([]int64, error) {
 }
 
 func DeleteReport(ctx context.Context, teamID, reportID, userID int64) error {
-	//tx := query.Use(dal.DB()).Report
-	//_, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(teamID), tx.ID.Eq(reportID)).Delete()
-	//
-	//return err
-
-	return dal.GetQuery().Transaction(func(tx *query.Query) error {
+	allErr := dal.GetQuery().Transaction(func(tx *query.Query) error {
 		r, err := tx.Report.WithContext(ctx).Where(tx.Report.ID.Eq(reportID)).First()
 		if err != nil {
 			return err
 		}
-
 		if _, err := tx.Report.WithContext(ctx).Where(tx.Report.TeamID.Eq(teamID), tx.Report.ID.Eq(reportID)).Delete(); err != nil {
 			return err
 		}
 
-		return record.InsertDelete(ctx, teamID, userID, record.OperationOperateDeleteReport, fmt.Sprintf("%s %s", r.PlanName, r.SceneName))
+		if err := record.InsertDelete(ctx, teamID, userID, record.OperationOperateDeleteReport, fmt.Sprintf("%s %s", r.PlanName, r.SceneName)); err != nil {
+			return err
+		}
+		return nil
 	})
+
+	if allErr != nil {
+		proof.Infof("DeleteReport：删除失败")
+		return allErr
+	}
+
+	// 把mongodb库里面的报告详情数据删掉
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectReportData)
+	reportIdString := strconv.FormatInt(reportID, 10)
+	findFilter := bson.M{"reportid": reportIdString}
+	_, err := collection.DeleteOne(ctx, findFilter)
+	if err != nil {
+		proof.Infof("DeleteReport：删除失败")
+	}
+
+	return nil
 }
 
 func GetTaskDetail(ctx context.Context, req rao.GetReportTaskDetailReq) (*rao.ReportTask, error) {
