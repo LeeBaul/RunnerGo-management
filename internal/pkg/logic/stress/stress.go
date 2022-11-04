@@ -763,7 +763,7 @@ func (s *RunMachineStress) Execute(baton *Baton) (int, error) {
 				partition := GetPartition()
 				if partition == -1 {
 					proof.Infof("当前没有可用的kafka分区")
-					return errno.ErrResourceNotEnough, errors.New("资源不足")
+					return errno.ErrResourceNotEnough, fmt.Errorf("资源不足")
 				}
 				stress.Partition = partition
 

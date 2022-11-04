@@ -44,18 +44,6 @@ func RunPlan(ctx *gin.Context) {
 		return
 	}
 
-	//_, err := dal.ClientGRPC().RunStress(ctx, &services.RunStressReq{
-	//	PlanID:  req.PlanID,
-	//	TeamID:  req.TeamID,
-	//	SceneID: req.SceneID,
-	//	UserID:  jwt.GetUserIDByCtx(ctx),
-	//})
-	//
-	//if err != nil {
-	//	response.ErrorWithMsg(ctx, errno.ErrHttpFailed, err.Error())
-	//	return
-	//}
-
 	// 调用controller方法改成本地
 	runStressParams := RunStressReq{
 		PlanID:  req.PlanID,
