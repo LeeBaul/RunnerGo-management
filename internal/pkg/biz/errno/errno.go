@@ -27,34 +27,37 @@ const (
 	ErrExistsTeam        = 20007
 	ErrMustTaskInit      = 20008
 	ErrResourceNotEnough = 20009
+	ErrEmptyScene        = 20010
 )
 
 // CodeMsgMap 错误码映射错误信息，不展示给用户
 var CodeMsgMap = map[int]string{
-	Ok:                 "success",
-	ErrServer:          "internal server error",
-	ErrParam:           "param error",
-	ErrSignError:       "signature error",
-	ErrRepeatRequest:   "repeat request",
-	ErrNonce:           "nonce error",
-	ErrTimeStamp:       "timestamp error",
-	ErrRecordNotFound:  "record not found",
-	ErrRPCFailed:       "rpc failed",
-	ErrInvalidToken:    "invalid token",
-	ErrMarshalFailed:   "marshal failed",
-	ErrUnMarshalFailed: "unmarshal failed",
-	ErrRedisFailed:     "redis operate failed",
-	ErrMongoFailed:     "mongo operate failed",
-	ErrMysqlFailed:     "mysql operate failed",
-	ErrMustLogin:       "must login",
-	ErrMustDID:         "must DID",
-	ErrMustSN:          "must SN",
-	ErrHttpFailed:      "http failed",
-	ErrAuthFailed:      "username/password failed",
-	ErrYetRegister:     "email yet register",
-	ErrURLExpired:      "invite url expired",
-	ErrExistsTeam:      "invite user exists team",
-	ErrMustTaskInit:    "fill in the task allocation and save it",
+	Ok:                   "success",
+	ErrServer:            "internal server error",
+	ErrParam:             "param error",
+	ErrSignError:         "signature error",
+	ErrRepeatRequest:     "repeat request",
+	ErrNonce:             "nonce error",
+	ErrTimeStamp:         "timestamp error",
+	ErrRecordNotFound:    "record not found",
+	ErrRPCFailed:         "rpc failed",
+	ErrInvalidToken:      "invalid token",
+	ErrMarshalFailed:     "marshal failed",
+	ErrUnMarshalFailed:   "unmarshal failed",
+	ErrRedisFailed:       "redis operate failed",
+	ErrMongoFailed:       "mongo operate failed",
+	ErrMysqlFailed:       "mysql operate failed",
+	ErrMustLogin:         "must login",
+	ErrMustDID:           "must DID",
+	ErrMustSN:            "must SN",
+	ErrHttpFailed:        "http failed",
+	ErrAuthFailed:        "username/password failed",
+	ErrYetRegister:       "email yet register",
+	ErrURLExpired:        "invite url expired",
+	ErrExistsTeam:        "invite user exists team",
+	ErrMustTaskInit:      "fill in the task allocation and save it",
+	ErrResourceNotEnough: "resource not enough",
+	ErrEmptyScene:        "The scene cannot be empty",
 }
 
 // CodeAlertMap 错图码映射错误提示，展示给用户
@@ -84,4 +87,5 @@ var CodeAlertMap = map[int]string{
 	ErrExistsTeam:        "用户已在此团队",
 	ErrMustTaskInit:      "请填写任务配置并保存",
 	ErrResourceNotEnough: "资源不足",
+	ErrEmptyScene:        "场景不能为空",
 }

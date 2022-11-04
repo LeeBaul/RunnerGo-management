@@ -346,6 +346,11 @@ func (s *AssembleFlows) Execute(baton *Baton) (int, error) {
 		return errno.ErrMongoFailed, err
 	}
 
+	if len(flows) != len(sceneIDs) {
+		proof.Infof("场景不能为空")
+		return errno.ErrEmptyScene, errors.New("场景不能为空")
+	}
+
 	baton.flows = flows
 	return s.next.Execute(baton)
 }
