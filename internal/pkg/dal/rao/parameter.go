@@ -185,7 +185,9 @@ type Assert struct {
 }
 
 type Regex struct {
-	Var     string `json:"var"`
-	Express string `json:"express"`
-	Val     string `json:"val"`
+	Var       string `json:"var"`
+	Express   string `json:"express"`
+	Val       string `json:"val"`
+	IsChecked int    `json:"is_checked"` // 1 选中, -1未选
+	Type      int    `json:"type"`       // 0 正则  1 json
 }
