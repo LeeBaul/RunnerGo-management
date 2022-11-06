@@ -259,6 +259,19 @@ func SavePlanTask(ctx *gin.Context) {
 		return
 	}
 
+	// 必填项判断
+	if req.TaskType == 0 || req.Mode == 0 || ((req.ModeConf.Duration == 0 && req.ModeConf.RoundNum == 0) || req.ModeConf.Concurrency == 0) {
+		response.ErrorWithMsg(ctx, errno.ErrMustTaskInit, "b必填项不能为空")
+		return
+	}
+
+	if req.TaskType != 1 {
+		if req.ModeConf.StartConcurrency == 0 || req.ModeConf.Step == 0 || req.ModeConf.StepRunTime == 0 || req.ModeConf.MaxConcurrency == 0 || req.ModeConf.Duration == 0 {
+			response.ErrorWithMsg(ctx, errno.ErrMustTaskInit, "b必填项不能为空")
+			return
+		}
+	}
+
 	if err := plan.SaveTask(ctx, &req, jwt.GetUserIDByCtx(ctx)); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
