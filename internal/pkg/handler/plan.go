@@ -260,12 +260,12 @@ func SavePlanTask(ctx *gin.Context) {
 	}
 
 	// 必填项判断
-	if req.TaskType == 0 || req.Mode == 0 || ((req.ModeConf.Duration == 0 && req.ModeConf.RoundNum == 0) || req.ModeConf.Concurrency == 0) {
+	if (req.ModeConf.Duration == 0 && req.ModeConf.RoundNum == 0) || req.ModeConf.Concurrency == 0 {
 		response.ErrorWithMsg(ctx, errno.ErrMustTaskInit, "必填项不能为空")
 		return
 	}
 
-	if req.Mode != 1 {
+	if req.Mode != 1 { // 非并发模式参数校验
 		if req.ModeConf.StartConcurrency == 0 || req.ModeConf.Step == 0 || req.ModeConf.StepRunTime == 0 || req.ModeConf.MaxConcurrency == 0 || req.ModeConf.Duration == 0 {
 			response.ErrorWithMsg(ctx, errno.ErrMustTaskInit, "必填项不能为空")
 			return
