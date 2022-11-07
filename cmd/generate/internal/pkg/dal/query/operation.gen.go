@@ -19,10 +19,10 @@ import (
 	"kp-management/cmd/generate/internal/pkg/dal/model"
 )
 
-func newOperation(db *gorm.DB) operation {
+func newOperation(db *gorm.DB, opts ...gen.DOOption) operation {
 	_operation := operation{}
 
-	_operation.operationDo.UseDB(db)
+	_operation.operationDo.UseDB(db, opts...)
 	_operation.operationDo.UseModel(&model.Operation{})
 
 	tableName := _operation.operationDo.TableName()
@@ -51,12 +51,30 @@ type operation struct {
 	TeamID       field.Int64
 	UserID       field.Int64
 	UserIdentify field.String
-	Category     field.Int32
-	Operate      field.Int32
-	Name         field.String
-	CreatedAt    field.Time
-	UpdatedAt    field.Time
-	DeletedAt    field.Field
+	Category     field.Int32 // 日志分组{1:新建，2:修改，3:删除，4:运行}
+	/*
+		操作类型: {1  : 创建文件夹,
+		2  : 创建接口,
+		3  : 创建分组,
+		4  : 创建计划,
+		5  : 创建场景,
+		6  : 修改文件夹,
+		7  : 修改接口,
+		8  : 修改分组,
+		9  : 修改计划,
+		10 : 修改场景,
+		11 : 克隆计划,
+		12 : 删除报告,
+		13 : 删除场景,
+		14 : 删除计划,
+		15 : 运行场景,
+		16 : 运行计划,}
+	*/
+	Operate   field.Int32
+	Name      field.String
+	CreatedAt field.Time
+	UpdatedAt field.Time
+	DeletedAt field.Field
 
 	fieldMap map[string]field.Expr
 }
@@ -121,6 +139,11 @@ func (o *operation) fillFieldMap() {
 }
 
 func (o operation) clone(db *gorm.DB) operation {
+	o.operationDo.ReplaceConnPool(db.Statement.ConnPool)
+	return o
+}
+
+func (o operation) replaceDB(db *gorm.DB) operation {
 	o.operationDo.ReplaceDB(db)
 	return o
 }
@@ -141,6 +164,10 @@ func (o operationDo) ReadDB() *operationDo {
 
 func (o operationDo) WriteDB() *operationDo {
 	return o.Clauses(dbresolver.Write)
+}
+
+func (o operationDo) Session(config *gorm.Session) *operationDo {
+	return o.withDO(o.DO.Session(config))
 }
 
 func (o operationDo) Clauses(conds ...clause.Expression) *operationDo {

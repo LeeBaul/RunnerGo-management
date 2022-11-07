@@ -19,10 +19,10 @@ import (
 	"kp-management/cmd/generate/internal/pkg/dal/model"
 )
 
-func newTarget(db *gorm.DB) target {
+func newTarget(db *gorm.DB, opts ...gen.DOOption) target {
 	_target := target{}
 
-	_target.targetDo.UseDB(db)
+	_target.targetDo.UseDB(db, opts...)
 	_target.targetDo.UseModel(&model.Target{})
 
 	tableName := _target.targetDo.TableName()
@@ -57,11 +57,11 @@ type target struct {
 	targetDo targetDo
 
 	ALL                field.Asterisk
-	ID                 field.Int64 // id
-	TeamID             field.Int64
-	TargetType         field.String
-	Name               field.String
-	ParentID           field.Int64
+	ID                 field.Int64  // id
+	TeamID             field.Int64  // 团队id
+	TargetType         field.String // 类型：文件夹，接口，分组，场景
+	Name               field.String // 名称
+	ParentID           field.Int64  // 父级ID
 	Method             field.String // 方法
 	Sort               field.Int32  // 排序
 	TypeSort           field.Int32  // 类型排序
@@ -72,8 +72,8 @@ type target struct {
 	CreatedUserID      field.Int64
 	RecentUserID       field.Int64
 	Description        field.String
-	Source             field.Int32
-	PlanID             field.Int64
+	Source             field.Int32 // 来源1正常，2计划
+	PlanID             field.Int64 // 计划id
 	CreatedAt          field.Time
 	UpdatedAt          field.Time
 	DeletedAt          field.Field
@@ -159,6 +159,11 @@ func (t *target) fillFieldMap() {
 }
 
 func (t target) clone(db *gorm.DB) target {
+	t.targetDo.ReplaceConnPool(db.Statement.ConnPool)
+	return t
+}
+
+func (t target) replaceDB(db *gorm.DB) target {
 	t.targetDo.ReplaceDB(db)
 	return t
 }
@@ -179,6 +184,10 @@ func (t targetDo) ReadDB() *targetDo {
 
 func (t targetDo) WriteDB() *targetDo {
 	return t.Clauses(dbresolver.Write)
+}
+
+func (t targetDo) Session(config *gorm.Session) *targetDo {
+	return t.withDO(t.DO.Session(config))
 }
 
 func (t targetDo) Clauses(conds ...clause.Expression) *targetDo {

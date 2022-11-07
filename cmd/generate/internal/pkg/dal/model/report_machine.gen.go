@@ -15,8 +15,8 @@ const TableNameReportMachine = "report_machine"
 // ReportMachine mapped from table <report_machine>
 type ReportMachine struct {
 	ID        int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	ReportID  int64          `gorm:"column:report_id;not null" json:"report_id"`
-	IP        string         `gorm:"column:ip;not null" json:"ip"`
+	ReportID  int64          `gorm:"column:report_id;not null" json:"report_id"` // 报告id
+	IP        string         `gorm:"column:ip;not null" json:"ip"`               // 机器ip
 	CreatedAt time.Time      `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt time.Time      `gorm:"column:updated_at;not null;default:CURRENT_TIMESTAMP" json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`

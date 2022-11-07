@@ -19,10 +19,10 @@ import (
 	"kp-management/cmd/generate/internal/pkg/dal/model"
 )
 
-func newTeam(db *gorm.DB) team {
+func newTeam(db *gorm.DB, opts ...gen.DOOption) team {
 	_team := team{}
 
-	_team.teamDo.UseDB(db)
+	_team.teamDo.UseDB(db, opts...)
 	_team.teamDo.UseModel(&model.Team{})
 
 	tableName := _team.teamDo.TableName()
@@ -46,9 +46,9 @@ type team struct {
 
 	ALL                field.Asterisk
 	ID                 field.Int64
-	Name               field.String
-	Type               field.Int32 // 1: 私有团队；2: 普通团队
-	CreatedUserID      field.Int64
+	Name               field.String // 团队名称
+	Type               field.Int32  // 团队类型 1: 私有团队；2: 普通团队
+	CreatedUserID      field.Int64  // 创建者id
 	CreateUserIdentify field.String
 	CreatedAt          field.Time
 	UpdatedAt          field.Time
@@ -111,6 +111,11 @@ func (t *team) fillFieldMap() {
 }
 
 func (t team) clone(db *gorm.DB) team {
+	t.teamDo.ReplaceConnPool(db.Statement.ConnPool)
+	return t
+}
+
+func (t team) replaceDB(db *gorm.DB) team {
 	t.teamDo.ReplaceDB(db)
 	return t
 }
@@ -131,6 +136,10 @@ func (t teamDo) ReadDB() *teamDo {
 
 func (t teamDo) WriteDB() *teamDo {
 	return t.Clauses(dbresolver.Write)
+}
+
+func (t teamDo) Session(config *gorm.Session) *teamDo {
+	return t.withDO(t.DO.Session(config))
 }
 
 func (t teamDo) Clauses(conds ...clause.Expression) *teamDo {

@@ -19,10 +19,10 @@ import (
 	"kp-management/cmd/generate/internal/pkg/dal/model"
 )
 
-func newUserTeam(db *gorm.DB) userTeam {
+func newUserTeam(db *gorm.DB, opts ...gen.DOOption) userTeam {
 	_userTeam := userTeam{}
 
-	_userTeam.userTeamDo.UseDB(db)
+	_userTeam.userTeamDo.UseDB(db, opts...)
 	_userTeam.userTeamDo.UseModel(&model.UserTeam{})
 
 	tableName := _userTeam.userTeamDo.TableName()
@@ -49,11 +49,11 @@ type userTeam struct {
 
 	ALL                field.Asterisk
 	ID                 field.Int64
-	UserID             field.Int64
+	UserID             field.Int64 // 用户ID
 	UserIdentify       field.String
-	TeamID             field.Int64
-	RoleID             field.Int64
-	InviteUserID       field.Int64
+	TeamID             field.Int64 // 团队id
+	RoleID             field.Int64 // 角色id1:超级管理员，2成员，3管理员
+	InviteUserID       field.Int64 // 邀请人id
 	InviteUserIdentify field.String
 	Sort               field.Int32
 	CreatedAt          field.Time
@@ -123,6 +123,11 @@ func (u *userTeam) fillFieldMap() {
 }
 
 func (u userTeam) clone(db *gorm.DB) userTeam {
+	u.userTeamDo.ReplaceConnPool(db.Statement.ConnPool)
+	return u
+}
+
+func (u userTeam) replaceDB(db *gorm.DB) userTeam {
 	u.userTeamDo.ReplaceDB(db)
 	return u
 }
@@ -143,6 +148,10 @@ func (u userTeamDo) ReadDB() *userTeamDo {
 
 func (u userTeamDo) WriteDB() *userTeamDo {
 	return u.Clauses(dbresolver.Write)
+}
+
+func (u userTeamDo) Session(config *gorm.Session) *userTeamDo {
+	return u.withDO(u.DO.Session(config))
 }
 
 func (u userTeamDo) Clauses(conds ...clause.Expression) *userTeamDo {
