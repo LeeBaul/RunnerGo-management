@@ -108,19 +108,26 @@ type SavePlanReq struct {
 }
 
 type SavePlanConfReq struct {
-	PlanID   int64     `json:"plan_id" binding:"required,gt=0"`
-	SceneID  int64     `json:"scene_id" binding:"required,gt=0"`
-	TeamID   int64     `json:"team_id" binding:"required,gt=0"`
-	Name     string    `json:"name" binding:"required"`
-	TaskType int32     `json:"task_type" binding:"required,gt=0"`
-	Mode     int32     `json:"mode" binding:"required,gt=0"`
-	Remark   string    `json:"remark"`
-	ModeConf *ModeConf `json:"mode_conf"`
-	CronExpr string    `json:"cron_expr"`
+	PlanID        int64          `json:"plan_id" binding:"required,gt=0"`
+	SceneID       int64          `json:"scene_id" binding:"required,gt=0"`
+	TeamID        int64          `json:"team_id" binding:"required,gt=0"`
+	Name          string         `json:"name" binding:"required"`
+	TaskType      int32          `json:"task_type" binding:"required,gt=0"`
+	Mode          int32          `json:"mode" binding:"required,gt=0"`
+	Remark        string         `json:"remark"`
+	ModeConf      *ModeConf      `json:"mode_conf"`
+	CronExpr      string         `json:"cron_expr"`
+	TimedTaskConf *TimedTaskConf `json:"timed_task_conf"`
 
 	//Nodes           []*Node `json:"nodes"`
 	//Edges           []*Edge `json:"edges"`
 	//MultiLevelNodes string  `json:"multi_level_nodes"`
+}
+
+type TimedTaskConf struct {
+	Frequency     int    `json:"frequency"`       // 频次: 0-一次，1-每天，2-每周，3-每月
+	TaskExecTime  uint64 `json:"task_exec_time"`  // 任执行时间
+	TaskCloseTime uint64 `json:"task_close_time"` // 结束时间
 }
 
 type SavePlanResp struct {
