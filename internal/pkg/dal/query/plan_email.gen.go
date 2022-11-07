@@ -19,10 +19,10 @@ import (
 	"kp-management/internal/pkg/dal/model"
 )
 
-func newPlanEmail(db *gorm.DB) planEmail {
+func newPlanEmail(db *gorm.DB, opts ...gen.DOOption) planEmail {
 	_planEmail := planEmail{}
 
-	_planEmail.planEmailDo.UseDB(db)
+	_planEmail.planEmailDo.UseDB(db, opts...)
 	_planEmail.planEmailDo.UseModel(&model.PlanEmail{})
 
 	tableName := _planEmail.planEmailDo.TableName()
@@ -43,9 +43,9 @@ type planEmail struct {
 	planEmailDo planEmailDo
 
 	ALL       field.Asterisk
-	ID        field.Int64
-	PlanID    field.Int64
-	Email     field.String
+	ID        field.Int64  // 主键
+	PlanID    field.Int64  // 计划ID
+	Email     field.String // 邮箱
 	CreatedAt field.Time
 	UpdatedAt field.Time
 	DeletedAt field.Field
@@ -105,6 +105,11 @@ func (p *planEmail) fillFieldMap() {
 }
 
 func (p planEmail) clone(db *gorm.DB) planEmail {
+	p.planEmailDo.ReplaceConnPool(db.Statement.ConnPool)
+	return p
+}
+
+func (p planEmail) replaceDB(db *gorm.DB) planEmail {
 	p.planEmailDo.ReplaceDB(db)
 	return p
 }
@@ -125,6 +130,10 @@ func (p planEmailDo) ReadDB() *planEmailDo {
 
 func (p planEmailDo) WriteDB() *planEmailDo {
 	return p.Clauses(dbresolver.Write)
+}
+
+func (p planEmailDo) Session(config *gorm.Session) *planEmailDo {
+	return p.withDO(p.DO.Session(config))
 }
 
 func (p planEmailDo) Clauses(conds ...clause.Expression) *planEmailDo {

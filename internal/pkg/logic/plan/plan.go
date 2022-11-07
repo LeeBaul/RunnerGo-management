@@ -3,6 +3,7 @@ package plan
 import (
 	"context"
 	"fmt"
+	"github.com/go-omnibus/proof"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -159,6 +160,7 @@ func Save(ctx context.Context, req *rao.SavePlanReq, userID int64) (int64, error
 func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error {
 	plan := packer.TransSavePlanReqToPlanModel(req, userID)
 	task := packer.TransSavePlanReqToMaoTask(req)
+	timingTaskConfig := packer.TransSaveTimingTaskConfigReqToModelData(req)
 
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectTask)
 
@@ -227,6 +229,11 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 		}
 
 		// 把定时任务保存到数据库中
+		err = tx.TimingTaskConfig.WithContext(ctx).Create(timingTaskConfig)
+		if err != nil {
+			proof.Infof("定时任务配置项保存失败，err：", err)
+			return err
+		}
 
 		return nil
 	})
@@ -240,6 +247,13 @@ func GetPlanTask(ctx context.Context, planID, sceneID int64) (*rao.PlanTask, err
 	if err == mongo.ErrNoDocuments {
 		return nil, nil
 	}
+	if err != nil {
+		return nil, err
+	}
+
+	//var timingTaskConfig *model.TimingTaskConfig
+	tx := query.Use(dal.DB()).TimingTaskConfig
+	timingTaskConfigInfo, err := tx.WithContext(ctx).Where(tx.PlanID.Eq(planID), tx.SenceID.Eq(sceneID)).First()
 	if err != nil {
 		return nil, err
 	}
@@ -259,6 +273,11 @@ func GetPlanTask(ctx context.Context, planID, sceneID int64) (*rao.PlanTask, err
 			StepRunTime:      t.ModeConf.StepRunTime,
 			MaxConcurrency:   t.ModeConf.MaxConcurrency,
 			Duration:         t.ModeConf.Duration,
+		},
+		TimedTaskConf: &rao.TimedTaskConf{
+			Frequency:     int(timingTaskConfigInfo.Frequency),
+			TaskExecTime:  uint64(timingTaskConfigInfo.TaskExecTime),
+			TaskCloseTime: uint64(timingTaskConfigInfo.TaskCloseTime),
 		},
 	}, nil
 }

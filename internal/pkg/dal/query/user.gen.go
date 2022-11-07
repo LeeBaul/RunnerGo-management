@@ -19,10 +19,10 @@ import (
 	"kp-management/internal/pkg/dal/model"
 )
 
-func newUser(db *gorm.DB) user {
+func newUser(db *gorm.DB, opts ...gen.DOOption) user {
 	_user := user{}
 
-	_user.userDo.UseDB(db)
+	_user.userDo.UseDB(db, opts...)
 	_user.userDo.UseModel(&model.User{})
 
 	tableName := _user.userDo.TableName()
@@ -47,11 +47,11 @@ type user struct {
 
 	ALL         field.Asterisk
 	ID          field.Int64
-	Email       field.String
-	Password    field.String
-	Nickname    field.String
-	Avatar      field.String
-	LastLoginAt field.Time
+	Email       field.String // 邮箱
+	Password    field.String // 密码
+	Nickname    field.String // 昵称
+	Avatar      field.String // 头像
+	LastLoginAt field.Time   // 最近登录时间
 	CreatedAt   field.Time
 	UpdatedAt   field.Time
 	DeletedAt   field.Field
@@ -115,6 +115,11 @@ func (u *user) fillFieldMap() {
 }
 
 func (u user) clone(db *gorm.DB) user {
+	u.userDo.ReplaceConnPool(db.Statement.ConnPool)
+	return u
+}
+
+func (u user) replaceDB(db *gorm.DB) user {
 	u.userDo.ReplaceDB(db)
 	return u
 }
@@ -135,6 +140,10 @@ func (u userDo) ReadDB() *userDo {
 
 func (u userDo) WriteDB() *userDo {
 	return u.Clauses(dbresolver.Write)
+}
+
+func (u userDo) Session(config *gorm.Session) *userDo {
+	return u.withDO(u.DO.Session(config))
 }
 
 func (u userDo) Clauses(conds ...clause.Expression) *userDo {

@@ -19,10 +19,10 @@ import (
 	"kp-management/internal/pkg/dal/model"
 )
 
-func newPlan(db *gorm.DB) plan {
+func newPlan(db *gorm.DB, opts ...gen.DOOption) plan {
 	_plan := plan{}
 
-	_plan.planDo.UseDB(db)
+	_plan.planDo.UseDB(db, opts...)
 	_plan.planDo.UseModel(&model.Plan{})
 
 	tableName := _plan.planDo.TableName()
@@ -53,19 +53,19 @@ type plan struct {
 	planDo planDo
 
 	ALL                field.Asterisk
-	ID                 field.Int64
-	TeamID             field.Int64
-	Rank               field.Int64
-	Name               field.String
-	TaskType           field.Int32
-	Mode               field.Int32
-	Status             field.Int32
+	ID                 field.Int64  // 主键
+	TeamID             field.Int64  // 团队ID
+	Rank               field.Int64  // 团队内份数
+	Name               field.String // 计划名称
+	TaskType           field.Int32  // 计划类型{1:普通任务,2:定时任务}
+	Mode               field.Int32  // 压测类型 1 // 并发模式，  2 // 阶梯模式，  3 // 错误率模式，  4 // 响应时间模式，  5 //每秒请求数模式，  6 //每秒事务数模式，
+	Status             field.Int32  // 计划状态1:未开始,2:进行中
 	CreateUserIdentify field.String
 	RunUserIdentify    field.String
-	CreateUserID       field.Int64
-	RunUserID          field.Int64
-	Remark             field.String
-	CronExpr           field.String
+	CreateUserID       field.Int64  // 创建人id
+	RunUserID          field.Int64  // 运行人id
+	Remark             field.String // 备注
+	CronExpr           field.String // 定时任务表达式
 	CreatedAt          field.Time
 	UpdatedAt          field.Time
 	DeletedAt          field.Field
@@ -143,6 +143,11 @@ func (p *plan) fillFieldMap() {
 }
 
 func (p plan) clone(db *gorm.DB) plan {
+	p.planDo.ReplaceConnPool(db.Statement.ConnPool)
+	return p
+}
+
+func (p plan) replaceDB(db *gorm.DB) plan {
 	p.planDo.ReplaceDB(db)
 	return p
 }
@@ -163,6 +168,10 @@ func (p planDo) ReadDB() *planDo {
 
 func (p planDo) WriteDB() *planDo {
 	return p.Clauses(dbresolver.Write)
+}
+
+func (p planDo) Session(config *gorm.Session) *planDo {
+	return p.withDO(p.DO.Session(config))
 }
 
 func (p planDo) Clauses(conds ...clause.Expression) *planDo {

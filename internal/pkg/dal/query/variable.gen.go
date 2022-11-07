@@ -19,10 +19,10 @@ import (
 	"kp-management/internal/pkg/dal/model"
 )
 
-func newVariable(db *gorm.DB) variable {
+func newVariable(db *gorm.DB, opts ...gen.DOOption) variable {
 	_variable := variable{}
 
-	_variable.variableDo.UseDB(db)
+	_variable.variableDo.UseDB(db, opts...)
 	_variable.variableDo.UseModel(&model.Variable{})
 
 	tableName := _variable.variableDo.TableName()
@@ -48,11 +48,11 @@ type variable struct {
 
 	ALL         field.Asterisk
 	ID          field.Int64
-	TeamID      field.Int64
-	Type        field.Int32 // 全局变量：1，场景变量：2
-	Var         field.String
-	Val         field.String
-	Description field.String
+	TeamID      field.Int64  // 团队id
+	Type        field.Int32  // 全局变量：1，场景变量：2
+	Var         field.String // 变量名
+	Val         field.String // 变量值
+	Description field.String // 描述
 	CreatedAt   field.Time
 	UpdatedAt   field.Time
 	DeletedAt   field.Field
@@ -119,6 +119,11 @@ func (v *variable) fillFieldMap() {
 }
 
 func (v variable) clone(db *gorm.DB) variable {
+	v.variableDo.ReplaceConnPool(db.Statement.ConnPool)
+	return v
+}
+
+func (v variable) replaceDB(db *gorm.DB) variable {
 	v.variableDo.ReplaceDB(db)
 	return v
 }
@@ -139,6 +144,10 @@ func (v variableDo) ReadDB() *variableDo {
 
 func (v variableDo) WriteDB() *variableDo {
 	return v.Clauses(dbresolver.Write)
+}
+
+func (v variableDo) Session(config *gorm.Session) *variableDo {
+	return v.withDO(v.DO.Session(config))
 }
 
 func (v variableDo) Clauses(conds ...clause.Expression) *variableDo {

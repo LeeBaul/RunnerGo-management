@@ -25,11 +25,12 @@ type Plan struct {
 }
 
 type PlanTask struct {
-	PlanID   int64     `json:"plan_id"`
-	SceneID  int64     `json:"scene_id"`
-	TaskType int32     `json:"task_type"`
-	Mode     int32     `json:"mode"`
-	ModeConf *ModeConf `json:"mode_conf"`
+	PlanID        int64          `json:"plan_id"`
+	SceneID       int64          `json:"scene_id"`
+	TaskType      int32          `json:"task_type"`
+	Mode          int32          `json:"mode"`
+	ModeConf      *ModeConf      `json:"mode_conf"`
+	TimedTaskConf *TimedTaskConf `json:"timed_task_conf"`
 }
 
 type ModeConf struct {

@@ -19,10 +19,10 @@ import (
 	"kp-management/internal/pkg/dal/model"
 )
 
-func newVariableImport(db *gorm.DB) variableImport {
+func newVariableImport(db *gorm.DB, opts ...gen.DOOption) variableImport {
 	_variableImport := variableImport{}
 
-	_variableImport.variableImportDo.UseDB(db)
+	_variableImport.variableImportDo.UseDB(db, opts...)
 	_variableImport.variableImportDo.UseModel(&model.VariableImport{})
 
 	tableName := _variableImport.variableImportDo.TableName()
@@ -47,11 +47,11 @@ type variableImport struct {
 
 	ALL        field.Asterisk
 	ID         field.Int64
-	TeamID     field.Int64
-	SceneID    field.Int64
+	TeamID     field.Int64 // 团队id
+	SceneID    field.Int64 // 场景id
 	Name       field.String
 	URL        field.String
-	UploaderID field.Int64
+	UploaderID field.Int64 // 上传人id
 	CreatedAt  field.Time
 	UpdatedAt  field.Time
 	DeletedAt  field.Field
@@ -117,6 +117,11 @@ func (v *variableImport) fillFieldMap() {
 }
 
 func (v variableImport) clone(db *gorm.DB) variableImport {
+	v.variableImportDo.ReplaceConnPool(db.Statement.ConnPool)
+	return v
+}
+
+func (v variableImport) replaceDB(db *gorm.DB) variableImport {
 	v.variableImportDo.ReplaceDB(db)
 	return v
 }
@@ -137,6 +142,10 @@ func (v variableImportDo) ReadDB() *variableImportDo {
 
 func (v variableImportDo) WriteDB() *variableImportDo {
 	return v.Clauses(dbresolver.Write)
+}
+
+func (v variableImportDo) Session(config *gorm.Session) *variableImportDo {
+	return v.withDO(v.DO.Session(config))
 }
 
 func (v variableImportDo) Clauses(conds ...clause.Expression) *variableImportDo {

@@ -19,10 +19,10 @@ import (
 	"kp-management/internal/pkg/dal/model"
 )
 
-func newReport(db *gorm.DB) report {
+func newReport(db *gorm.DB, opts ...gen.DOOption) report {
 	_report := report{}
 
-	_report.reportDo.UseDB(db)
+	_report.reportDo.UseDB(db, opts...)
 	_report.reportDo.UseModel(&model.Report{})
 
 	tableName := _report.reportDo.TableName()
@@ -54,18 +54,18 @@ type report struct {
 
 	ALL             field.Asterisk
 	ID              field.Int64
-	TeamID          field.Int64
-	Rank            field.Int64
-	PlanID          field.Int64
-	PlanName        field.String
-	SceneID         field.Int64
-	SceneName       field.String
-	TaskType        field.Int32
-	TaskMode        field.Int32
-	Status          field.Int32
-	RanAt           field.Time
+	TeamID          field.Int64  // 团队ID
+	Rank            field.Int64  // 团队内份数
+	PlanID          field.Int64  // 计划ID
+	PlanName        field.String // 计划名称
+	SceneID         field.Int64  // 场景ID
+	SceneName       field.String // 场景名称
+	TaskType        field.Int32  // 任务类型
+	TaskMode        field.Int32  // 压测模式
+	Status          field.Int32  // 报告状态1:进行中，2:已完成
+	RanAt           field.Time   // 启动时间
 	RunUserIdentify field.String
-	RunUserID       field.Int64
+	RunUserID       field.Int64 // 启动人id
 	CreatedAt       field.Time
 	UpdatedAt       field.Time
 	DeletedAt       field.Field
@@ -143,6 +143,11 @@ func (r *report) fillFieldMap() {
 }
 
 func (r report) clone(db *gorm.DB) report {
+	r.reportDo.ReplaceConnPool(db.Statement.ConnPool)
+	return r
+}
+
+func (r report) replaceDB(db *gorm.DB) report {
 	r.reportDo.ReplaceDB(db)
 	return r
 }
@@ -163,6 +168,10 @@ func (r reportDo) ReadDB() *reportDo {
 
 func (r reportDo) WriteDB() *reportDo {
 	return r.Clauses(dbresolver.Write)
+}
+
+func (r reportDo) Session(config *gorm.Session) *reportDo {
+	return r.withDO(r.DO.Session(config))
 }
 
 func (r reportDo) Clauses(conds ...clause.Expression) *reportDo {

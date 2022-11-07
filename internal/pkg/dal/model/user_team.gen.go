@@ -15,11 +15,11 @@ const TableNameUserTeam = "user_team"
 // UserTeam mapped from table <user_team>
 type UserTeam struct {
 	ID                 int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	UserID             int64          `gorm:"column:user_id;not null" json:"user_id"`
+	UserID             int64          `gorm:"column:user_id;not null" json:"user_id"` // 用户ID
 	UserIdentify       string         `gorm:"column:user_identify" json:"user_identify"`
-	TeamID             int64          `gorm:"column:team_id;not null" json:"team_id"`
-	RoleID             int64          `gorm:"column:role_id;not null" json:"role_id"`
-	InviteUserID       int64          `gorm:"column:invite_user_id;not null" json:"invite_user_id"`
+	TeamID             int64          `gorm:"column:team_id;not null" json:"team_id"`               // 团队id
+	RoleID             int64          `gorm:"column:role_id;not null" json:"role_id"`               // 角色id1:超级管理员，2成员，3管理员
+	InviteUserID       int64          `gorm:"column:invite_user_id;not null" json:"invite_user_id"` // 邀请人id
 	InviteUserIdentify string         `gorm:"column:invite_user_identify;not null" json:"invite_user_identify"`
 	Sort               int32          `gorm:"column:sort;not null" json:"sort"`
 	CreatedAt          time.Time      `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"`

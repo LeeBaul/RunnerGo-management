@@ -19,10 +19,10 @@ import (
 	"kp-management/internal/pkg/dal/model"
 )
 
-func newSetting(db *gorm.DB) setting {
+func newSetting(db *gorm.DB, opts ...gen.DOOption) setting {
 	_setting := setting{}
 
-	_setting.settingDo.UseDB(db)
+	_setting.settingDo.UseDB(db, opts...)
 	_setting.settingDo.UseModel(&model.Setting{})
 
 	tableName := _setting.settingDo.TableName()
@@ -45,9 +45,9 @@ type setting struct {
 
 	ALL          field.Asterisk
 	ID           field.Int64
-	UserID       field.Int64
+	UserID       field.Int64 // 用户id
 	UserIdentify field.String
-	TeamID       field.Int64
+	TeamID       field.Int64 // 当前团队id
 	CreatedAt    field.Time
 	UpdatedAt    field.Time
 	DeletedAt    field.Field
@@ -107,6 +107,11 @@ func (s *setting) fillFieldMap() {
 }
 
 func (s setting) clone(db *gorm.DB) setting {
+	s.settingDo.ReplaceConnPool(db.Statement.ConnPool)
+	return s
+}
+
+func (s setting) replaceDB(db *gorm.DB) setting {
 	s.settingDo.ReplaceDB(db)
 	return s
 }
@@ -127,6 +132,10 @@ func (s settingDo) ReadDB() *settingDo {
 
 func (s settingDo) WriteDB() *settingDo {
 	return s.Clauses(dbresolver.Write)
+}
+
+func (s settingDo) Session(config *gorm.Session) *settingDo {
+	return s.withDO(s.DO.Session(config))
 }
 
 func (s settingDo) Clauses(conds ...clause.Expression) *settingDo {

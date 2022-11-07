@@ -19,10 +19,10 @@ import (
 	"kp-management/internal/pkg/dal/model"
 )
 
-func newMachine(db *gorm.DB) machine {
+func newMachine(db *gorm.DB, opts ...gen.DOOption) machine {
 	_machine := machine{}
 
-	_machine.machineDo.UseDB(db)
+	_machine.machineDo.UseDB(db, opts...)
 	_machine.machineDo.UseModel(&model.Machine{})
 
 	tableName := _machine.machineDo.TableName()
@@ -115,6 +115,11 @@ func (m *machine) fillFieldMap() {
 }
 
 func (m machine) clone(db *gorm.DB) machine {
+	m.machineDo.ReplaceConnPool(db.Statement.ConnPool)
+	return m
+}
+
+func (m machine) replaceDB(db *gorm.DB) machine {
 	m.machineDo.ReplaceDB(db)
 	return m
 }
@@ -135,6 +140,10 @@ func (m machineDo) ReadDB() *machineDo {
 
 func (m machineDo) WriteDB() *machineDo {
 	return m.Clauses(dbresolver.Write)
+}
+
+func (m machineDo) Session(config *gorm.Session) *machineDo {
+	return m.withDO(m.DO.Session(config))
 }
 
 func (m machineDo) Clauses(conds ...clause.Expression) *machineDo {

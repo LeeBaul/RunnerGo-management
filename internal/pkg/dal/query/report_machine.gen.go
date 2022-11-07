@@ -19,10 +19,10 @@ import (
 	"kp-management/internal/pkg/dal/model"
 )
 
-func newReportMachine(db *gorm.DB) reportMachine {
+func newReportMachine(db *gorm.DB, opts ...gen.DOOption) reportMachine {
 	_reportMachine := reportMachine{}
 
-	_reportMachine.reportMachineDo.UseDB(db)
+	_reportMachine.reportMachineDo.UseDB(db, opts...)
 	_reportMachine.reportMachineDo.UseModel(&model.ReportMachine{})
 
 	tableName := _reportMachine.reportMachineDo.TableName()
@@ -44,8 +44,8 @@ type reportMachine struct {
 
 	ALL       field.Asterisk
 	ID        field.Int64
-	ReportID  field.Int64
-	IP        field.String
+	ReportID  field.Int64  // 报告id
+	IP        field.String // 机器ip
 	CreatedAt field.Time
 	UpdatedAt field.Time
 	DeletedAt field.Field
@@ -105,6 +105,11 @@ func (r *reportMachine) fillFieldMap() {
 }
 
 func (r reportMachine) clone(db *gorm.DB) reportMachine {
+	r.reportMachineDo.ReplaceConnPool(db.Statement.ConnPool)
+	return r
+}
+
+func (r reportMachine) replaceDB(db *gorm.DB) reportMachine {
 	r.reportMachineDo.ReplaceDB(db)
 	return r
 }
@@ -125,6 +130,10 @@ func (r reportMachineDo) ReadDB() *reportMachineDo {
 
 func (r reportMachineDo) WriteDB() *reportMachineDo {
 	return r.Clauses(dbresolver.Write)
+}
+
+func (r reportMachineDo) Session(config *gorm.Session) *reportMachineDo {
+	return r.withDO(r.DO.Session(config))
 }
 
 func (r reportMachineDo) Clauses(conds ...clause.Expression) *reportMachineDo {

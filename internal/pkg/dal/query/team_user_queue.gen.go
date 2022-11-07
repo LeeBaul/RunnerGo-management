@@ -19,10 +19,10 @@ import (
 	"kp-management/internal/pkg/dal/model"
 )
 
-func newTeamUserQueue(db *gorm.DB) teamUserQueue {
+func newTeamUserQueue(db *gorm.DB, opts ...gen.DOOption) teamUserQueue {
 	_teamUserQueue := teamUserQueue{}
 
-	_teamUserQueue.teamUserQueueDo.UseDB(db)
+	_teamUserQueue.teamUserQueueDo.UseDB(db, opts...)
 	_teamUserQueue.teamUserQueueDo.UseModel(&model.TeamUserQueue{})
 
 	tableName := _teamUserQueue.teamUserQueueDo.TableName()
@@ -44,8 +44,8 @@ type teamUserQueue struct {
 
 	ALL       field.Asterisk
 	ID        field.Int64
-	Email     field.String
-	TeamID    field.Int64
+	Email     field.String // 邮箱
+	TeamID    field.Int64  // 团队id
 	CreatedAt field.Time
 	UpdatedAt field.Time
 	DeletedAt field.Field
@@ -105,6 +105,11 @@ func (t *teamUserQueue) fillFieldMap() {
 }
 
 func (t teamUserQueue) clone(db *gorm.DB) teamUserQueue {
+	t.teamUserQueueDo.ReplaceConnPool(db.Statement.ConnPool)
+	return t
+}
+
+func (t teamUserQueue) replaceDB(db *gorm.DB) teamUserQueue {
 	t.teamUserQueueDo.ReplaceDB(db)
 	return t
 }
@@ -125,6 +130,10 @@ func (t teamUserQueueDo) ReadDB() *teamUserQueueDo {
 
 func (t teamUserQueueDo) WriteDB() *teamUserQueueDo {
 	return t.Clauses(dbresolver.Write)
+}
+
+func (t teamUserQueueDo) Session(config *gorm.Session) *teamUserQueueDo {
+	return t.withDO(t.DO.Session(config))
 }
 
 func (t teamUserQueueDo) Clauses(conds ...clause.Expression) *teamUserQueueDo {

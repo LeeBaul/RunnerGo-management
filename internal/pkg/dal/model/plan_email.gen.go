@@ -14,9 +14,9 @@ const TableNamePlanEmail = "plan_email"
 
 // PlanEmail mapped from table <plan_email>
 type PlanEmail struct {
-	ID        int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	PlanID    int64          `gorm:"column:plan_id" json:"plan_id"`
-	Email     string         `gorm:"column:email" json:"email"`
+	ID        int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"` // 主键
+	PlanID    int64          `gorm:"column:plan_id" json:"plan_id"`                     // 计划ID
+	Email     string         `gorm:"column:email" json:"email"`                         // 邮箱
 	CreatedAt time.Time      `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt time.Time      `gorm:"column:updated_at;not null;default:CURRENT_TIMESTAMP" json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`

@@ -14,7 +14,8 @@ func main() {
 	}
 
 	g := gen.NewGenerator(gen.Config{
-		OutPath: "./internal/pkg/dal/query",
+		//OutPath: "./internal/pkg/dal/query",
+		OutPath: "../../internal/pkg/dal/query",
 	})
 
 	g.UseDB(db)
