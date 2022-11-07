@@ -1,12 +1,11 @@
 package mao
 
 type Task struct {
-	PlanID        int64          `bson:"plan_id"`
-	SceneID       int64          `bson:"scene_id"`
-	TaskType      int32          `bson:"task_type"`
-	TaskMode      int32          `bson:"task_mode"`
-	ModeConf      *ModeConf      `bson:"mode_conf"`
-	TimedTaskConf *TimedTaskConf `bson:"timed_task"`
+	PlanID   int64     `bson:"plan_id"`
+	SceneID  int64     `bson:"scene_id"`
+	TaskType int32     `bson:"task_type"`
+	TaskMode int32     `bson:"task_mode"`
+	ModeConf *ModeConf `bson:"mode_conf"`
 }
 
 type ModeConf struct {
@@ -28,10 +27,4 @@ type Preinstall struct {
 	CronExpr string    `bson:"cron_expr"`
 	Mode     int32     `bson:"mode"`
 	ModeConf *ModeConf `bson:"mode_conf"`
-}
-
-type TimedTaskConf struct {
-	Frequency     int    `bson:"frequency"`       // 频次: 0-一次，1-每天，2-每周，3-每月
-	TaskExecTime  uint64 `bson:"task_exec_time"`  // 任执行时间
-	TaskCloseTime uint64 `bson:"task_close_time"` // 结束时间
 }
