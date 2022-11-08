@@ -166,14 +166,14 @@ func TransMaoPreinstallToRaoPreinstall(p *mao.Preinstall) *rao.Preinstall {
 	}
 }
 
-func TransSaveTimingTaskConfigReqToModelData(req *rao.SavePlanConfReq) *model.TimingTaskConfig {
-	return &model.TimingTaskConfig{
+func TransSaveTimingTaskConfigReqToModelData(req *rao.SavePlanConfReq) *model.TimedTaskConf {
+	return &model.TimedTaskConf{
 		PlanID:        req.PlanID,
 		SenceID:       req.SceneID,
 		TeamID:        req.TeamID,
-		Frequency:     int32(req.TimedTaskConf.Frequency),
-		TaskExecTime:  int64(req.TimedTaskConf.TaskExecTime),
-		TaskCloseTime: int64(req.TimedTaskConf.TaskCloseTime),
+		Frequency:     req.TimedTaskConf.Frequency,
+		TaskExecTime:  req.TimedTaskConf.TaskExecTime,
+		TaskCloseTime: req.TimedTaskConf.TaskCloseTime,
 		Status:        0,
 	}
 

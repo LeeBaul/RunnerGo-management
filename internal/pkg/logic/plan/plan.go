@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/go-omnibus/proof"
+	"gorm.io/gorm"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -229,7 +230,7 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 		}
 
 		// 把定时任务保存到数据库中
-		err = tx.TimingTaskConfig.WithContext(ctx).Create(timingTaskConfig)
+		err = tx.TimedTaskConf.WithContext(ctx).Create(timingTaskConfig)
 		if err != nil {
 			proof.Infof("定时任务配置项保存失败，err：", err)
 			return err
@@ -251,13 +252,20 @@ func GetPlanTask(ctx context.Context, planID, sceneID int64) (*rao.PlanTask, err
 		return nil, err
 	}
 
-	//var timingTaskConfig *model.TimingTaskConfig
-	tx := query.Use(dal.DB()).TimingTaskConfig
-	timingTaskConfigInfo, err := tx.WithContext(ctx).Where(tx.PlanID.Eq(planID), tx.SenceID.Eq(sceneID)).First()
-	if err != nil {
+	// 查询定时任务信息
+	var timingTaskConfigInfo *model.TimedTaskConf
+	timedTaskConf := new(rao.TimedTaskConf)
+	tx := query.Use(dal.DB()).TimedTaskConf
+	timingTaskConfigInfo, err = tx.WithContext(ctx).Where(tx.PlanID.Eq(planID), tx.SenceID.Eq(sceneID)).First()
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
+	} else if timingTaskConfigInfo != nil {
+		timedTaskConf.Frequency = timingTaskConfigInfo.Frequency
+		timedTaskConf.TaskExecTime = timingTaskConfigInfo.TaskExecTime
+		timedTaskConf.TaskCloseTime = timingTaskConfigInfo.TaskCloseTime
 	}
 
+	fmt.Println(timingTaskConfigInfo)
 	return &rao.PlanTask{
 		PlanID:   t.PlanID,
 		SceneID:  t.SceneID,
@@ -275,9 +283,9 @@ func GetPlanTask(ctx context.Context, planID, sceneID int64) (*rao.PlanTask, err
 			Duration:         t.ModeConf.Duration,
 		},
 		TimedTaskConf: &rao.TimedTaskConf{
-			Frequency:     int(timingTaskConfigInfo.Frequency),
-			TaskExecTime:  uint64(timingTaskConfigInfo.TaskExecTime),
-			TaskCloseTime: uint64(timingTaskConfigInfo.TaskCloseTime),
+			Frequency:     timedTaskConf.Frequency,
+			TaskExecTime:  timedTaskConf.TaskExecTime,
+			TaskCloseTime: timedTaskConf.TaskCloseTime,
 		},
 	}, nil
 }

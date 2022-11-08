@@ -17,65 +17,65 @@ import (
 
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
-		db:               db,
-		Machine:          newMachine(db, opts...),
-		Operation:        newOperation(db, opts...),
-		Plan:             newPlan(db, opts...),
-		PlanEmail:        newPlanEmail(db, opts...),
-		Report:           newReport(db, opts...),
-		ReportMachine:    newReportMachine(db, opts...),
-		Setting:          newSetting(db, opts...),
-		Target:           newTarget(db, opts...),
-		Team:             newTeam(db, opts...),
-		TeamUserQueue:    newTeamUserQueue(db, opts...),
-		TimingTaskConfig: newTimingTaskConfig(db, opts...),
-		User:             newUser(db, opts...),
-		UserTeam:         newUserTeam(db, opts...),
-		Variable:         newVariable(db, opts...),
-		VariableImport:   newVariableImport(db, opts...),
+		db:             db,
+		Machine:        newMachine(db, opts...),
+		Operation:      newOperation(db, opts...),
+		Plan:           newPlan(db, opts...),
+		PlanEmail:      newPlanEmail(db, opts...),
+		Report:         newReport(db, opts...),
+		ReportMachine:  newReportMachine(db, opts...),
+		Setting:        newSetting(db, opts...),
+		Target:         newTarget(db, opts...),
+		Team:           newTeam(db, opts...),
+		TeamUserQueue:  newTeamUserQueue(db, opts...),
+		TimedTaskConf:  newTimedTaskConf(db, opts...),
+		User:           newUser(db, opts...),
+		UserTeam:       newUserTeam(db, opts...),
+		Variable:       newVariable(db, opts...),
+		VariableImport: newVariableImport(db, opts...),
 	}
 }
 
 type Query struct {
 	db *gorm.DB
 
-	Machine          machine
-	Operation        operation
-	Plan             plan
-	PlanEmail        planEmail
-	Report           report
-	ReportMachine    reportMachine
-	Setting          setting
-	Target           target
-	Team             team
-	TeamUserQueue    teamUserQueue
-	TimingTaskConfig timingTaskConfig
-	User             user
-	UserTeam         userTeam
-	Variable         variable
-	VariableImport   variableImport
+	Machine        machine
+	Operation      operation
+	Plan           plan
+	PlanEmail      planEmail
+	Report         report
+	ReportMachine  reportMachine
+	Setting        setting
+	Target         target
+	Team           team
+	TeamUserQueue  teamUserQueue
+	TimedTaskConf  timedTaskConf
+	User           user
+	UserTeam       userTeam
+	Variable       variable
+	VariableImport variableImport
 }
 
 func (q *Query) Available() bool { return q.db != nil }
 
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
-		db:               db,
-		Machine:          q.Machine.clone(db),
-		Operation:        q.Operation.clone(db),
-		Plan:             q.Plan.clone(db),
-		PlanEmail:        q.PlanEmail.clone(db),
-		Report:           q.Report.clone(db),
-		ReportMachine:    q.ReportMachine.clone(db),
-		Setting:          q.Setting.clone(db),
-		Target:           q.Target.clone(db),
-		Team:             q.Team.clone(db),
-		TeamUserQueue:    q.TeamUserQueue.clone(db),
-		TimingTaskConfig: q.TimingTaskConfig.clone(db),
-		User:             q.User.clone(db),
-		UserTeam:         q.UserTeam.clone(db),
-		Variable:         q.Variable.clone(db),
-		VariableImport:   q.VariableImport.clone(db),
+		db:             db,
+		Machine:        q.Machine.clone(db),
+		Operation:      q.Operation.clone(db),
+		Plan:           q.Plan.clone(db),
+		PlanEmail:      q.PlanEmail.clone(db),
+		Report:         q.Report.clone(db),
+		ReportMachine:  q.ReportMachine.clone(db),
+		Setting:        q.Setting.clone(db),
+		Target:         q.Target.clone(db),
+		Team:           q.Team.clone(db),
+		TeamUserQueue:  q.TeamUserQueue.clone(db),
+		TimedTaskConf:  q.TimedTaskConf.clone(db),
+		User:           q.User.clone(db),
+		UserTeam:       q.UserTeam.clone(db),
+		Variable:       q.Variable.clone(db),
+		VariableImport: q.VariableImport.clone(db),
 	}
 }
 
@@ -89,60 +89,60 @@ func (q *Query) WriteDB() *Query {
 
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
-		db:               db,
-		Machine:          q.Machine.replaceDB(db),
-		Operation:        q.Operation.replaceDB(db),
-		Plan:             q.Plan.replaceDB(db),
-		PlanEmail:        q.PlanEmail.replaceDB(db),
-		Report:           q.Report.replaceDB(db),
-		ReportMachine:    q.ReportMachine.replaceDB(db),
-		Setting:          q.Setting.replaceDB(db),
-		Target:           q.Target.replaceDB(db),
-		Team:             q.Team.replaceDB(db),
-		TeamUserQueue:    q.TeamUserQueue.replaceDB(db),
-		TimingTaskConfig: q.TimingTaskConfig.replaceDB(db),
-		User:             q.User.replaceDB(db),
-		UserTeam:         q.UserTeam.replaceDB(db),
-		Variable:         q.Variable.replaceDB(db),
-		VariableImport:   q.VariableImport.replaceDB(db),
+		db:             db,
+		Machine:        q.Machine.replaceDB(db),
+		Operation:      q.Operation.replaceDB(db),
+		Plan:           q.Plan.replaceDB(db),
+		PlanEmail:      q.PlanEmail.replaceDB(db),
+		Report:         q.Report.replaceDB(db),
+		ReportMachine:  q.ReportMachine.replaceDB(db),
+		Setting:        q.Setting.replaceDB(db),
+		Target:         q.Target.replaceDB(db),
+		Team:           q.Team.replaceDB(db),
+		TeamUserQueue:  q.TeamUserQueue.replaceDB(db),
+		TimedTaskConf:  q.TimedTaskConf.replaceDB(db),
+		User:           q.User.replaceDB(db),
+		UserTeam:       q.UserTeam.replaceDB(db),
+		Variable:       q.Variable.replaceDB(db),
+		VariableImport: q.VariableImport.replaceDB(db),
 	}
 }
 
 type queryCtx struct {
-	Machine          *machineDo
-	Operation        *operationDo
-	Plan             *planDo
-	PlanEmail        *planEmailDo
-	Report           *reportDo
-	ReportMachine    *reportMachineDo
-	Setting          *settingDo
-	Target           *targetDo
-	Team             *teamDo
-	TeamUserQueue    *teamUserQueueDo
-	TimingTaskConfig *timingTaskConfigDo
-	User             *userDo
-	UserTeam         *userTeamDo
-	Variable         *variableDo
-	VariableImport   *variableImportDo
+	Machine        *machineDo
+	Operation      *operationDo
+	Plan           *planDo
+	PlanEmail      *planEmailDo
+	Report         *reportDo
+	ReportMachine  *reportMachineDo
+	Setting        *settingDo
+	Target         *targetDo
+	Team           *teamDo
+	TeamUserQueue  *teamUserQueueDo
+	TimedTaskConf  *timedTaskConfDo
+	User           *userDo
+	UserTeam       *userTeamDo
+	Variable       *variableDo
+	VariableImport *variableImportDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
-		Machine:          q.Machine.WithContext(ctx),
-		Operation:        q.Operation.WithContext(ctx),
-		Plan:             q.Plan.WithContext(ctx),
-		PlanEmail:        q.PlanEmail.WithContext(ctx),
-		Report:           q.Report.WithContext(ctx),
-		ReportMachine:    q.ReportMachine.WithContext(ctx),
-		Setting:          q.Setting.WithContext(ctx),
-		Target:           q.Target.WithContext(ctx),
-		Team:             q.Team.WithContext(ctx),
-		TeamUserQueue:    q.TeamUserQueue.WithContext(ctx),
-		TimingTaskConfig: q.TimingTaskConfig.WithContext(ctx),
-		User:             q.User.WithContext(ctx),
-		UserTeam:         q.UserTeam.WithContext(ctx),
-		Variable:         q.Variable.WithContext(ctx),
-		VariableImport:   q.VariableImport.WithContext(ctx),
+		Machine:        q.Machine.WithContext(ctx),
+		Operation:      q.Operation.WithContext(ctx),
+		Plan:           q.Plan.WithContext(ctx),
+		PlanEmail:      q.PlanEmail.WithContext(ctx),
+		Report:         q.Report.WithContext(ctx),
+		ReportMachine:  q.ReportMachine.WithContext(ctx),
+		Setting:        q.Setting.WithContext(ctx),
+		Target:         q.Target.WithContext(ctx),
+		Team:           q.Team.WithContext(ctx),
+		TeamUserQueue:  q.TeamUserQueue.WithContext(ctx),
+		TimedTaskConf:  q.TimedTaskConf.WithContext(ctx),
+		User:           q.User.WithContext(ctx),
+		UserTeam:       q.UserTeam.WithContext(ctx),
+		Variable:       q.Variable.WithContext(ctx),
+		VariableImport: q.VariableImport.WithContext(ctx),
 	}
 }
 

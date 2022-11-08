@@ -35,7 +35,7 @@ func main() {
 		g.GenerateModel("plan_email"),
 		g.GenerateModel("team_user_queue"),
 		g.GenerateModel("machine"),
-		g.GenerateModel("timing_task_config"),
+		g.GenerateModel("timed_task_conf"),
 	)
 
 	g.Execute()

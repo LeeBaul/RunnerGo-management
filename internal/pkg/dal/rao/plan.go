@@ -126,9 +126,9 @@ type SavePlanConfReq struct {
 }
 
 type TimedTaskConf struct {
-	Frequency     int    `json:"frequency"`       // 频次: 0-一次，1-每天，2-每周，3-每月
-	TaskExecTime  uint64 `json:"task_exec_time"`  // 任执行时间
-	TaskCloseTime uint64 `json:"task_close_time"` // 结束时间
+	Frequency     int32 `json:"frequency"`       // 频次: 0-一次，1-每天，2-每周，3-每月
+	TaskExecTime  int64 `json:"task_exec_time"`  // 任执行时间
+	TaskCloseTime int64 `json:"task_close_time"` // 结束时间
 }
 
 type SavePlanResp struct {
