@@ -259,7 +259,7 @@ func SavePlanTask(ctx *gin.Context) {
 	}
 
 	// 必填项判断
-	if (req.ModeConf.Duration == 0 && req.ModeConf.RoundNum == 0) || req.ModeConf.Concurrency == 0 {
+	if (req.ModeConf.Duration == 0 && req.ModeConf.RoundNum == 0) || (req.Mode == 1 && req.ModeConf.Concurrency == 0) {
 		response.ErrorWithMsg(ctx, errno.ErrMustTaskInit, "必填项不能为空")
 		return
 	}
