@@ -24,8 +24,8 @@ import (
 	"time"
 
 	"github.com/shirou/gopsutil/load"
+	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/conf"
-	"kp-management/internal/pkg/consts"
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/mao"
 	"kp-management/internal/pkg/dal/model"

@@ -16,7 +16,6 @@ import (
 	"kp-management/internal/pkg/biz/record"
 	"kp-management/internal/pkg/biz/response"
 	"kp-management/internal/pkg/conf"
-	consts2 "kp-management/internal/pkg/consts"
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/rao"
@@ -596,7 +595,7 @@ func NotifyStopStress(ctx *gin.Context) {
 		if len(mInfo) != 2 {
 			continue
 		}
-		machineUseStateKey := consts2.MachineUseStatePrefix + mInfo[0] + ":" + mInfo[1]
+		machineUseStateKey := consts.MachineUseStatePrefix + mInfo[0] + ":" + mInfo[1]
 		dal.RDB.Del(machineUseStateKey)
 	}
 
