@@ -252,7 +252,7 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 				updateData["frequency"] = req.TimedTaskConf.Frequency
 				updateData["task_exec_time"] = req.TimedTaskConf.TaskExecTime
 				updateData["task_close_time"] = req.TimedTaskConf.TaskCloseTime
-
+				updateData["status"] = consts.TimedTaskWaitEnable
 				_, err := tx.TimedTaskConf.WithContext(ctx).Where(tx.TimedTaskConf.TeamID.Eq(req.TeamID)).
 					Where(tx.TimedTaskConf.PlanID.Eq(req.PlanID)).
 					Where(tx.TimedTaskConf.SenceID.Eq(req.SceneID)).Updates(updateData)
