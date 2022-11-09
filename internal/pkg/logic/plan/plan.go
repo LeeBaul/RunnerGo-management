@@ -230,14 +230,38 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 
 		// 把定时任务保存到数据库中
 		if req.TaskType == consts.PlanTaskTypeCronjob {
-			timingTaskConfig := packer.TransSaveTimingTaskConfigReqToModelData(req)
-			err = tx.TimedTaskConf.WithContext(ctx).Create(timingTaskConfig)
-			if err != nil {
-				proof.Infof("定时任务配置项保存失败，err：", err)
+			// 查询当前定时任务是否存在
+			_, err := tx.TimedTaskConf.WithContext(ctx).
+				Where(tx.TimedTaskConf.TeamID.Eq(req.TeamID)).
+				Where(tx.TimedTaskConf.PlanID.Eq(req.PlanID)).
+				Where(tx.TimedTaskConf.SenceID.Eq(req.SceneID)).First()
+			if err != nil && err != gorm.ErrRecordNotFound {
+				proof.Infof("查询定时任务数据失败，err:", req)
 				return err
+			} else if err == gorm.ErrRecordNotFound {
+				// 新增配置
+				timingTaskConfig := packer.TransSaveTimingTaskConfigReqToModelData(req)
+				err = tx.TimedTaskConf.WithContext(ctx).Create(timingTaskConfig)
+				if err != nil {
+					proof.Infof("定时任务配置项保存失败，err：", err)
+					return err
+				}
+			} else {
+				// 修改配置
+				updateData := make(map[string]interface{}, 3)
+				updateData["frequency"] = req.TimedTaskConf.Frequency
+				updateData["task_exec_time"] = req.TimedTaskConf.TaskExecTime
+				updateData["task_close_time"] = req.TimedTaskConf.TaskCloseTime
+
+				_, err := tx.TimedTaskConf.WithContext(ctx).Where(tx.TimedTaskConf.TeamID.Eq(req.TeamID)).
+					Where(tx.TimedTaskConf.PlanID.Eq(req.PlanID)).
+					Where(tx.TimedTaskConf.SenceID.Eq(req.SceneID)).Updates(updateData)
+				if err != nil {
+					proof.Infof("更新定时任务配置失败，err:", err)
+				}
 			}
 		}
-		
+
 		return nil
 	})
 }

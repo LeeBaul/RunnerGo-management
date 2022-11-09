@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/go-omnibus/proof"
 	"gorm.io/gen"
@@ -14,7 +15,7 @@ import (
 )
 
 func TimedTaskExec() {
-	ctx := new(gin.Context)
+	ctx := context.Background()
 	tx := query.Use(dal.DB()).TimedTaskConf
 	// 开启定时任务轮询
 	for {
@@ -83,7 +84,8 @@ func TimedTaskExec() {
 				}
 
 				// 执行定时任务计划
-				err := runTimedTask(ctx, timedTaskInfo)
+				ctx2 := &gin.Context{}
+				err := runTimedTask(ctx2, timedTaskInfo)
 				if err != nil {
 					proof.Infof("定时任务运行失败，任务信息：", timedTaskInfo, " err：", err)
 				}
