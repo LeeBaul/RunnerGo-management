@@ -161,7 +161,6 @@ func Save(ctx context.Context, req *rao.SavePlanReq, userID int64) (int64, error
 func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error {
 	plan := packer.TransSavePlanReqToPlanModel(req, userID)
 	task := packer.TransSavePlanReqToMaoTask(req)
-	timingTaskConfig := packer.TransSaveTimingTaskConfigReqToModelData(req)
 
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectTask)
 
@@ -230,12 +229,15 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 		}
 
 		// 把定时任务保存到数据库中
-		err = tx.TimedTaskConf.WithContext(ctx).Create(timingTaskConfig)
-		if err != nil {
-			proof.Infof("定时任务配置项保存失败，err：", err)
-			return err
+		if req.TaskType == consts.PlanTaskTypeCronjob {
+			timingTaskConfig := packer.TransSaveTimingTaskConfigReqToModelData(req)
+			err = tx.TimedTaskConf.WithContext(ctx).Create(timingTaskConfig)
+			if err != nil {
+				proof.Infof("定时任务配置项保存失败，err：", err)
+				return err
+			}
 		}
-
+		
 		return nil
 	})
 }
