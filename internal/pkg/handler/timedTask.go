@@ -3,7 +3,6 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-omnibus/proof"
-	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"gorm.io/gen"
 	"gorm.io/gorm"
 	"kp-management/internal/pkg/biz/jwt"
@@ -25,7 +24,6 @@ func TimedTaskExec() {
 		nowTime := time.Now().Unix()
 		nextTime := time.Now().Unix() + 60
 		conditions = append(conditions, tx.Status.Eq(0))
-		conditions = append(conditions, tx.DeletedAt.Eq(bsontype.Null))
 
 		// 从数据库当中，查出当前需要执行的定时任务
 		timedTaskData, err := tx.WithContext(ctx).Where(conditions...).Find()
