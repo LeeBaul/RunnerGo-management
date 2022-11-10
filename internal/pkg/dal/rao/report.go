@@ -132,6 +132,6 @@ type ReportEmailResp struct {
 }
 
 type ChangeTaskConfReq struct {
-	ReportID int64     `bson:"report_id"`
+	ReportID int64     `json:"report_id"`
 	ModeConf *ModeConf `json:"mode_conf"`
 }
