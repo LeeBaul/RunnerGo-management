@@ -176,5 +176,25 @@ func TransSaveTimingTaskConfigReqToModelData(req *rao.SavePlanConfReq) *model.Ti
 		TaskCloseTime: req.TimedTaskConf.TaskCloseTime,
 		Status:        0,
 	}
+}
 
+func TransChangeReportConfRunToMao(req rao.ChangeTaskConfReq) *mao.ChangeTaskConf {
+	return &mao.ChangeTaskConf{
+		PlanID:   req.PlanID,
+		SceneID:  req.SceneID,
+		ReportID: req.ReportID,
+		TaskType: req.TaskType,
+		TaskMode: req.TaskMode,
+		ModeConf: &mao.ModeConf{
+			ReheatTime:       req.ModeConf.ReheatTime,
+			RoundNum:         req.ModeConf.RoundNum,
+			Concurrency:      req.ModeConf.Concurrency,
+			ThresholdValue:   req.ModeConf.ThresholdValue,
+			StartConcurrency: req.ModeConf.StartConcurrency,
+			Step:             req.ModeConf.Step,
+			StepRunTime:      req.ModeConf.StepRunTime,
+			MaxConcurrency:   req.ModeConf.MaxConcurrency,
+			Duration:         req.ModeConf.Duration,
+		},
+	}
 }

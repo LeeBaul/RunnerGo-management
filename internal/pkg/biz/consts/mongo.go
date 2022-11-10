@@ -1,14 +1,15 @@
 package consts
 
 const (
-	CollectFolder     = "folder"
-	CollectAPI        = "api"
-	CollectGroup      = "group"
-	CollectScene      = "scene"
-	CollectTask       = "task"
-	CollectFlow       = "flow"
-	CollectPreinstall = "preinstall"
-	CollectReportTask = "report_task"
+	CollectFolder           = "folder"
+	CollectAPI              = "api"
+	CollectGroup            = "group"
+	CollectScene            = "scene"
+	CollectTask             = "task"
+	CollectFlow             = "flow"
+	CollectPreinstall       = "preinstall"
+	CollectReportTask       = "report_task"
+	CollectChangeReportConf = "change_report_conf"
 
 	CollectAPIDebug    = "api_debug"
 	CollectSceneDebug  = "scene_debug"

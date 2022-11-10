@@ -129,3 +129,13 @@ type ReportEmailReq struct {
 
 type ReportEmailResp struct {
 }
+
+type ChangeTaskConfReq struct {
+	ReportID int64     `json:"report_id"`
+	PlanID   int64     `json:"plan_id"`
+	TeamID   int64     `json:"team_id"`
+	SceneID  int64     `json:"scene_id"`
+	TaskType int32     `json:"task_type"`
+	TaskMode int32     `json:"task_mode"`
+	ModeConf *ModeConf `json:"mode_conf"`
+}
