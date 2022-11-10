@@ -1,10 +1,14 @@
 package handler
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/go-omnibus/omnibus"
+	"github.com/go-omnibus/proof"
 	"github.com/go-resty/resty/v2"
 	"go.mongodb.org/mongo-driver/bson"
+	"kp-management/internal/pkg/packer"
+	"strconv"
 
 	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/biz/jwt"
@@ -260,17 +264,75 @@ func ReportEmail(ctx *gin.Context) {
 	}
 
 	rx := dal.GetQuery().Report
-	report, err := rx.WithContext(ctx).Where(rx.ID.Eq(req.ReportID)).First()
+	reportInfo, err := rx.WithContext(ctx).Where(rx.ID.Eq(req.ReportID)).First()
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
 
 	for _, email := range req.Emails {
-		if err := mail.SendReportEmail(ctx, email, req.ReportID, team, user, report); err != nil {
+		if err := mail.SendReportEmail(ctx, email, req.ReportID, team, user, reportInfo); err != nil {
 			response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 			return
 		}
+	}
+
+	response.Success(ctx)
+	return
+}
+
+// ChangeTaskConfRun 报告里面编辑任务配置并执行
+func ChangeTaskConfRun(ctx *gin.Context) {
+	var req rao.ChangeTaskConfReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	// 根据报告id，查询出来机器ip
+	rm := dal.GetQuery().ReportMachine
+	reportMachineInfo, err := rm.WithContext(ctx).Where(rm.ReportID.Eq(req.ReportID)).First()
+	if err != nil {
+		proof.Infof("编辑报告-查询报告对应的机器失败，err：", err)
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error()+" 报告对应的机器IP信息没有查到")
+		return
+	}
+
+	// 把新编辑的任务配置保存到redis当中，供压力机执行使用
+	reportIDString := strconv.Itoa(int(reportMachineInfo.ReportID))
+	key := reportMachineInfo.IP + ":" + reportIDString + ":adjust"
+	value := rao.ModeConf{
+		ReheatTime:       req.ModeConf.ReheatTime,
+		RoundNum:         req.ModeConf.RoundNum,
+		Concurrency:      req.ModeConf.Concurrency,
+		StartConcurrency: req.ModeConf.StartConcurrency,
+		Step:             req.ModeConf.Step,
+		StepRunTime:      req.ModeConf.StepRunTime,
+		MaxConcurrency:   req.ModeConf.MaxConcurrency,
+		Duration:         req.ModeConf.Duration,
+	}
+	valueString, err := json.Marshal(value)
+	if err != nil {
+		proof.Infof("编辑报告-组装redis值失败，marshal failed!，err：", err)
+		response.ErrorWithMsg(ctx, errno.ErrMarshalFailed, err.Error())
+		return
+	}
+	_, err = dal.RDB.Set(key, valueString, 0).Result()
+	if err != nil {
+		proof.Infof("编辑报告-写入redis数据失败，err：", err)
+		response.ErrorWithMsg(ctx, errno.ErrRedisFailed, err.Error())
+		return
+	}
+
+	// 组装修改的配置数据，保存到mg
+	res := packer.TransChangeReportConfRunToMao(req)
+	// 操作mongodb
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectChangeReportConf)
+	_, err = collection.InsertOne(ctx, res)
+	if err != nil {
+		proof.Infof("编辑报告保存配置项失败，err：", err)
+		response.ErrorWithMsg(ctx, errno.ErrMongoFailed, err.Error())
+		return
 	}
 
 	response.Success(ctx)

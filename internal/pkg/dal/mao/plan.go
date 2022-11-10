@@ -28,3 +28,12 @@ type Preinstall struct {
 	Mode     int32     `bson:"mode"`
 	ModeConf *ModeConf `bson:"mode_conf"`
 }
+
+type ChangeTaskConf struct {
+	PlanID   int64     `bson:"plan_id"`
+	SceneID  int64     `bson:"scene_id"`
+	ReportID int64     `bson:"report_id"`
+	TaskType int32     `bson:"task_type"`
+	TaskMode int32     `bson:"task_mode"`
+	ModeConf *ModeConf `bson:"mode_conf"`
+}
