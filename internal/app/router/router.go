@@ -168,6 +168,7 @@ func RegisterRouter(r *gin.Engine) {
 	report.GET("/debug/detail", handler.DebugDetail)
 	report.POST("/email_notify", handler.ReportEmail)
 	report.POST("/change_task_conf_run", handler.ChangeTaskConfRun) // 编辑报告配置并执行
+	//report.POST("/compare", handler.CompareReport)                  // 对比报告
 
 	// 操作日志
 	operation := api.Group("/v1/operation")

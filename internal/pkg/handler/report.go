@@ -338,3 +338,9 @@ func ChangeTaskConfRun(ctx *gin.Context) {
 	response.Success(ctx)
 	return
 }
+
+// 对比报告
+func CompareReport() {
+
+	return
+}
