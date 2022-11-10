@@ -100,19 +100,20 @@ type GetReportTaskDetailResp struct {
 }
 
 type ReportTask struct {
-	UserID         int64     `json:"user_id"`
-	UserName       string    `json:"user_name"`
-	UserAvatar     string    `json:"user_avatar"`
-	PlanID         int64     `json:"plan_id"`
-	PlanName       string    `json:"plan_name"`
-	SceneID        int64     `json:"scene_id"`
-	SceneName      string    `json:"scene_name"`
-	ReportID       int64     `json:"report_id"`
-	CreatedTimeSec int64     `json:"created_time_sec"`
-	TaskType       int32     `json:"task_type"`
-	TaskMode       int32     `json:"task_mode"`
-	TaskStatus     int32     `json:"task_status"`
-	ModeConf       *ModeConf `json:"mode_conf"`
+	UserID         int64       `json:"user_id"`
+	UserName       string      `json:"user_name"`
+	UserAvatar     string      `json:"user_avatar"`
+	PlanID         int64       `json:"plan_id"`
+	PlanName       string      `json:"plan_name"`
+	SceneID        int64       `json:"scene_id"`
+	SceneName      string      `json:"scene_name"`
+	ReportID       int64       `json:"report_id"`
+	CreatedTimeSec int64       `json:"created_time_sec"`
+	TaskType       int32       `json:"task_type"`
+	TaskMode       int32       `json:"task_mode"`
+	TaskStatus     int32       `json:"task_status"`
+	ModeConf       *ModeConf   `json:"mode_conf"`
+	ChangeTakeConf []*ModeConf `json:"change_take_conf"`
 }
 
 type DebugSettingReq struct {
@@ -131,11 +132,6 @@ type ReportEmailResp struct {
 }
 
 type ChangeTaskConfReq struct {
-	ReportID int64     `json:"report_id"`
-	PlanID   int64     `json:"plan_id"`
-	TeamID   int64     `json:"team_id"`
-	SceneID  int64     `json:"scene_id"`
-	TaskType int32     `json:"task_type"`
-	TaskMode int32     `json:"task_mode"`
+	ReportID int64     `bson:"report_id"`
 	ModeConf *ModeConf `json:"mode_conf"`
 }
