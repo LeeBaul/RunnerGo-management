@@ -300,7 +300,9 @@ func ChangeTaskConfRun(ctx *gin.Context) {
 
 	// 把新编辑的任务配置保存到redis当中，供压力机执行使用
 	reportIDString := strconv.Itoa(int(reportMachineInfo.ReportID))
-	key := reportMachineInfo.IP + ":" + reportIDString + ":adjust"
+	teamIDString := strconv.Itoa(int(req.TeamID))
+	planIDString := strconv.Itoa(int(req.PlanID))
+	key := "adjust:" + reportMachineInfo.IP + ":" + teamIDString + ":" + planIDString + ":" + reportIDString
 	value := rao.ModeConf{
 		ReheatTime:       req.ModeConf.ReheatTime,
 		RoundNum:         req.ModeConf.RoundNum,
@@ -339,8 +341,20 @@ func ChangeTaskConfRun(ctx *gin.Context) {
 	return
 }
 
-// 对比报告
-func CompareReport() {
+// CompareReport 对比报告
+func CompareReport(ctx *gin.Context) {
+	//var req rao.CompareReportReq
+	//if err := ctx.ShouldBindJSON(&req); err != nil {
+	//	response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+	//	return
+	//}
+	//
+	//result, err := report.GetCompareReportData(ctx, req)
+	//if err != nil {
+	//	response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+	//	return
+	//}
+	//response.SuccessWithData(ctx, result)
+	//return
 
-	return
 }
