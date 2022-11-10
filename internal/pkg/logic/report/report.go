@@ -766,3 +766,7 @@ type TimeValue struct {
 	TimeStamp int64       `json:"time_stamp" bson:"time_stamp"`
 	Value     interface{} `json:"value" bson:"value"`
 }
+
+func GetCompareReportData(ctx context.Context, req rao.CompareReportReq) {
+
+}

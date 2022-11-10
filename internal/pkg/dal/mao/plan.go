@@ -32,5 +32,7 @@ type Preinstall struct {
 
 type ChangeTaskConf struct {
 	ReportID int64     `bson:"report_id"`
+	TeamID   int64     `bson:"team_id"`
+	PlanID   int64     `bson:"plan_id"`
 	ModeConf *ModeConf `bson:"mode_conf"`
 }

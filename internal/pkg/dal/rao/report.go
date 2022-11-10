@@ -133,5 +133,11 @@ type ReportEmailResp struct {
 
 type ChangeTaskConfReq struct {
 	ReportID int64     `json:"report_id"`
+	PlanID   int64     `json:"plan_id"`
+	TeamID   int64     `json:"team_id"`
 	ModeConf *ModeConf `json:"mode_conf"`
+}
+
+type CompareReportReq struct {
+	ReportIDs []int64 `json:"report_ids"`
 }
