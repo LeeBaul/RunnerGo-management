@@ -270,6 +270,7 @@ func GetTaskDetail(ctx context.Context, req rao.GetReportTaskDetailReq) (*rao.Re
 		StepRunTime:      detail.ModeConf.StepRunTime,
 		MaxConcurrency:   detail.ModeConf.MaxConcurrency,
 		Duration:         detail.ModeConf.Duration,
+		CreatedTimeSec:   ru.CreatedAt.Unix(),
 	}
 
 	changeTaskConfData := &rao.ModeConf{
@@ -282,6 +283,7 @@ func GetTaskDetail(ctx context.Context, req rao.GetReportTaskDetailReq) (*rao.Re
 		StepRunTime:      detail.ModeConf.StepRunTime,
 		MaxConcurrency:   detail.ModeConf.MaxConcurrency,
 		Duration:         detail.ModeConf.Duration,
+		CreatedTimeSec:   ru.CreatedAt.Unix(),
 	}
 
 	res := &rao.ReportTask{
@@ -314,6 +316,7 @@ func GetTaskDetail(ctx context.Context, req rao.GetReportTaskDetailReq) (*rao.Re
 				StepRunTime:      changeTaskConfTmp.ModeConf.StepRunTime,
 				MaxConcurrency:   changeTaskConfTmp.ModeConf.MaxConcurrency,
 				Duration:         changeTaskConfTmp.ModeConf.Duration,
+				CreatedTimeSec:   changeTaskConfTmp.ModeConf.CreatedTimeSec,
 			}
 			res.ChangeTakeConf = append(res.ChangeTakeConf, tmp)
 		}

@@ -43,6 +43,7 @@ type ModeConf struct {
 	StepRunTime      int64 `json:"step_run_time"`     // 步长执行时长
 	MaxConcurrency   int64 `json:"max_concurrency"`   // 最大并发数
 	Duration         int64 `json:"duration"`          // 稳定持续时长，持续时长
+	CreatedTimeSec   int64 `json:"created_time_sec"`  // 创建时间
 }
 
 type RunPlanReq struct {
