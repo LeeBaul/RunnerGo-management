@@ -251,7 +251,40 @@ func GetTaskDetail(ctx context.Context, req rao.GetReportTaskDetailReq) (*rao.Re
 		return nil, err
 	}
 
-	return &rao.ReportTask{
+	// 从mongo查出编辑报告的数据列表
+	collection = dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectChangeReportConf)
+	ChangeTaskConfDetail, _ := collection.Find(ctx, bson.D{{"report_id", req.ReportID}})
+
+	changeTaskConf := make([]*mao.ChangeTaskConf, 0, 10)
+	if err := ChangeTaskConfDetail.All(ctx, &changeTaskConf); err != nil {
+		proof.Infof("没有查到编辑报告列表数据", proof.WithError(err))
+	}
+
+	modeConf := &rao.ModeConf{
+		ReheatTime:       detail.ModeConf.ReheatTime,
+		RoundNum:         detail.ModeConf.RoundNum,
+		Concurrency:      detail.ModeConf.Concurrency,
+		ThresholdValue:   detail.ModeConf.ThresholdValue,
+		StartConcurrency: detail.ModeConf.StartConcurrency,
+		Step:             detail.ModeConf.Step,
+		StepRunTime:      detail.ModeConf.StepRunTime,
+		MaxConcurrency:   detail.ModeConf.MaxConcurrency,
+		Duration:         detail.ModeConf.Duration,
+	}
+
+	changeTaskConfData := &rao.ModeConf{
+		ReheatTime:       detail.ModeConf.ReheatTime,
+		RoundNum:         detail.ModeConf.RoundNum,
+		Concurrency:      detail.ModeConf.Concurrency,
+		ThresholdValue:   detail.ModeConf.ThresholdValue,
+		StartConcurrency: detail.ModeConf.StartConcurrency,
+		Step:             detail.ModeConf.Step,
+		StepRunTime:      detail.ModeConf.StepRunTime,
+		MaxConcurrency:   detail.ModeConf.MaxConcurrency,
+		Duration:         detail.ModeConf.Duration,
+	}
+
+	res := &rao.ReportTask{
 		UserID:         user.ID,
 		UserName:       user.Nickname,
 		UserAvatar:     user.Avatar,
@@ -264,18 +297,29 @@ func GetTaskDetail(ctx context.Context, req rao.GetReportTaskDetailReq) (*rao.Re
 		TaskType:       detail.TaskType,
 		TaskMode:       detail.TaskMode,
 		TaskStatus:     ru.Status,
-		ModeConf: &rao.ModeConf{
-			ReheatTime:       detail.ModeConf.ReheatTime,
-			RoundNum:         detail.ModeConf.RoundNum,
-			Concurrency:      detail.ModeConf.Concurrency,
-			ThresholdValue:   detail.ModeConf.ThresholdValue,
-			StartConcurrency: detail.ModeConf.StartConcurrency,
-			Step:             detail.ModeConf.Step,
-			StepRunTime:      detail.ModeConf.StepRunTime,
-			MaxConcurrency:   detail.ModeConf.MaxConcurrency,
-			Duration:         detail.ModeConf.Duration,
-		},
-	}, nil
+		ModeConf:       modeConf,
+	}
+
+	res.ChangeTakeConf = append(res.ChangeTakeConf, changeTaskConfData)
+
+	if len(changeTaskConf) > 0 {
+		for _, changeTaskConfTmp := range changeTaskConf {
+			tmp := &rao.ModeConf{
+				ReheatTime:       changeTaskConfTmp.ModeConf.ReheatTime,
+				RoundNum:         changeTaskConfTmp.ModeConf.RoundNum,
+				Concurrency:      changeTaskConfTmp.ModeConf.Concurrency,
+				ThresholdValue:   changeTaskConfTmp.ModeConf.ThresholdValue,
+				StartConcurrency: changeTaskConfTmp.ModeConf.StartConcurrency,
+				Step:             changeTaskConfTmp.ModeConf.Step,
+				StepRunTime:      changeTaskConfTmp.ModeConf.StepRunTime,
+				MaxConcurrency:   changeTaskConfTmp.ModeConf.MaxConcurrency,
+				Duration:         changeTaskConfTmp.ModeConf.Duration,
+			}
+			res.ChangeTakeConf = append(res.ChangeTakeConf, tmp)
+		}
+	}
+
+	return res, nil
 }
 
 func GetReportDebugStatus(ctx context.Context, report rao.GetReportReq) string {

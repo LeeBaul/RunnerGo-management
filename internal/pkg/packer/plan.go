@@ -180,11 +180,7 @@ func TransSaveTimingTaskConfigReqToModelData(req *rao.SavePlanConfReq) *model.Ti
 
 func TransChangeReportConfRunToMao(req rao.ChangeTaskConfReq) *mao.ChangeTaskConf {
 	return &mao.ChangeTaskConf{
-		PlanID:   req.PlanID,
-		SceneID:  req.SceneID,
 		ReportID: req.ReportID,
-		TaskType: req.TaskType,
-		TaskMode: req.TaskMode,
 		ModeConf: &mao.ModeConf{
 			ReheatTime:       req.ModeConf.ReheatTime,
 			RoundNum:         req.ModeConf.RoundNum,
