@@ -54,5 +54,8 @@ redis:
 smtp:
   host: "smtpdm.aliyun.com"
   port: 465
-  email: "notice@no-reply.runnergo.cn"
-  password: "BIyela43413"
+  email: "findpwd@no-reply.apipost.cn"
+  password: "BIyela4341"
+  #新邮箱-待启用
+  #email: "notice@no-reply.runnergo.cn"
+  #password: "BIyela43413"
