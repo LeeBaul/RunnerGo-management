@@ -385,6 +385,8 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 		key := fmt.Sprintf("%d:%d:reportData", report.PlanId, report.ReportID)
 		dataList := rdb.LRange(ctx, key, 0, -1).Val()
 		if len(dataList) < 1 {
+			proof.Error("mongo里面没有查到报告详情数据，err:", proof.WithError(err))
+			err = nil
 			return
 		}
 		for i := len(dataList) - 1; i >= 0; i-- {
