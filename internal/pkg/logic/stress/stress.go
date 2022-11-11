@@ -761,6 +761,8 @@ func (s *RunMachineStress) Execute(baton *Baton) (int, error) {
 					tx.IP.Value(omnibus.Explode(":", addr)[0]),
 				).FirstOrCreate()
 				if err != nil {
+					_ = DeletePlanReport(baton)
+					proof.Infof("把报告和对应机器写入到数据库失败，err：", err)
 					return errno.ErrMysqlFailed, err
 				}
 
@@ -768,6 +770,7 @@ func (s *RunMachineStress) Execute(baton *Baton) (int, error) {
 				partition := GetPartition()
 				if partition == -1 {
 					proof.Infof("当前没有可用的kafka分区")
+					_ = DeletePlanReport(baton)
 					return errno.ErrResourceNotEnough, fmt.Errorf("资源不足")
 				}
 				stress.Partition = partition
@@ -775,12 +778,14 @@ func (s *RunMachineStress) Execute(baton *Baton) (int, error) {
 				_, err = resty.New().R().SetBody(stress).Post(fmt.Sprintf("http://%s/runner/run_plan", addr))
 				proof.Infof("请求压力机运行情况，req：%+v。 err： %+v。", proof.Render("req", stress), err)
 				if err != nil {
-					// 如果调用施压接口失败，则删除掉当前的这个报告id
-					reportTable := query.Use(dal.DB()).Report
-					_, err2 := reportTable.WithContext(baton.Ctx).Where(reportTable.ID.Eq(omnibus.DefiniteInt64(stress.ReportID))).Delete()
-					if err2 != nil {
-						return errno.ErrMysqlFailed, err2
-					}
+					//// 如果调用施压接口失败，则删除掉当前的这个报告id
+					//reportTable := query.Use(dal.DB()).Report
+					//_, err2 := reportTable.WithContext(baton.Ctx).Where(reportTable.ID.Eq(omnibus.DefiniteInt64(stress.ReportID))).Delete()
+					//if err2 != nil {
+					//	return errno.ErrMysqlFailed, err2
+					//}
+					_ = DeletePlanReport(baton)
+					proof.Infof("请求压力机进行压测失败，err：", err)
 					return errno.ErrHttpFailed, err
 				}
 
@@ -791,6 +796,7 @@ func (s *RunMachineStress) Execute(baton *Baton) (int, error) {
 				p := query.Use(dal.DB()).Plan
 				_, err = p.WithContext(baton.Ctx).Where(p.ID.Eq(baton.PlanID)).UpdateColumn(p.Status, consts.PlanStatusUnderway)
 				if err != nil {
+					proof.Infof("把压力机使用情况写入redis是吧，err：", err)
 					return errno.ErrMysqlFailed, err
 				}
 				break
@@ -802,6 +808,7 @@ func (s *RunMachineStress) Execute(baton *Baton) (int, error) {
 		if breakState {
 			// todo 报警
 			proof.Infof("当前没有可用的压力机，或所有压力机状态爆满")
+			_ = DeletePlanReport(baton)
 			return errno.ErrResourceNotEnough, errors.New("资源不足")
 		}
 	}
@@ -813,7 +820,7 @@ func (s *RunMachineStress) SetNext(stress Stress) {
 	s.next = stress
 }
 
-// 获取可用分区
+// GetPartition 获取可用分区
 func GetPartition() int32 {
 	//默认分区为0
 	var partition int32 = -1 //默认为-1 表示不可用分区锁
@@ -838,7 +845,7 @@ func GetPartition() int32 {
 	return partition
 }
 
-// 获取当前压力机是否可用
+// GetRunnerMachineState 获取当前压力机是否可用
 func GetRunnerMachineState(addr string) bool {
 	// 从Redis获取压力机列表
 	machineListRes := dal.RDB.HGetAll(consts.MachineListRedisKey)
@@ -912,4 +919,17 @@ func GetRunnerMachineState(addr string) bool {
 	} else {
 		return machineState
 	}
+}
+
+// 删除执行失败的计划下的所有报告
+func DeletePlanReport(baton *Baton) error {
+	for _, reportInfo := range baton.reports {
+		// 如果调用施压接口失败，则删除掉当前的这个报告id
+		reportTable := query.Use(dal.DB()).Report
+		_, err := reportTable.WithContext(baton.Ctx).Where(reportTable.ID.Eq(omnibus.DefiniteInt64(reportInfo.ID))).Delete()
+		if err != nil {
+			proof.Infof("运行计划--删除报告失败，报告id为：", reportInfo.ID)
+		}
+	}
+	return nil
 }
