@@ -239,7 +239,7 @@ type Node struct {
 	// 接口
 	Weight            int        `json:"weight,omitempty"`
 	Mode              int        `json:"mode,omitempty"`
-	ErrorThreshold    int        `json:"error_threshold,omitempty"`
+	ErrorThreshold    float64    `json:"error_threshold,omitempty"`
 	ResponseThreshold int        `json:"response_threshold,omitempty"`
 	RequestThreshold  int        `json:"request_threshold,omitempty"`
 	PercentAge        int        `json:"percent_age,omitempty"`
