@@ -343,18 +343,18 @@ func ChangeTaskConfRun(ctx *gin.Context) {
 
 // CompareReport 对比报告
 func CompareReport(ctx *gin.Context) {
-	//var req rao.CompareReportReq
-	//if err := ctx.ShouldBindJSON(&req); err != nil {
-	//	response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
-	//	return
-	//}
-	//
-	//result, err := report.GetCompareReportData(ctx, req)
-	//if err != nil {
-	//	response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
-	//	return
-	//}
-	//response.SuccessWithData(ctx, result)
-	//return
+	var req rao.CompareReportReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	res, err := report.GetCompareReportData(ctx, req)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+	response.SuccessWithData(ctx, res)
+	return
 
 }

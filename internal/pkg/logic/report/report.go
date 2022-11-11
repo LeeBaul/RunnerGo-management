@@ -769,6 +769,162 @@ type TimeValue struct {
 	Value     interface{} `json:"value" bson:"value"`
 }
 
-func GetCompareReportData(ctx context.Context, req rao.CompareReportReq) {
+func GetCompareReportData(ctx context.Context, req rao.CompareReportReq) (*CompareReportResponse, error) {
+	// 获取报告的基本信息
+	reportTable := dal.GetQuery().Report
+	reportBaseList, err := reportTable.WithContext(ctx).Where(reportTable.ID.In(req.ReportIDs...)).Find()
+	if err != nil {
+		return nil, err
+	}
 
+	reportNames := make([]string, 0, len(reportBaseList))                    // 计划和场景名字
+	reportBaseData := make([]*mao.ReportTask, 0, len(reportBaseList))        // 报告基本信息
+	reportCollectMap := make([][]*reportCollectData, 0, len(reportBaseList)) // 报告汇总信息
+
+	//reportDetailMap := make([]*reportDetailData, 0, 10)
+	reportDetailAllMap := make([][]*reportDetailData, 0, len(reportBaseList)) // 报告详情信息
+
+	for _, reportBaseInfo := range reportBaseList {
+		// 把报告基本信息设置到map当中
+		planAndSceneName := reportBaseInfo.PlanName + "/" + reportBaseInfo.SceneName
+		reportNames = append(reportNames, planAndSceneName)
+
+	}
+
+	// 从mg查询任务对应的配置信息
+	var reportTaskConfList []*mao.ReportTask
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectReportTask)
+	reportTaskConfListTmp, err := collection.Find(ctx, bson.D{{"report_id", bson.D{{"$in", req.ReportIDs}}}})
+	if err != nil {
+		// todo
+		return nil, err
+	}
+	if err := reportTaskConfListTmp.All(ctx, &reportTaskConfList); err != nil {
+		// todo
+		return nil, err
+	}
+
+	for _, reportTaskConfInfo := range reportTaskConfList {
+		reportBaseData = append(reportBaseData, reportTaskConfInfo)
+	}
+
+	// 从mg里面获取报告汇总信息
+	var reportDataList []*ResultData
+	collection = dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectReportData)
+	reportDataListTmp, err := collection.Find(ctx, bson.D{{"reportid", bson.D{{"$in", req.ReportIDs}}}})
+	if err != nil {
+		// todo
+		return nil, err
+	}
+	if err := reportDataListTmp.All(ctx, &reportDataList); err != nil {
+		// todo
+		return nil, err
+	}
+
+	// 先组装一个事件id对应报告结果数据
+	for _, reportData := range reportDataList {
+		//rId, err := strconv.Atoi(reportData.ReportId)
+		//if err != nil {
+		//	continue
+		//}
+
+		var reportCollectMapTmp []*reportCollectData
+		var reportDetailDataSlice []*reportDetailData
+		for _, reportMsg := range reportData.Results {
+			sceneNodeMap := &reportCollectData{
+				ApiName:                   reportMsg.ApiName,
+				TotalRequestNum:           reportMsg.TotalRequestNum,
+				TotalRequestTime:          reportMsg.TotalRequestTime,
+				MaxRequestTime:            reportMsg.MaxRequestTime,
+				MinRequestTime:            reportMsg.MinRequestTime,
+				AvgRequestTime:            reportMsg.AvgRequestTime,
+				NinetyRequestTimeLine:     reportMsg.NinetyRequestTimeLine,
+				NinetyFiveRequestTimeLine: reportMsg.NinetyFiveRequestTimeLine,
+				NinetyNineRequestTimeLine: reportMsg.NinetyNineRequestTimeLine,
+				Qps:                       reportMsg.Qps,
+				SRps:                      reportMsg.SRps,
+				ErrorRate:                 reportMsg.ErrorRate,
+				ReceivedBytes:             reportMsg.ReceivedBytes,
+				SendBytes:                 reportMsg.SendBytes,
+			}
+			reportCollectMapTmp = append(reportCollectMapTmp, sceneNodeMap)
+
+			// 接口请求详情数据
+			reportDetailDataTmp := &reportDetailData{
+				AvgList:         reportMsg.AvgList,
+				QpsList:         reportMsg.QpsList,
+				ConcurrencyList: reportMsg.ConcurrencyList,
+				ErrorNumList:    reportMsg.ErrorNumList,
+				FiftyList:       reportMsg.FiftyList,
+				NinetyList:      reportMsg.NinetyList,
+				NinetyFiveList:  reportMsg.NinetyFiveList,
+				NinetyNineList:  reportMsg.NinetyNineList,
+			}
+			reportDetailDataSlice = append(reportDetailDataSlice, reportDetailDataTmp)
+		}
+
+		reportCollectMap = append(reportCollectMap, reportCollectMapTmp)
+		reportDetailAllMap = append(reportDetailAllMap, reportDetailDataSlice)
+	}
+
+	res := &CompareReportResponse{
+		ReportNamesData:     reportNames,
+		ReportBaseData:      reportBaseData,
+		ReportCollectData:   reportCollectMap,
+		ReportDetailAllData: reportDetailAllMap,
+	}
+
+	return res, nil
+}
+
+type reportBaseValue struct {
+	ReportID      int64  `json:"report_id"`
+	Name          string `json:"name"`
+	RunUserID     int64  `json:"run_user_id"`
+	Performer     string `json:"performer"`
+	CreateTimeSec int64  `json:"create_time_sec"`
+	TaskType      int32  `json:"task_type"` // 任务类型
+	TaskMode      int32  `json:"task_mode"` // 压测模式
+	rao.ModeConf
+}
+
+type reportCollectAllData struct {
+	ReportId          int64                `json:"report_id"`
+	PlanAndScene      string               `json:"plan_and_scene"` // 计划和场景名称
+	ReportCollectData []*reportCollectData `json:"report_collect_data"`
+}
+type reportCollectData struct {
+	ApiName                   string  `json:"api_name" bson:"api_name"`
+	TotalRequestNum           uint64  `json:"total_request_num" bson:"total_request_num"`   // 总请求数
+	TotalRequestTime          float64 `json:"total_request_time" bson:"total_request_time"` // 总响应时间
+	MaxRequestTime            float64 `json:"max_request_time" bson:"max_request_time"`
+	MinRequestTime            float64 `json:"min_request_time" bson:"min_request_time"` // 毫秒
+	AvgRequestTime            float64 `json:"avg_request_time" bson:"avg_request_time"` // 平均响应事件
+	NinetyRequestTimeLine     int64   `json:"ninety_request_time_line" bson:"ninety_request_time_line"`
+	NinetyFiveRequestTimeLine int64   `json:"ninety_five_request_time_line" bson:"ninety_five_request_time_line"`
+	NinetyNineRequestTimeLine int64   `json:"ninety_nine_request_time_line" bson:"ninety_nine_request_time_line"`
+	Qps                       float64 `json:"qps" bson:"qps"`
+	SRps                      float64 `json:"srps" bson:"srps"`
+	ErrorRate                 float64 `json:"error_rate" bson:"error_rate"`
+	ReceivedBytes             float64 `json:"received_bytes" bson:"received_bytes"` // 接收字节数
+	SendBytes                 float64 `json:"send_bytes" bson:"send_bytes"`         // 发送字节数
+}
+
+type reportDetailData struct {
+	AvgList         []TimeValue `json:"avg_list" bson:"avg_list"`
+	QpsList         []TimeValue `json:"qps_list" bson:"qps_list"`
+	ConcurrencyList []TimeValue `json:"concurrency_list" bson:"concurrency_list"`
+	ErrorNumList    []TimeValue `json:"error_num_list" bson:"error_num_list"`
+	FiftyList       []TimeValue `json:"fifty_list" bson:"fifty_list"`
+	NinetyList      []TimeValue `json:"ninety_list" bson:"ninety_list"`
+	NinetyFiveList  []TimeValue `json:"ninety_five_list" bson:"ninety_five_list"`
+	NinetyNineList  []TimeValue `json:"ninety_nine_list" bson:"ninety_nine_list"`
+}
+
+// 对比报告接口返回值
+type CompareReportResponse struct {
+	ReportNamesData     []string               `json:"report_names_data"`
+	ReportBaseData      []*mao.ReportTask      `json:"report_base_data"`
+	ReportCollectData   [][]*reportCollectData `json:"report_collect_data"`
+	ReportDetailAllData [][]*reportDetailData  `json:"report_detail_all_data"`
 }
