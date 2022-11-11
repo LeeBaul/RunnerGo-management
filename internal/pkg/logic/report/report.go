@@ -380,7 +380,8 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 	var resultMsg SceneTestResultDataMsg
 	var dataMap = make(map[string]string)
 	err = collection.FindOne(ctx, filter).Decode(dataMap)
-	if err != nil {
+	_, ok := dataMap["data"]
+	if err != nil || !ok {
 		rdb := dal.GetRDB()
 		key := fmt.Sprintf("%d:%d:reportData", report.PlanId, report.ReportID)
 		dataList := rdb.LRange(ctx, key, 0, -1).Val()
@@ -505,8 +506,15 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 					proof.Error("resultData转字节失败：：    ", proof.WithError(err))
 					return
 				}
+				var apiResultTotalMsg = make(map[string]string)
+				for _, value := range resultData.Results {
+					apiResultTotalMsg[value.ApiName] = fmt.Sprintf("平均响应时间为%f； 百分之五十响应时间线的值为%f; 百分之九十响应时间线的值为%f; 百分之九十五响应时间线的值为%f; 百分之九十九响应时间线的值为%f; RPS为%f; SRPS为%f",
+						value.AvgRequestTime, value.FiftyRequestTimelineValue, value.NinetyRequestTimeLineValue, value.NinetyFiveRequestTimeLineValue, value.NinetyNineRequestTimeLineValue, value.Qps, value.SRps)
+				}
 				dataMap["reportid"] = resultData.ReportId
 				dataMap["data"] = string(by)
+				by, _ = json.Marshal(apiResultTotalMsg)
+				dataMap["analysis"] = string(by)
 				_, err = collection.InsertOne(ctx, dataMap)
 				if err != nil {
 					proof.Error("测试数据写入mongo失败：    ", proof.WithError(err))
@@ -762,6 +770,8 @@ type ResultData struct {
 	SceneName  string                    `json:"scene_name"`
 	Results    map[string]*ResultDataMsg `json:"results"`
 	TimeStamp  int64                     `json:"time_stamp"`
+	Analysis   string                    `json:"analysis"`
+	Msg        string                    `json:"msg"`
 }
 
 type TimeValue struct {
