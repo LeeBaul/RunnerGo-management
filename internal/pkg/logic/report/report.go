@@ -316,7 +316,6 @@ func GetTaskDetail(ctx context.Context, req rao.GetReportTaskDetailReq) (*rao.Re
 				StepRunTime:      changeTaskConfTmp.ModeConf.StepRunTime,
 				MaxConcurrency:   changeTaskConfTmp.ModeConf.MaxConcurrency,
 				Duration:         changeTaskConfTmp.ModeConf.Duration,
-				CreatedTimeSec:   changeTaskConfTmp.ModeConf.CreatedTimeSec,
 			}
 			res.ChangeTakeConf = append(res.ChangeTakeConf, tmp)
 		}
@@ -578,6 +577,8 @@ type ApiTestResultDataMsg struct {
 	ReceivedBytes                  float64 `json:"received_bytes" bson:"received_bytes"` // 接收字节数
 	Qps                            float64 `json:"qps" bson:"qps"`
 	SRps                           float64 `json:"srps" bson:"srps"`
+	ApiName                        string  `json:"api_name" bson:"api_name"`
+	ErrorRate                      float64 `json:"error_rate" bson:"error_rate"`
 }
 
 // ResultDataMsg 前端展示各个api数据
@@ -620,18 +621,23 @@ type ResultDataMsg struct {
 	NinetyNineList                 []TimeValue `json:"ninety_nine_list" bson:"ninety_nine_list"`
 }
 
+type reportDataFmt struct {
+	ReportID string `json:"reportid" bson:"reportid"`
+	//Data     ResultData `json:"data" bson:"data"`
+	Data string `json:"data" bson:"data"`
+}
 type ResultData struct {
-	End        bool                      `json:"end"`
-	ReportId   string                    `json:"report_id"`
-	ReportName string                    `json:"report_name"`
-	PlanId     int64                     `json:"plan_id"`   // 任务ID
-	PlanName   string                    `json:"plan_name"` //
-	SceneId    int64                     `json:"scene_id"`  // 场景
-	SceneName  string                    `json:"scene_name"`
-	Results    map[string]*ResultDataMsg `json:"results"`
-	TimeStamp  int64                     `json:"time_stamp"`
-	Analysis   string                    `json:"analysis"`
-	Msg        string                    `json:"msg"`
+	End        bool                      `json:"end" bson:"end"`
+	ReportId   string                    `json:"report_id" bson:"report_id"`
+	ReportName string                    `json:"report_name" bson:"report_name"`
+	PlanId     int64                     `json:"plan_id" bson:"plan_id"`     // 任务ID
+	PlanName   string                    `json:"plan_name" bson:"plan_name"` //
+	SceneId    int64                     `json:"scene_id" bson:"scene_id"`   // 场景
+	SceneName  string                    `json:"scene_name" bson:"scene_name"`
+	Results    map[string]*ResultDataMsg `json:"results" bson:"results"`
+	TimeStamp  int64                     `json:"time_stamp" bson:"time_stamp"`
+	Analysis   string                    `json:"analysis" bson:"analysis"`
+	Msg        string                    `json:"msg" bson:"msg"`
 }
 
 type TimeValue struct {
@@ -639,6 +645,7 @@ type TimeValue struct {
 	Value     interface{} `json:"value" bson:"value"`
 }
 
+// GetCompareReportData 获取报告对比数据
 func GetCompareReportData(ctx context.Context, req rao.CompareReportReq) (*CompareReportResponse, error) {
 	// 获取报告的基本信息
 	reportTable := dal.GetQuery().Report
@@ -647,18 +654,43 @@ func GetCompareReportData(ctx context.Context, req rao.CompareReportReq) (*Compa
 		return nil, err
 	}
 
-	reportNames := make([]string, 0, len(reportBaseList))                    // 计划和场景名字
-	reportBaseData := make([]*mao.ReportTask, 0, len(reportBaseList))        // 报告基本信息
-	reportCollectMap := make([][]*reportCollectData, 0, len(reportBaseList)) // 报告汇总信息
+	reportNames := make([]string, 0, len(reportBaseList))                                 // 计划和场景名字
+	reportBaseResponse := make([]*reportBaseFormat, 0, len(reportBaseList))               // 报告基本信息
+	reportCollectAllDataResponse := make([]*reportCollectAllData, 0, len(reportBaseList)) // 报告汇总信息
+	reportDetailAllDataResponse := make([]*reportDetailAllData, 0, len(reportBaseList))   // 报告详情信息
 
-	//reportDetailMap := make([]*reportDetailData, 0, 10)
-	reportDetailAllMap := make([][]*reportDetailData, 0, len(reportBaseList)) // 报告详情信息
-
+	// 用户id集合
+	var runUserIds []int64
+	reportNamesMap := make(map[int64]string, len(req.ReportIDs))
+	reportUserMap := make(map[int64]int64, len(req.ReportIDs))
+	reportRunTimeMap := make(map[int64]time.Time, len(req.ReportIDs))
 	for _, reportBaseInfo := range reportBaseList {
 		// 把报告基本信息设置到map当中
 		planAndSceneName := reportBaseInfo.PlanName + "/" + reportBaseInfo.SceneName
 		reportNames = append(reportNames, planAndSceneName)
+		// 组装报告id和计划/场景名映射
+		reportNamesMap[reportBaseInfo.ID] = planAndSceneName
+		// 组装报告和运行人id的映射
+		reportUserMap[reportBaseInfo.ID] = reportBaseInfo.RunUserID
+		// 组装报告和报告运行时间映射
+		reportRunTimeMap[reportBaseInfo.ID] = reportBaseInfo.RanAt
 
+		// 组装用户id集合
+		runUserIds = append(runUserIds, reportBaseInfo.RunUserID)
+
+	}
+
+	// 查出用户信息
+	userTable := dal.GetQuery().User
+	userList, err := userTable.WithContext(ctx).Where(userTable.ID.In(runUserIds...)).Find()
+	if err != nil {
+		proof.Errorf("对比报告--查询用户信息失败，err:", err)
+		return nil, err
+	}
+	// 用户Id和名称映射数据
+	userMap := make(map[int64]string)
+	for _, userInfo := range userList {
+		userMap[userInfo.ID] = userInfo.Nickname
 	}
 
 	// 从mg查询任务对应的配置信息
@@ -666,102 +698,155 @@ func GetCompareReportData(ctx context.Context, req rao.CompareReportReq) (*Compa
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectReportTask)
 	reportTaskConfListTmp, err := collection.Find(ctx, bson.D{{"report_id", bson.D{{"$in", req.ReportIDs}}}})
 	if err != nil {
-		// todo
+		proof.Errorf("对比报告--从mongodb查询任务配置信息失败，err:", err)
 		return nil, err
 	}
 	if err := reportTaskConfListTmp.All(ctx, &reportTaskConfList); err != nil {
-		// todo
+		proof.Errorf("对比报告--从mongodb解析任务配置信息失败，err:", err)
 		return nil, err
 	}
 
+	reportBaseTmp := new(reportBaseFormat)
 	for _, reportTaskConfInfo := range reportTaskConfList {
-		reportBaseData = append(reportBaseData, reportTaskConfInfo)
+		year := reportRunTimeMap[reportTaskConfInfo.ReportID].Year()
+		month := reportRunTimeMap[reportTaskConfInfo.ReportID].Month()
+		day := reportRunTimeMap[reportTaskConfInfo.ReportID].Day()
+		hour := reportRunTimeMap[reportTaskConfInfo.ReportID].Hour()
+		minute := reportRunTimeMap[reportTaskConfInfo.ReportID].Minute()
+		second := reportRunTimeMap[reportTaskConfInfo.ReportID].Second()
+
+		reportBaseTmp = &reportBaseFormat{
+			ReportID:         reportTaskConfInfo.ReportID,
+			Name:             reportNamesMap[reportTaskConfInfo.ReportID],
+			Performer:        userMap[reportUserMap[reportTaskConfInfo.ReportID]],
+			CreatedTimeSec:   fmt.Sprintf("%d-%d-%d %d:%d:%d", year, month, day, hour, minute, second),
+			TaskType:         reportTaskConfInfo.TaskType,
+			TaskMode:         reportTaskConfInfo.TaskMode,
+			StartConcurrency: reportTaskConfInfo.ModeConf.StartConcurrency,
+			Step:             reportTaskConfInfo.ModeConf.Step,
+			StepRunTime:      reportTaskConfInfo.ModeConf.StepRunTime,
+			MaxConcurrency:   reportTaskConfInfo.ModeConf.MaxConcurrency,
+			Duration:         reportTaskConfInfo.ModeConf.Duration,
+			Concurrency:      reportTaskConfInfo.ModeConf.Concurrency,
+			ReheatTime:       reportTaskConfInfo.ModeConf.ReheatTime,
+			RoundNum:         reportTaskConfInfo.ModeConf.RoundNum,
+		}
+		reportBaseResponse = append(reportBaseResponse, reportBaseTmp)
 	}
 
 	// 从mg里面获取报告汇总信息
-	var reportDataList []*ResultData
+	var sceneTestResultDataMsgSlice []*reportDataFmt
+	reportIdsTmp := make([]string, 0, len(req.ReportIDs))
+	for _, reportID := range req.ReportIDs {
+		reportIDString := strconv.Itoa(int(reportID))
+		reportIdsTmp = append(reportIdsTmp, reportIDString)
+	}
 	collection = dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectReportData)
-	reportDataListTmp, err := collection.Find(ctx, bson.D{{"reportid", bson.D{{"$in", req.ReportIDs}}}})
+	reportDataListTmp, err := collection.Find(ctx, bson.D{{"reportid", bson.D{{"$in", reportIdsTmp}}}})
 	if err != nil {
-		// todo
+		proof.Errorf("对比报告--从mongodb查询报告数据失败，err:", err)
 		return nil, err
 	}
-	if err := reportDataListTmp.All(ctx, &reportDataList); err != nil {
-		// todo
+	if err := reportDataListTmp.All(ctx, &sceneTestResultDataMsgSlice); err != nil {
+		proof.Errorf("对比报告--从mongodb解析报告数据失败，err:", err)
 		return nil, err
 	}
 
 	// 先组装一个事件id对应报告结果数据
-	for _, reportData := range reportDataList {
-		//rId, err := strconv.Atoi(reportData.ReportId)
-		//if err != nil {
-		//	continue
-		//}
-
-		var reportCollectMapTmp []*reportCollectData
-		var reportDetailDataSlice []*reportDetailData
-		for _, reportMsg := range reportData.Results {
-			sceneNodeMap := &reportCollectData{
-				ApiName:                   reportMsg.ApiName,
-				TotalRequestNum:           reportMsg.TotalRequestNum,
-				TotalRequestTime:          reportMsg.TotalRequestTime,
-				MaxRequestTime:            reportMsg.MaxRequestTime,
-				MinRequestTime:            reportMsg.MinRequestTime,
-				AvgRequestTime:            reportMsg.AvgRequestTime,
-				NinetyRequestTimeLine:     reportMsg.NinetyRequestTimeLine,
-				NinetyFiveRequestTimeLine: reportMsg.NinetyFiveRequestTimeLine,
-				NinetyNineRequestTimeLine: reportMsg.NinetyNineRequestTimeLine,
-				Qps:                       reportMsg.Qps,
-				SRps:                      reportMsg.SRps,
-				ErrorRate:                 reportMsg.ErrorRate,
-				ReceivedBytes:             reportMsg.ReceivedBytes,
-				SendBytes:                 reportMsg.SendBytes,
+	reportCollectDataSlice := make([]*reportCollectData, 0, len(req.ReportIDs))
+	reportCollectDataMap := make(map[string]*reportDetailData, len(req.ReportIDs))
+	for _, sceneTestResultData := range sceneTestResultDataMsgSlice {
+		var sceneTestResultDataTmp ResultData
+		err := json.Unmarshal([]byte(sceneTestResultData.Data), &sceneTestResultDataTmp)
+		if err != nil {
+			proof.Errorf("对比报告--解析报告详情数据失败，err:", err)
+			return nil, err
+		}
+		for apiId, resultsInfo := range sceneTestResultDataTmp.Results {
+			reportCollectDataOne := &reportCollectData{
+				ApiName:                   resultsInfo.ApiName,
+				TotalRequestNum:           resultsInfo.TotalRequestNum,
+				TotalRequestTime:          resultsInfo.TotalRequestTime,
+				MaxRequestTime:            resultsInfo.MaxRequestTime,
+				MinRequestTime:            resultsInfo.MinRequestTime,
+				AvgRequestTime:            resultsInfo.AvgRequestTime,
+				NinetyRequestTimeLine:     resultsInfo.NinetyRequestTimeLine,
+				NinetyFiveRequestTimeLine: resultsInfo.NinetyFiveRequestTimeLine,
+				NinetyNineRequestTimeLine: resultsInfo.NinetyNineRequestTimeLine,
+				Qps:                       resultsInfo.Qps,
+				SRps:                      resultsInfo.SRps,
+				ErrorRate:                 resultsInfo.ErrorRate,
+				ReceivedBytes:             resultsInfo.ReceivedBytes,
+				SendBytes:                 resultsInfo.SendBytes,
 			}
-			reportCollectMapTmp = append(reportCollectMapTmp, sceneNodeMap)
+			reportCollectDataSlice = append(reportCollectDataSlice, reportCollectDataOne)
 
-			// 接口请求详情数据
-			reportDetailDataTmp := &reportDetailData{
-				AvgList:         reportMsg.AvgList,
-				QpsList:         reportMsg.QpsList,
-				ConcurrencyList: reportMsg.ConcurrencyList,
-				ErrorNumList:    reportMsg.ErrorNumList,
-				FiftyList:       reportMsg.FiftyList,
-				NinetyList:      reportMsg.NinetyList,
-				NinetyFiveList:  reportMsg.NinetyFiveList,
-				NinetyNineList:  reportMsg.NinetyNineList,
+			reportCollectDataMap[apiId] = &reportDetailData{
+				ApiName:         resultsInfo.ApiName,
+				AvgList:         resultsInfo.AvgList,
+				QpsList:         resultsInfo.QpsList,
+				ConcurrencyList: resultsInfo.ConcurrencyList,
+				ErrorNumList:    resultsInfo.ErrorNumList,
+				FiftyList:       resultsInfo.FiftyList,
+				NinetyList:      resultsInfo.NinetyList,
+				NinetyFiveList:  resultsInfo.NinetyFiveList,
+				NinetyNineList:  resultsInfo.NinetyNineList,
 			}
-			reportDetailDataSlice = append(reportDetailDataSlice, reportDetailDataTmp)
 		}
 
-		reportCollectMap = append(reportCollectMap, reportCollectMapTmp)
-		reportDetailAllMap = append(reportDetailAllMap, reportDetailDataSlice)
+		rId, err := strconv.Atoi(sceneTestResultData.ReportID)
+		if err != nil {
+			proof.Errorf("对比报告--报告id类型转换失败，err:", err)
+			return nil, err
+		}
+		reportCollectAllDataResponse = append(reportCollectAllDataResponse, &reportCollectAllData{
+			Name: reportNamesMap[int64(rId)],
+			Data: reportCollectDataSlice,
+		})
+
+		timeLayout := "2006-01-02 15:04:05"
+		createdTime := time.Unix(sceneTestResultDataTmp.TimeStamp, 0).Format(timeLayout)
+
+		reportDetailAllDataResponse = append(reportDetailAllDataResponse, &reportDetailAllData{
+			Name: reportNamesMap[int64(rId)],
+			Time: createdTime,
+			Data: reportCollectDataMap,
+		})
 	}
 
 	res := &CompareReportResponse{
 		ReportNamesData:     reportNames,
-		ReportBaseData:      reportBaseData,
-		ReportCollectData:   reportCollectMap,
-		ReportDetailAllData: reportDetailAllMap,
+		ReportBaseData:      reportBaseResponse,
+		ReportCollectData:   reportCollectAllDataResponse,
+		ReportDetailAllData: reportDetailAllDataResponse,
 	}
 
 	return res, nil
 }
 
-type reportBaseValue struct {
-	ReportID      int64  `json:"report_id"`
-	Name          string `json:"name"`
-	RunUserID     int64  `json:"run_user_id"`
-	Performer     string `json:"performer"`
-	CreateTimeSec int64  `json:"create_time_sec"`
-	TaskType      int32  `json:"task_type"` // 任务类型
-	TaskMode      int32  `json:"task_mode"` // 压测模式
-	rao.ModeConf
+type reportBaseFormat struct {
+	ReportID         int64  `json:"report_id"`
+	Name             string `json:"name"`
+	Performer        string `json:"performer"`
+	CreatedTimeSec   string `json:"created_time_sec"`  // 创建时间
+	TaskType         int32  `json:"task_type"`         // 任务类型
+	TaskMode         int32  `json:"task_mode"`         // 压测模式
+	StartConcurrency int64  `json:"start_concurrency"` // 起始并发数
+	Step             int64  `json:"step"`              // 步长
+	StepRunTime      int64  `json:"step_run_time"`     // 步长执行时长
+	MaxConcurrency   int64  `json:"max_concurrency"`   // 最大并发数
+	Duration         int64  `json:"duration"`          // 稳定持续时长，持续时长
+	Concurrency      int64  `json:"concurrency"`       // 并发数
+	ReheatTime       int64  `json:"reheat_time"`       // 预热时长
+	RoundNum         int64  `json:"round_num"`         // 轮次
+
+	ThresholdValue int64 `json:"threshold_value"` // 阈值
+
 }
 
 type reportCollectAllData struct {
-	ReportId          int64                `json:"report_id"`
-	PlanAndScene      string               `json:"plan_and_scene"` // 计划和场景名称
-	ReportCollectData []*reportCollectData `json:"report_collect_data"`
+	Name string               `json:"name"` // 计划和场景名称
+	Data []*reportCollectData `json:"data"`
 }
 type reportCollectData struct {
 	ApiName                   string  `json:"api_name" bson:"api_name"`
@@ -780,7 +865,13 @@ type reportCollectData struct {
 	SendBytes                 float64 `json:"send_bytes" bson:"send_bytes"`         // 发送字节数
 }
 
+type reportDetailAllData struct {
+	Name string                       `json:"name" bson:"name"`
+	Time string                       `json:"time" bson:"time"`
+	Data map[string]*reportDetailData `json:"data" bson:"data"`
+}
 type reportDetailData struct {
+	ApiName         string      `json:"api_name" bson:"api_name"`
 	AvgList         []TimeValue `json:"avg_list" bson:"avg_list"`
 	QpsList         []TimeValue `json:"qps_list" bson:"qps_list"`
 	ConcurrencyList []TimeValue `json:"concurrency_list" bson:"concurrency_list"`
@@ -791,10 +882,10 @@ type reportDetailData struct {
 	NinetyNineList  []TimeValue `json:"ninety_nine_list" bson:"ninety_nine_list"`
 }
 
-// 对比报告接口返回值
+// CompareReportResponse 对比报告接口返回值
 type CompareReportResponse struct {
-	ReportNamesData     []string               `json:"report_names_data"`
-	ReportBaseData      []*mao.ReportTask      `json:"report_base_data"`
-	ReportCollectData   [][]*reportCollectData `json:"report_collect_data"`
-	ReportDetailAllData [][]*reportDetailData  `json:"report_detail_all_data"`
+	ReportNamesData     []string                `json:"report_names_data"`
+	ReportBaseData      []*reportBaseFormat     `json:"report_base_data"`
+	ReportCollectData   []*reportCollectAllData `json:"report_collect_data"`
+	ReportDetailAllData []*reportDetailAllData  `json:"report_detail_all_data"`
 }

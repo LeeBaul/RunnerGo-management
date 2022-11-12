@@ -5,7 +5,6 @@ import (
 	"kp-management/internal/pkg/dal/mao"
 	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/rao"
-	"time"
 )
 
 func TransPlansToRaoPlanList(plans []*model.Plan, users []*model.User) []*rao.Plan {
@@ -194,7 +193,6 @@ func TransChangeReportConfRunToMao(req rao.ChangeTaskConfReq) *mao.ChangeTaskCon
 			StepRunTime:      req.ModeConf.StepRunTime,
 			MaxConcurrency:   req.ModeConf.MaxConcurrency,
 			Duration:         req.ModeConf.Duration,
-			CreatedTimeSec:   time.Now().Unix(),
 		},
 	}
 }
