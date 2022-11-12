@@ -164,106 +164,125 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectTask)
 
-	return query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
-
-		err := collection.FindOne(ctx, bson.D{{"scene_id", req.SceneID}}).Err()
-		if err == mongo.ErrNoDocuments {
-			//if _, err := tx.Plan.WithContext(ctx).Omit(tx.Plan.CreateUserID).Updates(plan); err != nil {
-			//	return err
-			//}
-
-			_, err := collection.InsertOne(ctx, task)
-			if err != nil {
-				return err
-			}
-
-			err = record.InsertCreate(ctx, plan.TeamID, userID, record.OperationOperateCreatePlan, plan.Name)
-			if err != nil {
-				return err
-			}
-		}
-
-		if err == nil {
-			//if _, err := tx.Plan.WithContext(ctx).Omit(tx.Plan.CreateUserID).Updates(plan); err != nil {
-			//	return err
-			//}
-
-			_, err = collection.UpdateOne(ctx, bson.D{{"scene_id", req.SceneID}}, bson.M{"$set": task})
-			if err != nil {
-				return err
-			}
-
-			err := record.InsertUpdate(ctx, plan.TeamID, userID, record.OperationOperateUpdatePlan, plan.Name)
-			if err != nil {
-				return err
-			}
-		}
-
-		cur, err := collection.Find(ctx, bson.D{{"plan_id", req.PlanID}})
-		if err != nil {
-			return err
-		}
-		var tasks []*mao.Task
-		if err := cur.All(ctx, &tasks); err != nil {
-			return err
-		}
-
-		if len(tasks) > 0 {
-			planType := tasks[0].TaskType
-			planMode := tasks[0].TaskMode
-			for i, t := range tasks {
-				if i > 0 {
-					if t.TaskType != planType {
-						planType = consts.PlanTaskTypeMix
-					}
-					if t.TaskMode != planMode {
-						planMode = consts.PlanModeMix
-					}
-				}
-			}
-
-			_, err := tx.Plan.WithContext(ctx).Where(tx.Plan.ID.Eq(req.PlanID)).UpdateSimple(tx.Plan.TaskType.Value(planType), tx.Plan.Mode.Value(planMode))
-			if err != nil {
-				return err
-			}
-		}
-
-		// 把定时任务保存到数据库中
-		if req.TaskType == consts.PlanTaskTypeCronjob {
-			// 查询当前定时任务是否存在
+	// 判断任务配置类型
+	if req.TaskType == 1 { // 普通任务
+		return query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
+			// 1、先去把定时任务数据删掉
 			_, err := tx.TimedTaskConf.WithContext(ctx).
 				Where(tx.TimedTaskConf.TeamID.Eq(req.TeamID)).
 				Where(tx.TimedTaskConf.PlanID.Eq(req.PlanID)).
-				Where(tx.TimedTaskConf.SenceID.Eq(req.SceneID)).First()
-			if err != nil && err != gorm.ErrRecordNotFound {
-				proof.Infof("查询定时任务数据失败，err:", req)
-				return err
-			} else if err == gorm.ErrRecordNotFound {
-				// 新增配置
-				timingTaskConfig := packer.TransSaveTimingTaskConfigReqToModelData(req)
-				err = tx.TimedTaskConf.WithContext(ctx).Create(timingTaskConfig)
+				Where(tx.TimedTaskConf.SenceID.Eq(req.SceneID)).Delete()
+			if err != nil {
+				proof.Infof("保存配置--不存在定时任务或删除mysql失败")
+			}
+
+			// 2、去mg里面创建或更新配置数据
+			err = collection.FindOne(ctx, bson.D{{"scene_id", req.SceneID}}).Err()
+			if err == mongo.ErrNoDocuments {
+				// 如果没有当前场景配置，则创建
+				_, err := collection.InsertOne(ctx, task)
 				if err != nil {
-					proof.Infof("定时任务配置项保存失败，err：", err)
+					proof.Errorf("保存配置--在mg保存任务配置失败，err:", err)
 					return err
 				}
-			} else {
-				// 修改配置
-				updateData := make(map[string]interface{}, 3)
-				updateData["frequency"] = req.TimedTaskConf.Frequency
-				updateData["task_exec_time"] = req.TimedTaskConf.TaskExecTime
-				updateData["task_close_time"] = req.TimedTaskConf.TaskCloseTime
-				updateData["status"] = consts.TimedTaskWaitEnable
-				_, err := tx.TimedTaskConf.WithContext(ctx).Where(tx.TimedTaskConf.TeamID.Eq(req.TeamID)).
-					Where(tx.TimedTaskConf.PlanID.Eq(req.PlanID)).
-					Where(tx.TimedTaskConf.SenceID.Eq(req.SceneID)).Updates(updateData)
+
+				err = record.InsertCreate(ctx, plan.TeamID, userID, record.OperationOperateCreatePlan, plan.Name)
 				if err != nil {
-					proof.Infof("更新定时任务配置失败，err:", err)
+					proof.Errorf("保存配置--保存操作日志失败，err:", err)
+					return err
 				}
+			}
+
+			if err == nil { // 如果mg里面有数据的话
+				_, err = collection.UpdateOne(ctx, bson.D{{"scene_id", req.SceneID}}, bson.M{"$set": task})
+				if err != nil {
+					proof.Errorf("保存配置--更新任务配置项失败，err:", err)
+					return err
+				}
+
+				err := record.InsertUpdate(ctx, plan.TeamID, userID, record.OperationOperateUpdatePlan, plan.Name)
+				if err != nil {
+					proof.Errorf("保存配置--保存操作日志失败，err:", err)
+					return err
+				}
+			}
+
+			cur, err := collection.Find(ctx, bson.D{{"plan_id", req.PlanID}})
+			if err != nil {
+				proof.Errorf("保存配置--查找当前计划下所有任务配置失败，plan_id:", req.PlanID, " err:", err)
+				return err
+			}
+			var tasks []*mao.Task
+			if err := cur.All(ctx, &tasks); err != nil {
+				proof.Errorf("保存配置--解析当前计划下所有任务配置失败，plan_id:", req.PlanID, " err:", err)
+				return err
+			}
+
+			if len(tasks) > 0 {
+				planType := tasks[0].TaskType
+				planMode := tasks[0].TaskMode
+				for i, t := range tasks {
+					if i > 0 {
+						if t.TaskType != planType {
+							planType = consts.PlanTaskTypeMix
+						}
+						if t.TaskMode != planMode {
+							planMode = consts.PlanModeMix
+						}
+					}
+				}
+
+				_, err := tx.Plan.WithContext(ctx).Where(tx.Plan.ID.Eq(req.PlanID)).UpdateSimple(tx.Plan.TaskType.Value(planType), tx.Plan.Mode.Value(planMode))
+				if err != nil {
+					return err
+				}
+			}
+			return nil
+		})
+	} else { // 定时任务
+		// 1、先去把mg里面可能存在的普通任务配置给删掉
+		_, err := collection.DeleteOne(ctx, bson.D{{"scene_id", req.SceneID}})
+		if err != nil {
+			proof.Infof("保存配置--不存在普通任务或删除mg失败")
+			return err
+		}
+
+		tx := dal.GetQuery().TimedTaskConf
+		// 把定时任务保存到数据库中
+		// 查询当前定时任务是否存在
+		_, err = tx.WithContext(ctx).
+			Where(tx.TeamID.Eq(req.TeamID)).
+			Where(tx.PlanID.Eq(req.PlanID)).
+			Where(tx.SenceID.Eq(req.SceneID)).First()
+		if err != nil && err != gorm.ErrRecordNotFound {
+			proof.Infof("保存配置--查询定时任务数据失败，err:", req)
+			return err
+		} else if err == gorm.ErrRecordNotFound {
+			// 新增配置
+			timingTaskConfig := packer.TransSaveTimingTaskConfigReqToModelData(req)
+			err = tx.WithContext(ctx).Create(timingTaskConfig)
+			if err != nil {
+				proof.Infof("保存配置--定时任务配置项保存失败，err：", err)
+				return err
+			}
+		} else {
+			// 修改配置
+			updateData := make(map[string]interface{}, 3)
+			updateData["frequency"] = req.TimedTaskConf.Frequency
+			updateData["task_exec_time"] = req.TimedTaskConf.TaskExecTime
+			updateData["task_close_time"] = req.TimedTaskConf.TaskCloseTime
+			updateData["status"] = consts.TimedTaskWaitEnable
+			_, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(req.TeamID)).
+				Where(tx.PlanID.Eq(req.PlanID)).
+				Where(tx.SenceID.Eq(req.SceneID)).Updates(updateData)
+			if err != nil {
+				proof.Infof("保存配置--更新定时任务配置失败，err:", err)
+				return err
 			}
 		}
 
-		return nil
-	})
+	}
+	return nil
 }
 
 func GetPlanTask(ctx context.Context, planID, sceneID int64) (*rao.PlanTask, error) {
