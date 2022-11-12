@@ -764,20 +764,21 @@ func GetCompareReportData(ctx context.Context, req rao.CompareReportReq) (*Compa
 		}
 		for apiId, resultsInfo := range sceneTestResultDataTmp.Results {
 			reportCollectDataOne := &reportCollectData{
-				ApiName:                   resultsInfo.ApiName,
-				TotalRequestNum:           resultsInfo.TotalRequestNum,
-				TotalRequestTime:          resultsInfo.TotalRequestTime,
-				MaxRequestTime:            resultsInfo.MaxRequestTime,
-				MinRequestTime:            resultsInfo.MinRequestTime,
-				AvgRequestTime:            resultsInfo.AvgRequestTime,
-				NinetyRequestTimeLine:     resultsInfo.NinetyRequestTimeLine,
-				NinetyFiveRequestTimeLine: resultsInfo.NinetyFiveRequestTimeLine,
-				NinetyNineRequestTimeLine: resultsInfo.NinetyNineRequestTimeLine,
-				Qps:                       resultsInfo.Qps,
-				SRps:                      resultsInfo.SRps,
-				ErrorRate:                 resultsInfo.ErrorRate,
-				ReceivedBytes:             resultsInfo.ReceivedBytes,
-				SendBytes:                 resultsInfo.SendBytes,
+				ApiName:                        resultsInfo.ApiName,
+				TotalRequestNum:                resultsInfo.TotalRequestNum,
+				TotalRequestTime:               resultsInfo.TotalRequestTime,
+				MaxRequestTime:                 resultsInfo.MaxRequestTime,
+				MinRequestTime:                 resultsInfo.MinRequestTime,
+				AvgRequestTime:                 resultsInfo.AvgRequestTime,
+				FiftyRequestTimelineValue:      resultsInfo.FiftyRequestTimelineValue,
+				NinetyRequestTimeLineValue:     resultsInfo.NinetyRequestTimeLineValue,
+				NinetyFiveRequestTimeLineValue: resultsInfo.NinetyFiveRequestTimeLineValue,
+				NinetyNineRequestTimeLineValue: resultsInfo.NinetyNineRequestTimeLineValue,
+				Qps:                            resultsInfo.Qps,
+				SRps:                           resultsInfo.SRps,
+				ErrorRate:                      resultsInfo.ErrorRate,
+				ReceivedBytes:                  resultsInfo.ReceivedBytes,
+				SendBytes:                      resultsInfo.SendBytes,
 			}
 			reportCollectDataSlice = append(reportCollectDataSlice, reportCollectDataOne)
 
@@ -849,20 +850,25 @@ type reportCollectAllData struct {
 	Data []*reportCollectData `json:"data"`
 }
 type reportCollectData struct {
-	ApiName                   string  `json:"api_name" bson:"api_name"`
-	TotalRequestNum           uint64  `json:"total_request_num" bson:"total_request_num"`   // 总请求数
-	TotalRequestTime          float64 `json:"total_request_time" bson:"total_request_time"` // 总响应时间
-	MaxRequestTime            float64 `json:"max_request_time" bson:"max_request_time"`
-	MinRequestTime            float64 `json:"min_request_time" bson:"min_request_time"` // 毫秒
-	AvgRequestTime            float64 `json:"avg_request_time" bson:"avg_request_time"` // 平均响应事件
-	NinetyRequestTimeLine     int64   `json:"ninety_request_time_line" bson:"ninety_request_time_line"`
-	NinetyFiveRequestTimeLine int64   `json:"ninety_five_request_time_line" bson:"ninety_five_request_time_line"`
-	NinetyNineRequestTimeLine int64   `json:"ninety_nine_request_time_line" bson:"ninety_nine_request_time_line"`
-	Qps                       float64 `json:"qps" bson:"qps"`
-	SRps                      float64 `json:"srps" bson:"srps"`
-	ErrorRate                 float64 `json:"error_rate" bson:"error_rate"`
-	ReceivedBytes             float64 `json:"received_bytes" bson:"received_bytes"` // 接收字节数
-	SendBytes                 float64 `json:"send_bytes" bson:"send_bytes"`         // 发送字节数
+	ApiName                        string  `json:"api_name" bson:"api_name"`
+	TotalRequestNum                uint64  `json:"total_request_num" bson:"total_request_num"`   // 总请求数
+	TotalRequestTime               float64 `json:"total_request_time" bson:"total_request_time"` // 总响应时间
+	MaxRequestTime                 float64 `json:"max_request_time" bson:"max_request_time"`
+	MinRequestTime                 float64 `json:"min_request_time" bson:"min_request_time"` // 毫秒
+	AvgRequestTime                 float64 `json:"avg_request_time" bson:"avg_request_time"` // 平均响应事件
+	FiftyRequestTimeline           int64   `json:"fifty_request_time_line" bson:"fifty_request_time_line"`
+	NinetyRequestTimeLine          int64   `json:"ninety_request_time_line" bson:"ninety_request_time_line"`
+	NinetyFiveRequestTimeLine      int64   `json:"ninety_five_request_time_line" bson:"ninety_five_request_time_line"`
+	NinetyNineRequestTimeLine      int64   `json:"ninety_nine_request_time_line" bson:"ninety_nine_request_time_line"`
+	FiftyRequestTimelineValue      float64 `json:"fifty_request_time_line_value" bson:"fifty_request_time_line_value"`
+	NinetyRequestTimeLineValue     float64 `json:"ninety_request_time_line_value" bson:"ninety_request_time_line_value"`
+	NinetyFiveRequestTimeLineValue float64 `json:"ninety_five_request_time_line_value" bson:"ninety_five_request_time_line_value"`
+	NinetyNineRequestTimeLineValue float64 `json:"ninety_nine_request_time_line_value" bson:"ninety_nine_request_time_line_value"`
+	Qps                            float64 `json:"qps" bson:"qps"`
+	SRps                           float64 `json:"srps" bson:"srps"`
+	ErrorRate                      float64 `json:"error_rate" bson:"error_rate"`
+	ReceivedBytes                  float64 `json:"received_bytes" bson:"received_bytes"` // 接收字节数
+	SendBytes                      float64 `json:"send_bytes" bson:"send_bytes"`         // 发送字节数
 }
 
 type reportDetailAllData struct {
