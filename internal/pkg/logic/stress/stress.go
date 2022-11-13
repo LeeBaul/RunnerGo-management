@@ -278,20 +278,44 @@ type AssembleTask struct {
 }
 
 func (s *AssembleTask) Execute(baton *Baton) (int, error) {
-	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectTask)
-	cur, err := collection.Find(baton.Ctx, bson.D{{"plan_id", baton.PlanID}})
-	if err != nil {
-		return errno.ErrMongoFailed, err
-	}
-
-	var task []*mao.Task
-	if err := cur.All(baton.Ctx, &task); err != nil {
-		return errno.ErrMongoFailed, err
-	}
-
 	memo := make(map[int64]*mao.Task)
-	for _, t := range task {
-		memo[t.SceneID] = t
+
+	// 判断参数是否包含scene_ids
+	if len(baton.SceneIDs) > 0 { // 包含则说明当前任务时定时任务
+		tx := dal.GetQuery().TimedTaskConf
+		timedTaskConfInfo, err := tx.WithContext(baton.Ctx).Where(tx.SenceID.Eq(baton.SceneIDs[0])).First()
+		if err != nil {
+			return errno.ErrMysqlFailed, err
+		}
+
+		var modeConf mao.ModeConf
+		err = json.Unmarshal([]byte(timedTaskConfInfo.ModeConf), &modeConf)
+		if err != nil {
+			proof.Errorf("运行定时任务--解析任务配置文件失败")
+			return errno.ErrUnMarshalFailed, err
+		}
+		memo[baton.SceneIDs[0]] = &mao.Task{
+			PlanID:   timedTaskConfInfo.PlanID,
+			SceneID:  timedTaskConfInfo.SenceID,
+			TaskType: timedTaskConfInfo.TaskType,
+			TaskMode: timedTaskConfInfo.TaskMode,
+			ModeConf: &modeConf,
+		}
+	} else { // 普通任务
+		collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectTask)
+		cur, err := collection.Find(baton.Ctx, bson.D{{"plan_id", baton.PlanID}})
+		if err != nil {
+			return errno.ErrMongoFailed, err
+		}
+
+		var task []*mao.Task
+		if err := cur.All(baton.Ctx, &task); err != nil {
+			return errno.ErrMongoFailed, err
+		}
+
+		for _, t := range task {
+			memo[t.SceneID] = t
+		}
 	}
 
 	baton.task = memo

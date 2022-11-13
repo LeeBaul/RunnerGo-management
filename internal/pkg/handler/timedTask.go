@@ -120,7 +120,7 @@ func runTimedTask(ctx *gin.Context, timedTaskInfo *model.TimedTaskConf) error {
 		_, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(timedTaskInfo.TeamID)).
 			Where(tx.PlanID.Eq(timedTaskInfo.PlanID)).
 			Where(tx.SenceID.Eq(timedTaskInfo.SenceID)).
-			UpdateColumn(tx.Status, consts.PlanStatusUnderway)
+			UpdateColumn(tx.Status, consts.TimedTaskInExec)
 		if err != nil {
 			proof.Infof("定时任务状态修改失败，err：", err, " 参数为：", runStressParams)
 		}
