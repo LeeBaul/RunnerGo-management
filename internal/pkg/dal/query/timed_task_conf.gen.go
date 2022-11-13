@@ -34,6 +34,9 @@ func newTimedTaskConf(db *gorm.DB, opts ...gen.DOOption) timedTaskConf {
 	_timedTaskConf.Frequency = field.NewInt32(tableName, "frequency")
 	_timedTaskConf.TaskExecTime = field.NewInt64(tableName, "task_exec_time")
 	_timedTaskConf.TaskCloseTime = field.NewInt64(tableName, "task_close_time")
+	_timedTaskConf.TaskType = field.NewInt32(tableName, "task_type")
+	_timedTaskConf.TaskMode = field.NewInt32(tableName, "task_mode")
+	_timedTaskConf.ModeConf = field.NewString(tableName, "mode_conf")
 	_timedTaskConf.Status = field.NewInt32(tableName, "status")
 	_timedTaskConf.CreatedAt = field.NewTime(tableName, "created_at")
 	_timedTaskConf.UpdatedAt = field.NewTime(tableName, "updated_at")
@@ -48,17 +51,20 @@ type timedTaskConf struct {
 	timedTaskConfDo timedTaskConfDo
 
 	ALL           field.Asterisk
-	ID            field.Int32 // 表id
-	PlanID        field.Int64 // 计划id
-	SenceID       field.Int64 // 场景id
-	TeamID        field.Int64 // 团队id
-	Frequency     field.Int32 // 任务执行频次
-	TaskExecTime  field.Int64 // 任务执行时间
-	TaskCloseTime field.Int64 // 任务结束时间
-	Status        field.Int32 // 任务状态：0-未执行，1-执行中，2-已过期，3-已删除
-	CreatedAt     field.Time  // 创建时间
-	UpdatedAt     field.Time  // 更新时间
-	DeletedAt     field.Field // 删除时间
+	ID            field.Int32  // 表id
+	PlanID        field.Int64  // 计划id
+	SenceID       field.Int64  // 场景id
+	TeamID        field.Int64  // 团队id
+	Frequency     field.Int32  // 任务执行频次
+	TaskExecTime  field.Int64  // 任务执行时间
+	TaskCloseTime field.Int64  // 任务结束时间
+	TaskType      field.Int32  // 任务类型：1-普通任务，2-定时任务
+	TaskMode      field.Int32  // 压测模式：1-并发模式，2-阶梯模式，3-错误率模式，4-响应时间模式，5-每秒请求数模式，  6 //每秒事务数模式，
+	ModeConf      field.String // 压测详细配置
+	Status        field.Int32  // 任务状态：0-未启用，1-运行中，3-已过期
+	CreatedAt     field.Time   // 创建时间
+	UpdatedAt     field.Time   // 更新时间
+	DeletedAt     field.Field  // 删除时间
 
 	fieldMap map[string]field.Expr
 }
@@ -82,6 +88,9 @@ func (t *timedTaskConf) updateTableName(table string) *timedTaskConf {
 	t.Frequency = field.NewInt32(table, "frequency")
 	t.TaskExecTime = field.NewInt64(table, "task_exec_time")
 	t.TaskCloseTime = field.NewInt64(table, "task_close_time")
+	t.TaskType = field.NewInt32(table, "task_type")
+	t.TaskMode = field.NewInt32(table, "task_mode")
+	t.ModeConf = field.NewString(table, "mode_conf")
 	t.Status = field.NewInt32(table, "status")
 	t.CreatedAt = field.NewTime(table, "created_at")
 	t.UpdatedAt = field.NewTime(table, "updated_at")
@@ -110,7 +119,7 @@ func (t *timedTaskConf) GetFieldByName(fieldName string) (field.OrderExpr, bool)
 }
 
 func (t *timedTaskConf) fillFieldMap() {
-	t.fieldMap = make(map[string]field.Expr, 11)
+	t.fieldMap = make(map[string]field.Expr, 14)
 	t.fieldMap["id"] = t.ID
 	t.fieldMap["plan_id"] = t.PlanID
 	t.fieldMap["sence_id"] = t.SenceID
@@ -118,6 +127,9 @@ func (t *timedTaskConf) fillFieldMap() {
 	t.fieldMap["frequency"] = t.Frequency
 	t.fieldMap["task_exec_time"] = t.TaskExecTime
 	t.fieldMap["task_close_time"] = t.TaskCloseTime
+	t.fieldMap["task_type"] = t.TaskType
+	t.fieldMap["task_mode"] = t.TaskMode
+	t.fieldMap["mode_conf"] = t.ModeConf
 	t.fieldMap["status"] = t.Status
 	t.fieldMap["created_at"] = t.CreatedAt
 	t.fieldMap["updated_at"] = t.UpdatedAt

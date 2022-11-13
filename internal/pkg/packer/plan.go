@@ -1,6 +1,7 @@
 package packer
 
 import (
+	"encoding/json"
 	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/dal/mao"
 	"kp-management/internal/pkg/dal/model"
@@ -166,7 +167,12 @@ func TransMaoPreinstallToRaoPreinstall(p *mao.Preinstall) *rao.Preinstall {
 	}
 }
 
-func TransSaveTimingTaskConfigReqToModelData(req *rao.SavePlanConfReq) *model.TimedTaskConf {
+func TransSaveTimingTaskConfigReqToModelData(req *rao.SavePlanConfReq) (*model.TimedTaskConf, error) {
+	// 把mode_conf压缩成字符串
+	modeConfString, err := json.Marshal(req.ModeConf)
+	if err != nil {
+		return nil, err
+	}
 	return &model.TimedTaskConf{
 		PlanID:        req.PlanID,
 		SenceID:       req.SceneID,
@@ -174,8 +180,11 @@ func TransSaveTimingTaskConfigReqToModelData(req *rao.SavePlanConfReq) *model.Ti
 		Frequency:     req.TimedTaskConf.Frequency,
 		TaskExecTime:  req.TimedTaskConf.TaskExecTime,
 		TaskCloseTime: req.TimedTaskConf.TaskCloseTime,
+		TaskType:      req.TaskType,
+		TaskMode:      req.Mode,
+		ModeConf:      string(modeConfString),
 		Status:        0,
-	}
+	}, nil
 }
 
 func TransChangeReportConfRunToMao(req rao.ChangeTaskConfReq) *mao.ChangeTaskConf {

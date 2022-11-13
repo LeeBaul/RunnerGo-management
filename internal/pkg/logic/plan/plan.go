@@ -2,6 +2,7 @@ package plan
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/go-omnibus/proof"
 	"gorm.io/gorm"
@@ -173,27 +174,31 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 				Where(tx.TimedTaskConf.PlanID.Eq(req.PlanID)).
 				Where(tx.TimedTaskConf.SenceID.Eq(req.SceneID)).Delete()
 			if err != nil {
-				proof.Infof("保存配置--不存在定时任务或删除mysql失败")
+				proof.Infof("保存配置--不存在定时任务或删除mysql失败,err:", err)
 			}
 
 			// 2、去mg里面创建或更新配置数据
 			err = collection.FindOne(ctx, bson.D{{"scene_id", req.SceneID}}).Err()
-			if err == mongo.ErrNoDocuments {
-				// 如果没有当前场景配置，则创建
-				_, err := collection.InsertOne(ctx, task)
-				if err != nil {
-					proof.Errorf("保存配置--在mg保存任务配置失败，err:", err)
+			if err != nil {
+				if err == mongo.ErrNoDocuments { // 如果没查到
+					// 如果没有当前场景配置，则创建
+					_, err := collection.InsertOne(ctx, task)
+					if err != nil {
+						proof.Errorf("保存配置--在mg保存任务配置失败，err:", err)
+						return err
+					}
+
+					// 记录操作日志
+					err = record.InsertCreate(ctx, plan.TeamID, userID, record.OperationOperateCreatePlan, plan.Name)
+					if err != nil {
+						proof.Errorf("保存配置--保存操作日志失败，err:", err)
+						return err
+					}
+				} else {
+					proof.Errorf("保存配置--查找任务配置失败，err:", err)
 					return err
 				}
-
-				err = record.InsertCreate(ctx, plan.TeamID, userID, record.OperationOperateCreatePlan, plan.Name)
-				if err != nil {
-					proof.Errorf("保存配置--保存操作日志失败，err:", err)
-					return err
-				}
-			}
-
-			if err == nil { // 如果mg里面有数据的话
+			} else { // 如果mg里面有数据的话
 				_, err = collection.UpdateOne(ctx, bson.D{{"scene_id", req.SceneID}}, bson.M{"$set": task})
 				if err != nil {
 					proof.Errorf("保存配置--更新任务配置项失败，err:", err)
@@ -206,82 +211,119 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 					return err
 				}
 			}
-
-			cur, err := collection.Find(ctx, bson.D{{"plan_id", req.PlanID}})
-			if err != nil {
-				proof.Errorf("保存配置--查找当前计划下所有任务配置失败，plan_id:", req.PlanID, " err:", err)
-				return err
-			}
-			var tasks []*mao.Task
-			if err := cur.All(ctx, &tasks); err != nil {
-				proof.Errorf("保存配置--解析当前计划下所有任务配置失败，plan_id:", req.PlanID, " err:", err)
-				return err
-			}
-
-			if len(tasks) > 0 {
-				planType := tasks[0].TaskType
-				planMode := tasks[0].TaskMode
-				for i, t := range tasks {
-					if i > 0 {
-						if t.TaskType != planType {
-							planType = consts.PlanTaskTypeMix
-						}
-						if t.TaskMode != planMode {
-							planMode = consts.PlanModeMix
-						}
-					}
-				}
-
-				_, err := tx.Plan.WithContext(ctx).Where(tx.Plan.ID.Eq(req.PlanID)).UpdateSimple(tx.Plan.TaskType.Value(planType), tx.Plan.Mode.Value(planMode))
-				if err != nil {
-					return err
-				}
-			}
 			return nil
 		})
 	} else { // 定时任务
 		// 1、先去把mg里面可能存在的普通任务配置给删掉
-		_, err := collection.DeleteOne(ctx, bson.D{{"scene_id", req.SceneID}})
+		_, err := collection.DeleteOne(ctx, bson.D{{"plan_id", req.PlanID}, {"scene_id", req.SceneID}})
 		if err != nil {
-			proof.Infof("保存配置--不存在普通任务或删除mg失败")
-			return err
+			proof.Infof("保存配置--不存在普通任务或删除mg失败,err:", err)
 		}
 
-		tx := dal.GetQuery().TimedTaskConf
 		// 把定时任务保存到数据库中
+		tx := dal.GetQuery().TimedTaskConf
 		// 查询当前定时任务是否存在
 		_, err = tx.WithContext(ctx).
 			Where(tx.TeamID.Eq(req.TeamID)).
 			Where(tx.PlanID.Eq(req.PlanID)).
 			Where(tx.SenceID.Eq(req.SceneID)).First()
-		if err != nil && err != gorm.ErrRecordNotFound {
+		if err != nil && err != gorm.ErrRecordNotFound { // 查询出错
 			proof.Infof("保存配置--查询定时任务数据失败，err:", req)
 			return err
-		} else if err == gorm.ErrRecordNotFound {
+		} else if err == gorm.ErrRecordNotFound { // 数据不存在
 			// 新增配置
-			timingTaskConfig := packer.TransSaveTimingTaskConfigReqToModelData(req)
+			timingTaskConfig, err := packer.TransSaveTimingTaskConfigReqToModelData(req)
+			if err != nil {
+				proof.Infof("保存配置--压缩mode_conf为字符串时失败", err)
+				return err
+			}
 			err = tx.WithContext(ctx).Create(timingTaskConfig)
 			if err != nil {
 				proof.Infof("保存配置--定时任务配置项保存失败，err：", err)
 				return err
 			}
 		} else {
+			// 把mode_conf压缩成字符串
+			modeConfString, err := json.Marshal(req.ModeConf)
+			if err != nil {
+				proof.Infof("保存配置--压缩mode_conf为字符串时失败", err)
+				return err
+			}
+
 			// 修改配置
 			updateData := make(map[string]interface{}, 3)
 			updateData["frequency"] = req.TimedTaskConf.Frequency
 			updateData["task_exec_time"] = req.TimedTaskConf.TaskExecTime
 			updateData["task_close_time"] = req.TimedTaskConf.TaskCloseTime
+			updateData["task_mode"] = req.Mode
+			updateData["mode_conf"] = modeConfString
 			updateData["status"] = consts.TimedTaskWaitEnable
-			_, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(req.TeamID)).
+			_, err = tx.WithContext(ctx).Where(tx.TeamID.Eq(req.TeamID)).
 				Where(tx.PlanID.Eq(req.PlanID)).
 				Where(tx.SenceID.Eq(req.SceneID)).Updates(updateData)
 			if err != nil {
-				proof.Infof("保存配置--更新定时任务配置失败，err:", err)
+				proof.Errorf("保存配置--更新定时任务配置失败，err:", err)
 				return err
 			}
 		}
 
 	}
+
+	// 判断当前计划是否是混合任务
+	cur, err := collection.Find(ctx, bson.D{{"plan_id", req.PlanID}})
+	if err != nil {
+		proof.Errorf("保存配置--查找当前计划下所有任务配置失败，plan_id:", req.PlanID, " err:", err)
+		return err
+	}
+	var tasks []*mao.Task
+	if err := cur.All(ctx, &tasks); err != nil {
+		proof.Errorf("保存配置--解析当前计划下所有任务配置失败，plan_id:", req.PlanID, " err:", err)
+		return err
+	}
+
+	// 查询当前计划下是否有定时任务
+	tx := dal.GetQuery()
+	timedTaskList, err := tx.TimedTaskConf.WithContext(ctx).Where(tx.TimedTaskConf.PlanID.Eq(req.PlanID)).Find()
+	if err != nil && err != gorm.ErrRecordNotFound {
+		proof.Infof("保存配置--查询当前计划下是否有定时任务时出错，err:", err)
+		return err
+	}
+
+	var planType int32 = 1
+	var planMode int32 = 1
+
+	if len(tasks) > 0 {
+		planMode = tasks[0].TaskMode
+		for i, t := range tasks {
+			if i > 0 {
+				if t.TaskMode != planMode {
+					planMode = consts.PlanModeMix
+					break
+				}
+			}
+		}
+	}
+
+	if len(timedTaskList) > 0 {
+		for _, timeTaskConf := range timedTaskList {
+			if timeTaskConf.TaskMode != planMode {
+				planMode = consts.PlanModeMix
+				break
+			}
+		}
+	}
+
+	if len(tasks) > 0 && len(timedTaskList) > 0 {
+		planType = consts.PlanTaskTypeMix
+	}
+
+	_, err = tx.Plan.WithContext(ctx).Where(tx.Plan.ID.Eq(req.PlanID)).UpdateSimple(tx.Plan.TaskType.Value(planType), tx.Plan.Mode.Value(planMode))
+	if err != nil {
+		proof.Errorf("保存配置--修改计划的任务类型和也测模式失败，err:", err)
+		return err
+	}
+
+	// 最后的返回
 	return nil
 }
 

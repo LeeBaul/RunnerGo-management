@@ -18,8 +18,6 @@ const (
 
 	// 定时任务的几个状态
 	TimedTaskWaitEnable = 0 // 未启用
-	TimedTaskNotExec    = 1 // 待执行
-	TimedTaskInExec     = 2 // 执行中
-	TimedTaskTimeout    = 3 // 已过期
-	TimeTaskDelete      = 4 // 已删除
+	TimedTaskInExec     = 1 // 执行中
+	TimedTaskTimeout    = 2 // 已过期
 )
