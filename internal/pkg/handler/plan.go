@@ -541,7 +541,7 @@ type notifyStopStressReq struct {
 	Machines []string `json:"machines"`
 }
 
-// 压力机回调压测状态和结果
+// NotifyStopStress 压力机回调压测状态和结果
 func NotifyStopStress(ctx *gin.Context) {
 	var req notifyStopStressReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -549,32 +549,31 @@ func NotifyStopStress(ctx *gin.Context) {
 		return
 	}
 
-	proof.Infof("NotifyStopStress，入参为：", req)
 	err := query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
 		r := tx.Report
 		// 修改报告状态
 		_, err := r.WithContext(ctx).Where(r.ID.Eq(req.ReportID)).UpdateSimple(r.Status.Value(consts.ReportStatusFinish), r.UpdatedAt.Value(time.Now()))
 		if err != nil {
-			proof.Infof("NotifyStopStress修改报告状态失败")
+			proof.Errorf("NotifyStopStress--修改报告状态失败")
 			return err
 		}
 
 		// 查找报告对应计划
 		report, err := r.WithContext(ctx).Where(r.ID.Eq(req.ReportID)).First()
 		if err != nil {
-			proof.Infof("NotifyStopStress查找报告对应计划失败")
+			proof.Errorf("NotifyStopStress--查找报告对应计划失败")
 			return err
 		}
 
 		// 统计报告是否全部完成
 		reportCnt, err := r.WithContext(ctx).Where(r.PlanID.Eq(report.PlanID)).Count()
 		if err != nil {
-			proof.Infof("NotifyStopStress统计当前计划下所有的报告数量--失败")
+			proof.Errorf("NotifyStopStress--统计当前计划下所有的报告数量--失败")
 			return err
 		}
 		finishReportCnt, err := r.WithContext(ctx).Where(r.PlanID.Eq(report.PlanID), r.Status.Eq(consts.ReportStatusFinish)).Count()
 		if err != nil {
-			proof.Infof("NotifyStopStress统计当前计划下所有成功的报告--失败")
+			proof.Errorf("NotifyStopStress--统计当前计划下所有成功的报告--失败")
 			return err
 		}
 
@@ -600,11 +599,10 @@ func NotifyStopStress(ctx *gin.Context) {
 	}
 
 	if err != nil {
-		proof.Infof("NotifyStopStress整体事务失败")
+		proof.Errorf("NotifyStopStress整体事务失败")
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
-	proof.Infof("NotifyStopStress整体成功")
 	response.Success(ctx)
 	return
 }

@@ -328,53 +328,67 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 }
 
 func GetPlanTask(ctx context.Context, planID, sceneID int64) (*rao.PlanTask, error) {
+	// 初始化返回值
+	planTaskConf := new(rao.PlanTask)
+
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectTask)
-
-	var t *mao.Task
+	t := new(mao.Task)
 	err := collection.FindOne(ctx, bson.D{{"scene_id", sceneID}, {"plan_id", planID}}).Decode(&t)
-	if err == mongo.ErrNoDocuments {
-		return nil, nil
-	}
 	if err != nil {
-		return nil, err
+		if err != mongo.ErrNoDocuments {
+			proof.Errorf("获取任务配置详情--从mg查询失败，err:", err)
+			return nil, err
+		} else { // 定时任务
+			// 查询定时任务信息
+			var timingTaskConfigInfo *model.TimedTaskConf
+			tx := query.Use(dal.DB()).TimedTaskConf
+			timingTaskConfigInfo, err = tx.WithContext(ctx).Where(tx.PlanID.Eq(planID), tx.SenceID.Eq(sceneID)).First()
+			if err != nil {
+				return nil, err
+			}
+			if timingTaskConfigInfo != nil {
+				var modeConf rao.ModeConf
+				err := json.Unmarshal([]byte(timingTaskConfigInfo.ModeConf), &modeConf)
+				if err != nil {
+					proof.Errorf("获取任务配置详情--解析定时任务详细配置失败，err:", err)
+					return nil, err
+				}
+
+				planTaskConf = &rao.PlanTask{
+					PlanID:   timingTaskConfigInfo.PlanID,
+					SceneID:  timingTaskConfigInfo.SenceID,
+					TaskType: timingTaskConfigInfo.TaskType,
+					Mode:     timingTaskConfigInfo.TaskMode,
+					ModeConf: &modeConf,
+					TimedTaskConf: &rao.TimedTaskConf{
+						Frequency:     timingTaskConfigInfo.Frequency,
+						TaskExecTime:  timingTaskConfigInfo.TaskExecTime,
+						TaskCloseTime: timingTaskConfigInfo.TaskCloseTime,
+					},
+				}
+			}
+		}
+	} else { // 普通任务
+		planTaskConf = &rao.PlanTask{
+			PlanID:   t.PlanID,
+			SceneID:  t.SceneID,
+			TaskType: t.TaskType,
+			Mode:     t.TaskMode,
+			ModeConf: &rao.ModeConf{
+				ReheatTime:       t.ModeConf.ReheatTime,
+				RoundNum:         t.ModeConf.RoundNum,
+				Concurrency:      t.ModeConf.Concurrency,
+				ThresholdValue:   t.ModeConf.ThresholdValue,
+				StartConcurrency: t.ModeConf.StartConcurrency,
+				Step:             t.ModeConf.Step,
+				StepRunTime:      t.ModeConf.StepRunTime,
+				MaxConcurrency:   t.ModeConf.MaxConcurrency,
+				Duration:         t.ModeConf.Duration,
+			},
+		}
 	}
 
-	// 查询定时任务信息
-	var timingTaskConfigInfo *model.TimedTaskConf
-	timedTaskConf := new(rao.TimedTaskConf)
-	tx := query.Use(dal.DB()).TimedTaskConf
-	timingTaskConfigInfo, err = tx.WithContext(ctx).Where(tx.PlanID.Eq(planID), tx.SenceID.Eq(sceneID)).First()
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return nil, err
-	} else if timingTaskConfigInfo != nil {
-		timedTaskConf.Frequency = timingTaskConfigInfo.Frequency
-		timedTaskConf.TaskExecTime = timingTaskConfigInfo.TaskExecTime
-		timedTaskConf.TaskCloseTime = timingTaskConfigInfo.TaskCloseTime
-	}
-
-	fmt.Println(timingTaskConfigInfo)
-	return &rao.PlanTask{
-		PlanID:   t.PlanID,
-		SceneID:  t.SceneID,
-		TaskType: t.TaskType,
-		Mode:     t.TaskMode,
-		ModeConf: &rao.ModeConf{
-			ReheatTime:       t.ModeConf.ReheatTime,
-			RoundNum:         t.ModeConf.RoundNum,
-			Concurrency:      t.ModeConf.Concurrency,
-			ThresholdValue:   t.ModeConf.ThresholdValue,
-			StartConcurrency: t.ModeConf.StartConcurrency,
-			Step:             t.ModeConf.Step,
-			StepRunTime:      t.ModeConf.StepRunTime,
-			MaxConcurrency:   t.ModeConf.MaxConcurrency,
-			Duration:         t.ModeConf.Duration,
-		},
-		TimedTaskConf: &rao.TimedTaskConf{
-			Frequency:     timedTaskConf.Frequency,
-			TaskExecTime:  timedTaskConf.TaskExecTime,
-			TaskCloseTime: timedTaskConf.TaskCloseTime,
-		},
-	}, nil
+	return planTaskConf, nil
 }
 
 func GetByPlanID(ctx context.Context, teamID, planID int64) (*rao.Plan, error) {
