@@ -122,6 +122,7 @@ func (s *CheckIdleMachine) Execute(baton *Baton) (int, error) {
 
 	var breakFor = false
 
+	tx := dal.GetQuery().Machine
 	// 查到了机器列表，然后判断可用性
 	var runnerMachineInfo HeartBeat
 	for machineAddr, machineDetail := range machineListRes.Val() {
@@ -134,7 +135,7 @@ func (s *CheckIdleMachine) Execute(baton *Baton) (int, error) {
 
 		// 压力机数据上报时间超过3秒，则认为服务不可用，不参与本次压力测试
 		nowTime := time.Now().Unix()
-		if nowTime-runnerMachineInfo.CreateTime > 3 {
+		if nowTime-runnerMachineInfo.CreateTime > consts.MachineAliveTime {
 			proof.Infof("当前压力机上报心跳数据超时，暂不可用")
 			continue
 		}
@@ -163,6 +164,16 @@ func (s *CheckIdleMachine) Execute(baton *Baton) (int, error) {
 
 		machineAddrSlice := strings.Split(machineAddr, "_")
 		if len(machineAddrSlice) != 3 {
+			continue
+		}
+
+		// 判断当前压力机是否被停用，如果停用，则不参与压测
+		machineInfo, err := tx.WithContext(baton.Ctx).Where(tx.IP.Eq(machineAddrSlice[0])).First()
+		if err != nil {
+			proof.Infof("运行计划--没有查到当前压力机数据，err:", err)
+			continue
+		}
+		if machineInfo.Status == 2 { // 已停用
 			continue
 		}
 

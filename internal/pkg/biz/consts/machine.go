@@ -6,4 +6,5 @@ const (
 
 	MachineListRedisKey   = "RunnerMachineList"
 	MachineUseStatePrefix = "MachineUseState:"
+	MachineAliveTime      = 3
 )
