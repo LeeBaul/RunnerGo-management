@@ -31,8 +31,15 @@ func newMachine(db *gorm.DB, opts ...gen.DOOption) machine {
 	_machine.Region = field.NewString(tableName, "region")
 	_machine.IP = field.NewString(tableName, "ip")
 	_machine.Port = field.NewInt32(tableName, "port")
-	_machine.Weight = field.NewInt32(tableName, "weight")
 	_machine.Name = field.NewString(tableName, "name")
+	_machine.CPUUsage = field.NewFloat32(tableName, "cpu_usage")
+	_machine.CPULoadOne = field.NewFloat32(tableName, "cpu_load_one")
+	_machine.CPULoadFive = field.NewFloat32(tableName, "cpu_load_five")
+	_machine.CPULoadFifteen = field.NewFloat32(tableName, "cpu_load_fifteen")
+	_machine.MemUsage = field.NewFloat32(tableName, "mem_usage")
+	_machine.DiskUsage = field.NewFloat32(tableName, "disk_usage")
+	_machine.MaxGoroutines = field.NewInt64(tableName, "max_goroutines")
+	_machine.CurrentGoroutines = field.NewInt64(tableName, "current_goroutines")
 	_machine.ServerType = field.NewInt32(tableName, "server_type")
 	_machine.Status = field.NewInt32(tableName, "status")
 	_machine.CreatedAt = field.NewTime(tableName, "created_at")
@@ -47,18 +54,25 @@ func newMachine(db *gorm.DB, opts ...gen.DOOption) machine {
 type machine struct {
 	machineDo machineDo
 
-	ALL        field.Asterisk
-	ID         field.Int64  // 主键id
-	Region     field.String // 所属区域
-	IP         field.String // 机器IP
-	Port       field.Int32  // 端口
-	Weight     field.Int32  // 额外权重
-	Name       field.String // 机器名称
-	ServerType field.Int32  // 机器类型：1-主力机器，2-备用机器
-	Status     field.Int32  // 机器状态：1-使用中，2-卸载
-	CreatedAt  field.Time   // 创建时间
-	UpdatedAt  field.Time   // 修改时间
-	DeletedAt  field.Field  // 删除时间
+	ALL               field.Asterisk
+	ID                field.Int64   // 主键id
+	Region            field.String  // 所属区域
+	IP                field.String  // 机器IP
+	Port              field.Int32   // 端口
+	Name              field.String  // 机器名称
+	CPUUsage          field.Float32 // CPU使用率
+	CPULoadOne        field.Float32 // CPU-1分钟内平均负载
+	CPULoadFive       field.Float32 // CPU-5分钟内平均负载
+	CPULoadFifteen    field.Float32 // CPU-15分钟内平均负载
+	MemUsage          field.Float32 // 内存使用率
+	DiskUsage         field.Float32 // 磁盘使用率
+	MaxGoroutines     field.Int64   // 最大协程数
+	CurrentGoroutines field.Int64   // 已用协程数
+	ServerType        field.Int32   // 机器类型：1-主力机器，2-备用机器
+	Status            field.Int32   // 机器状态：1-使用中，2-卸载
+	CreatedAt         field.Time    // 创建时间
+	UpdatedAt         field.Time    // 修改时间
+	DeletedAt         field.Field   // 删除时间
 
 	fieldMap map[string]field.Expr
 }
@@ -79,8 +93,15 @@ func (m *machine) updateTableName(table string) *machine {
 	m.Region = field.NewString(table, "region")
 	m.IP = field.NewString(table, "ip")
 	m.Port = field.NewInt32(table, "port")
-	m.Weight = field.NewInt32(table, "weight")
 	m.Name = field.NewString(table, "name")
+	m.CPUUsage = field.NewFloat32(table, "cpu_usage")
+	m.CPULoadOne = field.NewFloat32(table, "cpu_load_one")
+	m.CPULoadFive = field.NewFloat32(table, "cpu_load_five")
+	m.CPULoadFifteen = field.NewFloat32(table, "cpu_load_fifteen")
+	m.MemUsage = field.NewFloat32(table, "mem_usage")
+	m.DiskUsage = field.NewFloat32(table, "disk_usage")
+	m.MaxGoroutines = field.NewInt64(table, "max_goroutines")
+	m.CurrentGoroutines = field.NewInt64(table, "current_goroutines")
 	m.ServerType = field.NewInt32(table, "server_type")
 	m.Status = field.NewInt32(table, "status")
 	m.CreatedAt = field.NewTime(table, "created_at")
@@ -108,13 +129,20 @@ func (m *machine) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (m *machine) fillFieldMap() {
-	m.fieldMap = make(map[string]field.Expr, 11)
+	m.fieldMap = make(map[string]field.Expr, 18)
 	m.fieldMap["id"] = m.ID
 	m.fieldMap["region"] = m.Region
 	m.fieldMap["ip"] = m.IP
 	m.fieldMap["port"] = m.Port
-	m.fieldMap["weight"] = m.Weight
 	m.fieldMap["name"] = m.Name
+	m.fieldMap["cpu_usage"] = m.CPUUsage
+	m.fieldMap["cpu_load_one"] = m.CPULoadOne
+	m.fieldMap["cpu_load_five"] = m.CPULoadFive
+	m.fieldMap["cpu_load_fifteen"] = m.CPULoadFifteen
+	m.fieldMap["mem_usage"] = m.MemUsage
+	m.fieldMap["disk_usage"] = m.DiskUsage
+	m.fieldMap["max_goroutines"] = m.MaxGoroutines
+	m.fieldMap["current_goroutines"] = m.CurrentGoroutines
 	m.fieldMap["server_type"] = m.ServerType
 	m.fieldMap["status"] = m.Status
 	m.fieldMap["created_at"] = m.CreatedAt
