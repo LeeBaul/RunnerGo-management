@@ -753,7 +753,6 @@ func GetCompareReportData(ctx context.Context, req rao.CompareReportReq) (*Compa
 	}
 
 	// 先组装一个事件id对应报告结果数据
-	reportCollectDataSlice := make([]*reportCollectData, 0, len(req.ReportIDs))
 	reportCollectDataMap := make(map[string]*reportDetailData, len(req.ReportIDs))
 	for _, sceneTestResultData := range sceneTestResultDataMsgSlice {
 		var sceneTestResultDataTmp ResultData
@@ -762,6 +761,7 @@ func GetCompareReportData(ctx context.Context, req rao.CompareReportReq) (*Compa
 			proof.Errorf("对比报告--解析报告详情数据失败，err:", err)
 			return nil, err
 		}
+		reportCollectDataSlice := make([]*reportCollectData, 0, len(req.ReportIDs))
 		for apiId, resultsInfo := range sceneTestResultDataTmp.Results {
 			reportCollectDataOne := &reportCollectData{
 				ApiName:                        resultsInfo.ApiName,
