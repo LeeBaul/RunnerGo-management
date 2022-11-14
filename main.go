@@ -20,6 +20,11 @@ func main() {
 		handler.TimedTaskExec()
 	}()
 
+	// 把压力机上报的机器信息定时写入数据库
+	go func() {
+		handler.MachineDataInsert()
+	}()
+
 	if err := r.Run(fmt.Sprintf(":%d", conf.Conf.Http.Port)); err != nil {
 		panic(err)
 	}

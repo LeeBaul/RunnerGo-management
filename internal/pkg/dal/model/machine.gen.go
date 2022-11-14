@@ -28,7 +28,7 @@ type Machine struct {
 	MaxGoroutines     int64          `gorm:"column:max_goroutines;not null" json:"max_goroutines"`                   // 最大协程数
 	CurrentGoroutines int64          `gorm:"column:current_goroutines;not null" json:"current_goroutines"`           // 已用协程数
 	ServerType        int32          `gorm:"column:server_type;not null;default:1" json:"server_type"`               // 机器类型：1-主力机器，2-备用机器
-	Status            int32          `gorm:"column:status;not null;default:1" json:"status"`                         // 机器状态：1-使用中，2-卸载
+	Status            int32          `gorm:"column:status;not null;default:1" json:"status"`                         // 机器状态：1-使用中，2-已卸载
 	CreatedAt         time.Time      `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"` // 创建时间
 	UpdatedAt         time.Time      `gorm:"column:updated_at;not null;default:CURRENT_TIMESTAMP" json:"updated_at"` // 修改时间
 	DeletedAt         gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`                                    // 删除时间

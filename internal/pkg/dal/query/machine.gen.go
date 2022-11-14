@@ -69,7 +69,7 @@ type machine struct {
 	MaxGoroutines     field.Int64   // 最大协程数
 	CurrentGoroutines field.Int64   // 已用协程数
 	ServerType        field.Int32   // 机器类型：1-主力机器，2-备用机器
-	Status            field.Int32   // 机器状态：1-使用中，2-卸载
+	Status            field.Int32   // 机器状态：1-使用中，2-已卸载
 	CreatedAt         field.Time    // 创建时间
 	UpdatedAt         field.Time    // 修改时间
 	DeletedAt         field.Field   // 删除时间

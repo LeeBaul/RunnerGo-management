@@ -2,10 +2,21 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/go-omnibus/proof"
+	"github.com/goccy/go-json"
+	"golang.org/x/net/context"
+	"gorm.io/gorm"
+	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/response"
+	"kp-management/internal/pkg/dal"
+	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/logic/machine"
+	"kp-management/internal/pkg/logic/stress"
+	"strconv"
+	"strings"
+	"time"
 )
 
 // GetMachineList 获取机器列表
@@ -43,4 +54,102 @@ func ChangeMachineOnOff(ctx *gin.Context) {
 	}
 	response.Success(ctx)
 	return
+}
+
+// MachineDataInsert 把压力机上报的机器数据插入数据库
+func MachineDataInsert() {
+	ctx := context.Background()
+	for {
+		// 从Redis获取压力机列表
+		machineListRes := dal.RDB.HGetAll(consts.MachineListRedisKey)
+		if len(machineListRes.Val()) == 0 || machineListRes.Err() != nil {
+			// todo 需不需要改变数据库的所有数据
+			proof.Errorf("压力机数据入库--没有获取到任何压力机上报数据，err:", machineListRes.Err())
+			time.Sleep(5 * time.Second) // 5秒循环一次
+			continue
+		}
+
+		// 有数据，则入库
+
+		for machineAddr, machineDetail := range machineListRes.Val() {
+			// 获取机器IP，端口号，区域
+			machineAddrSlice := strings.Split(machineAddr, "_")
+			if len(machineAddrSlice) != 3 {
+				continue
+			}
+
+			// 把机器详情信息解析成格式化数据
+			var runnerMachineInfo stress.HeartBeat
+			err := json.Unmarshal([]byte(machineDetail), &runnerMachineInfo)
+			if err != nil {
+				proof.Infof("压力机数据入库--压力机详情数据解析失败，err：", err)
+				continue
+			}
+
+			ip := machineAddrSlice[0]
+			port := machineAddrSlice[1]
+			portInt, err := strconv.Atoi(port)
+			if err != nil {
+				proof.Errorf("压力机数据入库--转换类型失败，err:", err)
+				continue
+			}
+			region := machineAddrSlice[2]
+
+			// 查询当前机器信息是否存在数据库
+			tx := dal.GetQuery().Machine
+
+			// 查询数据
+			_, err = tx.WithContext(ctx).Where(tx.IP.Eq(ip)).First()
+			if err != nil && err != gorm.ErrRecordNotFound {
+				proof.Errorf("压力机数据入库--查询数据出错，err:", err)
+				continue
+			}
+
+			if err == nil { // 查到了，修改数据
+				updateData := model.Machine{
+					Port:              int32(portInt),
+					Region:            region,
+					Name:              runnerMachineInfo.Name,
+					CPUUsage:          float32(runnerMachineInfo.CpuUsage),
+					CPULoadOne:        float32(runnerMachineInfo.CpuLoad.Load1),
+					CPULoadFive:       float32(runnerMachineInfo.CpuLoad.Load5),
+					CPULoadFifteen:    float32(runnerMachineInfo.CpuLoad.Load15),
+					MemUsage:          float32(runnerMachineInfo.MemInfo[0].UsedPercent),
+					DiskUsage:         float32(runnerMachineInfo.DiskInfos[0].UsedPercent),
+					MaxGoroutines:     runnerMachineInfo.MaxGoroutines,
+					CurrentGoroutines: runnerMachineInfo.CurrentGoroutines,
+					ServerType:        int32(runnerMachineInfo.ServerType),
+				}
+				_, err := tx.WithContext(ctx).Where(tx.IP.Eq(ip)).Updates(&updateData)
+				if err != nil {
+					proof.Errorf("压力机数据入库--更新数据失败，err:", err)
+					continue
+				}
+			} else { // 没查到，新增数据
+				insertData := model.Machine{
+					IP:                ip,
+					Port:              int32(portInt),
+					Region:            region,
+					Name:              runnerMachineInfo.Name,
+					CPUUsage:          float32(runnerMachineInfo.CpuUsage),
+					CPULoadOne:        float32(runnerMachineInfo.CpuLoad.Load1),
+					CPULoadFive:       float32(runnerMachineInfo.CpuLoad.Load5),
+					CPULoadFifteen:    float32(runnerMachineInfo.CpuLoad.Load15),
+					MemUsage:          float32(runnerMachineInfo.MemInfo[0].UsedPercent),
+					DiskUsage:         float32(runnerMachineInfo.DiskInfos[0].UsedPercent),
+					MaxGoroutines:     runnerMachineInfo.MaxGoroutines,
+					CurrentGoroutines: runnerMachineInfo.CurrentGoroutines,
+					ServerType:        int32(runnerMachineInfo.ServerType),
+				}
+				err := tx.WithContext(ctx).Create(&insertData)
+				if err != nil {
+					proof.Errorf("压力机数据入库")
+					continue
+				}
+			}
+		}
+
+		time.Sleep(5 * time.Second) // 5秒循环一次
+	}
+
 }
