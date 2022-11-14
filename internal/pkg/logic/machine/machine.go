@@ -26,16 +26,22 @@ func GetMachineList(ctx *gin.Context, req rao.GetMachineListParam) ([]*rao.Machi
 	if req.SortTag == 0 { // 默认排序(创建时间)
 		sort = append(sort, tx.CreatedAt.Desc())
 	}
-	if req.SortTag == 1 { // 内存使用率升序
+	if req.SortTag == 1 { // CPU使用率升序
+		sort = append(sort, tx.CPUUsage)
+	}
+	if req.SortTag == 2 { // CPU使用率降序
+		sort = append(sort, tx.CPUUsage.Desc())
+	}
+	if req.SortTag == 3 { // 内存使用率升序
 		sort = append(sort, tx.MemUsage)
 	}
-	if req.SortTag == 2 { // 内存使用率降序
+	if req.SortTag == 4 { // 内存使用率降序
 		sort = append(sort, tx.MemUsage.Desc())
 	}
-	if req.SortTag == 3 { // 磁盘使用率升序
+	if req.SortTag == 5 { // 磁盘使用率升序
 		sort = append(sort, tx.DiskUsage)
 	}
-	if req.SortTag == 4 { // 磁盘使用率降序
+	if req.SortTag == 6 { // 磁盘使用率降序
 		sort = append(sort, tx.DiskUsage.Desc())
 	}
 	// 查询数据库
@@ -67,4 +73,16 @@ func GetMachineList(ctx *gin.Context, req rao.GetMachineListParam) ([]*rao.Machi
 	}
 
 	return res, count, nil
+}
+
+// ChangeMachineOnOff 启用或卸载机器
+func ChangeMachineOnOff(ctx *gin.Context, req rao.ChangeMachineOnOff) error {
+	// 查询机器列表
+	tx := dal.GetQuery().Machine
+	res, err := tx.WithContext(ctx).Where(tx.ID.Eq(req.ID)).Update(tx.Status, req.Status)
+	if err != nil || res.RowsAffected == 0 {
+		proof.Errorf("启用或卸载机器--修改数据库失败，err:", err)
+		return err
+	}
+	return nil
 }

@@ -176,6 +176,6 @@ func RegisterRouter(r *gin.Engine) {
 
 	// 机器管理
 	machine := api.Group("/v1/machine/")
-	machine.POST("machine_list", handler.GetMachineList)
-
+	machine.POST("machine_list", handler.GetMachineList)              // 获取压力机列表
+	machine.POST("change_machine_on_off", handler.ChangeMachineOnOff) // 启用或停用机器
 }

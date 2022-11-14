@@ -19,6 +19,7 @@ type GetMachineListResponse struct {
 }
 
 type MachineList struct {
+	ID                int64     `json:"id"`
 	Name              string    `json:"name"`
 	CPUUsage          float32   `json:"cpu_usage"`          // CPU使用率
 	CPULoadOne        float32   `json:"cpu_Load_one"`       // CPU-1分钟内平均负载
@@ -31,4 +32,9 @@ type MachineList struct {
 	ServerType        int32     `json:"server_type"`
 	Status            int32     `json:"status"`
 	CreatedAt         time.Time `json:"created_at"`
+}
+
+type ChangeMachineOnOff struct {
+	ID     int64 `json:"id"`
+	Status int32 `json:"status"`
 }
