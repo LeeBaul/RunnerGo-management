@@ -57,6 +57,7 @@ func GetMachineList(ctx *gin.Context, req rao.GetMachineListParam) ([]*rao.Machi
 	res := make([]*rao.MachineList, 0, len(machineList))
 	for _, machineInfo := range machineList {
 		machineTmp := &rao.MachineList{
+			ID:                machineInfo.ID,
 			Name:              machineInfo.Name,
 			CPUUsage:          machineInfo.CPUUsage,
 			CPULoadOne:        machineInfo.CPULoadOne,
