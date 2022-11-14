@@ -8,9 +8,17 @@ type GetMachineListParam struct {
 	ServerType int32  `json:"server_type"`
 	Name       string `json:"name"`
 	SortTag    int    `json:"sort_tag"`
+
+	Page int `json:"page" form:"page,default=1"`
+	Size int `json:"size" form:"size,default=10"`
 }
 
 type GetMachineListResponse struct {
+	MachineList []*MachineList `json:"machine_list"`
+	Total       int64          `json:"total"`
+}
+
+type MachineList struct {
 	Name              string    `json:"name"`
 	CPUUsage          float32   `json:"cpu_usage"`          // CPU使用率
 	CPULoadOne        float32   `json:"cpu_Load_one"`       // CPU-1分钟内平均负载

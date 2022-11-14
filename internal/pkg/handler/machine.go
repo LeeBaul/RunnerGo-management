@@ -15,11 +15,14 @@ func GetMachineList(ctx *gin.Context) {
 		return
 	}
 
-	res, err := machine.GetMachineList(ctx, req)
+	res, total, err := machine.GetMachineList(ctx, req)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
-	response.SuccessWithData(ctx, res)
+	response.SuccessWithData(ctx, rao.GetMachineListResponse{
+		MachineList: res,
+		Total:       total,
+	})
 	return
 }

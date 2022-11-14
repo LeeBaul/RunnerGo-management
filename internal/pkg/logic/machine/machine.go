@@ -9,7 +9,7 @@ import (
 	"kp-management/internal/pkg/dal/rao"
 )
 
-func GetMachineList(ctx *gin.Context, req rao.GetMachineListParam) ([]*rao.GetMachineListResponse, error) {
+func GetMachineList(ctx *gin.Context, req rao.GetMachineListParam) ([]*rao.MachineList, int64, error) {
 	// 查询机器列表
 	tx := dal.GetQuery().Machine
 
@@ -39,15 +39,17 @@ func GetMachineList(ctx *gin.Context, req rao.GetMachineListParam) ([]*rao.GetMa
 		sort = append(sort, tx.DiskUsage.Desc())
 	}
 	// 查询数据库
-	machineList, err := tx.WithContext(ctx).Where(conditions...).Order(sort...).Find()
+	limit := req.Size
+	offset := (req.Page - 1) * req.Size
+	machineList, count, err := tx.WithContext(ctx).Where(conditions...).Order(sort...).FindByPage(offset, limit)
 	if err != nil {
 		proof.Errorf("机器列表--获取机器列表数据失败，err:", err)
-		return nil, err
+		return nil, 0, err
 	}
 
-	res := make([]*rao.GetMachineListResponse, 0, len(machineList))
+	res := make([]*rao.MachineList, 0, len(machineList))
 	for _, machineInfo := range machineList {
-		machineTmp := &rao.GetMachineListResponse{
+		machineTmp := &rao.MachineList{
 			Name:              machineInfo.Name,
 			CPUUsage:          machineInfo.CPUUsage,
 			CPULoadOne:        machineInfo.CPULoadOne,
@@ -64,5 +66,5 @@ func GetMachineList(ctx *gin.Context, req rao.GetMachineListParam) ([]*rao.GetMa
 		res = append(res, machineTmp)
 	}
 
-	return res, nil
+	return res, count, nil
 }
