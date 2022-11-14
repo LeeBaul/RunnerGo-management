@@ -32,6 +32,8 @@ func newMachine(db *gorm.DB, opts ...gen.DOOption) machine {
 	_machine.IP = field.NewString(tableName, "ip")
 	_machine.Port = field.NewInt32(tableName, "port")
 	_machine.Weight = field.NewInt32(tableName, "weight")
+	_machine.Name = field.NewString(tableName, "name")
+	_machine.ServerType = field.NewInt32(tableName, "server_type")
 	_machine.Status = field.NewInt32(tableName, "status")
 	_machine.CreatedAt = field.NewTime(tableName, "created_at")
 	_machine.UpdatedAt = field.NewTime(tableName, "updated_at")
@@ -45,16 +47,18 @@ func newMachine(db *gorm.DB, opts ...gen.DOOption) machine {
 type machine struct {
 	machineDo machineDo
 
-	ALL       field.Asterisk
-	ID        field.Int64  // id
-	Region    field.String // 地域
-	IP        field.String // ip
-	Port      field.Int32  // 端口
-	Weight    field.Int32  // 额外权重
-	Status    field.Int32  // 机器状态{1: 空闲, 2: 忙碌}
-	CreatedAt field.Time   // 创建时间
-	UpdatedAt field.Time   // 修改时间
-	DeletedAt field.Field
+	ALL        field.Asterisk
+	ID         field.Int64  // 主键id
+	Region     field.String // 所属区域
+	IP         field.String // 机器IP
+	Port       field.Int32  // 端口
+	Weight     field.Int32  // 额外权重
+	Name       field.String // 机器名称
+	ServerType field.Int32  // 机器类型：1-主力机器，2-备用机器
+	Status     field.Int32  // 机器状态：1-使用中，2-卸载
+	CreatedAt  field.Time   // 创建时间
+	UpdatedAt  field.Time   // 修改时间
+	DeletedAt  field.Field  // 删除时间
 
 	fieldMap map[string]field.Expr
 }
@@ -76,6 +80,8 @@ func (m *machine) updateTableName(table string) *machine {
 	m.IP = field.NewString(table, "ip")
 	m.Port = field.NewInt32(table, "port")
 	m.Weight = field.NewInt32(table, "weight")
+	m.Name = field.NewString(table, "name")
+	m.ServerType = field.NewInt32(table, "server_type")
 	m.Status = field.NewInt32(table, "status")
 	m.CreatedAt = field.NewTime(table, "created_at")
 	m.UpdatedAt = field.NewTime(table, "updated_at")
@@ -102,12 +108,14 @@ func (m *machine) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (m *machine) fillFieldMap() {
-	m.fieldMap = make(map[string]field.Expr, 9)
+	m.fieldMap = make(map[string]field.Expr, 11)
 	m.fieldMap["id"] = m.ID
 	m.fieldMap["region"] = m.Region
 	m.fieldMap["ip"] = m.IP
 	m.fieldMap["port"] = m.Port
 	m.fieldMap["weight"] = m.Weight
+	m.fieldMap["name"] = m.Name
+	m.fieldMap["server_type"] = m.ServerType
 	m.fieldMap["status"] = m.Status
 	m.fieldMap["created_at"] = m.CreatedAt
 	m.fieldMap["updated_at"] = m.UpdatedAt

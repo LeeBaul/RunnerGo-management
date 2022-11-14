@@ -175,5 +175,7 @@ func RegisterRouter(r *gin.Engine) {
 	operation.GET("/list", handler.ListOperations)
 
 	// 机器管理
+	machine := api.Group("/v1/machine/")
+	machine.GET("machine_list", handler.GetMachineList)
 
 }

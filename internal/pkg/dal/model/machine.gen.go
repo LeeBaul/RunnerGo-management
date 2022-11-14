@@ -14,15 +14,17 @@ const TableNameMachine = "machine"
 
 // Machine mapped from table <machine>
 type Machine struct {
-	ID        int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`                      // id
-	Region    string         `gorm:"column:region;not null" json:"region"`                                   // 地域
-	IP        string         `gorm:"column:ip;not null" json:"ip"`                                           // ip
-	Port      int32          `gorm:"column:port;not null" json:"port"`                                       // 端口
-	Weight    int32          `gorm:"column:weight;not null" json:"weight"`                                   // 额外权重
-	Status    int32          `gorm:"column:status" json:"status"`                                            // 机器状态{1: 空闲, 2: 忙碌}
-	CreatedAt time.Time      `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"` // 创建时间
-	UpdatedAt time.Time      `gorm:"column:updated_at;not null;default:CURRENT_TIMESTAMP" json:"updated_at"` // 修改时间
-	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`
+	ID         int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`                      // 主键id
+	Region     string         `gorm:"column:region;not null" json:"region"`                                   // 所属区域
+	IP         string         `gorm:"column:ip;not null" json:"ip"`                                           // 机器IP
+	Port       int32          `gorm:"column:port;not null" json:"port"`                                       // 端口
+	Weight     int32          `gorm:"column:weight;not null" json:"weight"`                                   // 额外权重
+	Name       string         `gorm:"column:name;not null" json:"name"`                                       // 机器名称
+	ServerType int32          `gorm:"column:server_type;not null;default:1" json:"server_type"`               // 机器类型：1-主力机器，2-备用机器
+	Status     int32          `gorm:"column:status;not null;default:1" json:"status"`                         // 机器状态：1-使用中，2-卸载
+	CreatedAt  time.Time      `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"` // 创建时间
+	UpdatedAt  time.Time      `gorm:"column:updated_at;not null;default:CURRENT_TIMESTAMP" json:"updated_at"` // 修改时间
+	DeletedAt  gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`                                    // 删除时间
 }
 
 // TableName Machine's table name
