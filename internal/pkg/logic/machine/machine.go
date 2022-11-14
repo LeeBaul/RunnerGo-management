@@ -1,6 +1,7 @@
 package machine
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-omnibus/proof"
 	"gorm.io/gen"
@@ -15,7 +16,7 @@ func GetMachineList(ctx *gin.Context, req rao.GetMachineListParam) ([]*rao.Machi
 
 	conditions := make([]gen.Condition, 0)
 	if req.Name != "" {
-		conditions = append(conditions, tx.Name.Eq(req.Name))
+		conditions = append(conditions, tx.Name.Like(fmt.Sprintf("%%%s%%", req.Name)))
 	}
 	if req.ServerType != 0 {
 		conditions = append(conditions, tx.ServerType.Eq(req.ServerType))
