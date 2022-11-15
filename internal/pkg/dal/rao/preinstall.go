@@ -1,14 +1,12 @@
 package rao
 
 type SavePreinstallReq struct {
-	ID       int32  `json:"id"`
-	TeamID   int64  `json:"team_id" binding:"required"`
-	ConfName string `json:"conf_name" binding:"required"`
-	//UserID        int64          `json:"user_id" binding:"required"`
-	//UserName      string         `json:"user_name" binding:"required"`
-	TaskType      int32          `json:"task_type" binding:"required"`
-	TaskMode      int32          `json:"task_mode" binding:"required"`
-	ModeConf      *ModeConf      `json:"mode_conf" binding:"required"`
+	ID            int32          `json:"id"`
+	TeamID        int64          `json:"team_id" binding:"required"`
+	ConfName      string         `json:"conf_name"`
+	TaskType      int32          `json:"task_type"`
+	TaskMode      int32          `json:"task_mode"`
+	ModeConf      *ModeConf      `json:"mode_conf"`
 	TimedTaskConf *TimedTaskConf `json:"timed_task_conf"`
 }
 
@@ -40,5 +38,9 @@ type GetPreinstallResponse struct {
 }
 
 type DeletePreinstallReq struct {
+	ID int32 `json:"id"`
+}
+
+type CopyPreinstallReq struct {
 	ID int32 `json:"id"`
 }

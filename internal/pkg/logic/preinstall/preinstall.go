@@ -1,16 +1,20 @@
 package preinstall
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-omnibus/proof"
 	"github.com/goccy/go-json"
 	"golang.org/x/net/context"
 	"gorm.io/gen/field"
+	"gorm.io/gorm"
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/jwt"
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/rao"
+	"strconv"
+	"strings"
 )
 
 func SavePreinstall(ctx *gin.Context, req *rao.SavePreinstallReq) (int, error) {
@@ -48,6 +52,7 @@ func SavePreinstall(ctx *gin.Context, req *rao.SavePreinstallReq) (int, error) {
 
 		insertData := &model.PreinstallConf{
 			ConfName:      req.ConfName,
+			TeamID:        req.TeamID,
 			UserID:        userId,
 			UserName:      userInfo.Nickname,
 			TaskType:      req.TaskType,
@@ -63,6 +68,7 @@ func SavePreinstall(ctx *gin.Context, req *rao.SavePreinstallReq) (int, error) {
 	} else { // 修改
 		updateData := model.PreinstallConf{
 			ConfName:      req.ConfName,
+			TeamID:        req.TeamID,
 			UserID:        userId,
 			UserName:      userInfo.Nickname,
 			TaskType:      req.TaskType,
@@ -178,5 +184,71 @@ func DeletePreinstall(ctx *gin.Context, req rao.DeletePreinstallReq) error {
 		proof.Errorf("删除预设配置--删除失败，err:", err)
 		return err
 	}
+	return nil
+}
+
+// CopyPreinstall 复制预设配置
+func CopyPreinstall(ctx *gin.Context, req rao.CopyPreinstallReq) error {
+	tx := dal.GetQuery().PreinstallConf
+	oldPreinstallInfo, err := tx.WithContext(ctx).Where(tx.ID.Eq(req.ID)).First()
+	if err != nil {
+		proof.Errorf("复制预设配置--查询老配置失败，err:", err)
+		return err
+	}
+
+	oldPreInstallName := oldPreinstallInfo.ConfName
+	newPreInstallName := ""
+
+	// 查询老配置相关的
+	list, err := tx.WithContext(ctx).Where(tx.ConfName.Like(fmt.Sprintf("%s%%", oldPreInstallName+"_"))).Find()
+	if err != nil && err != gorm.ErrRecordNotFound {
+		proof.Errorf("复制预设配置--查询老配置失败，err:", err)
+		return err
+	} else if err == gorm.ErrRecordNotFound {
+		newPreInstallName = oldPreInstallName + "_1"
+	} else { // 有复制过得配置
+		maxNum := 0
+		for _, preInstallInfo := range list {
+			nameTmp := preInstallInfo.ConfName
+			postfixSlice := strings.Split(nameTmp, "_")
+			if len(postfixSlice) != 2 {
+				continue
+			}
+			currentNum, err := strconv.Atoi(postfixSlice[1])
+			if err != nil {
+				proof.Errorf("复制预设配置--类型转换失败，err:", err)
+			}
+			if currentNum > maxNum {
+				maxNum = currentNum
+			}
+		}
+		newPreInstallName = oldPreInstallName + "_" + fmt.Sprintf("%d", maxNum+1)
+	}
+
+	// 用户信息
+	userId := jwt.GetUserIDByCtx(ctx)
+	userTable := dal.GetQuery().User
+	userInfo, err := userTable.WithContext(ctx).Where(userTable.ID.Eq(userId)).First()
+	if err != nil {
+		proof.Errorf("复制预设配置--查询用户信息失败")
+		return err
+	}
+
+	insertData := &model.PreinstallConf{
+		ConfName:      newPreInstallName,
+		TeamID:        oldPreinstallInfo.TeamID,
+		UserID:        userId,
+		UserName:      userInfo.Nickname,
+		TaskType:      oldPreinstallInfo.TaskType,
+		TaskMode:      oldPreinstallInfo.TaskMode,
+		ModeConf:      oldPreinstallInfo.ModeConf,
+		TimedTaskConf: oldPreinstallInfo.TimedTaskConf,
+	}
+	err = tx.WithContext(ctx).Create(insertData)
+	if err != nil {
+		proof.Errorf("复制预设配置--复制数据失败，err:", err)
+		return err
+	}
+
 	return nil
 }

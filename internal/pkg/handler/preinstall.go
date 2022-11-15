@@ -78,3 +78,19 @@ func DeletePreinstall(ctx *gin.Context) {
 	response.Success(ctx)
 	return
 }
+
+// CopyPreinstall 复制预设配置数据
+func CopyPreinstall(ctx *gin.Context) {
+	var req rao.CopyPreinstallReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+	err := preinstall.CopyPreinstall(ctx, req)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+	response.Success(ctx)
+	return
+}
