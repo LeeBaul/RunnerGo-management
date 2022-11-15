@@ -41,6 +41,7 @@ func GetPreinstallDetail(ctx *gin.Context) {
 		return
 	}
 	response.SuccessWithData(ctx, preinstallDetail)
+	return
 }
 
 // GetPreinstallList 获取预设配置列表
@@ -59,5 +60,21 @@ func GetPreinstallList(ctx *gin.Context) {
 		PreinstallList: list,
 		Total:          total,
 	})
+	return
+}
+
+// DeletePreinstall 删除预设配置
+func DeletePreinstall(ctx *gin.Context) {
+	var req rao.DeletePreinstallReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+	err := preinstall.DeletePreinstall(ctx, req)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+	response.Success(ctx)
 	return
 }

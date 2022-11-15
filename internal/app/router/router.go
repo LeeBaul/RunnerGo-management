@@ -184,4 +184,5 @@ func RegisterRouter(r *gin.Engine) {
 	preinstall.POST("save", handler.SavePreinstall)
 	preinstall.POST("list", handler.GetPreinstallList)
 	preinstall.POST("detail", handler.GetPreinstallDetail)
+	preinstall.POST("delete", handler.DeletePreinstall)
 }

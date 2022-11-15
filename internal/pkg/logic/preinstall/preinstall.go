@@ -169,3 +169,14 @@ func GetPreinstallList(ctx *gin.Context, req rao.GetPreinstallListReq) ([]*rao.P
 	}
 	return res, total, nil
 }
+
+// DeletePreinstall 删除预设配置
+func DeletePreinstall(ctx *gin.Context, req rao.DeletePreinstallReq) error {
+	tx := dal.GetQuery().PreinstallConf
+	_, err := tx.WithContext(ctx).Where(tx.ID.Eq(req.ID)).Delete()
+	if err != nil {
+		proof.Errorf("删除预设配置--删除失败，err:", err)
+		return err
+	}
+	return nil
+}

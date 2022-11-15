@@ -38,3 +38,7 @@ type GetPreinstallResponse struct {
 	PreinstallList []*PreinstallDetailResponse `json:"preinstall_list"`
 	Total          int64                       `json:"total"`
 }
+
+type DeletePreinstallReq struct {
+	ID int32 `json:"id"`
+}
