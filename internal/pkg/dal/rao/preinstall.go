@@ -27,7 +27,7 @@ type PreinstallDetailResponse struct {
 
 type GetPreinstallListReq struct {
 	TeamID   int64  `json:"team_id" binding:"required"`
-	ConfName string `json:"conf_name" binding:"required"`
+	ConfName string `json:"conf_name"`
 
 	Page int `json:"page" form:"page,default=1"`
 	Size int `json:"size" form:"size,default=10"`
