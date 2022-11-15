@@ -6,7 +6,6 @@ import (
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/response"
 	"kp-management/internal/pkg/dal/rao"
-	"kp-management/internal/pkg/logic/plan"
 	"kp-management/internal/pkg/logic/preinstall"
 )
 
@@ -31,17 +30,15 @@ func SavePreinstall(ctx *gin.Context) {
 
 // GetPreinstallDetail 获取预设设置
 func GetPreinstallDetail(ctx *gin.Context) {
-	var req rao.GetPreinstallReq
+	var req rao.GetPreinstallDetailReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
 	}
-
-	p, err := plan.GetPreinstall(ctx, req.PlanID)
+	preinstallDetail, err := preinstall.GetPreinstallDetail(ctx, req)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
-
-	response.SuccessWithData(ctx, rao.GetPreinstallResp{Preinstall: p})
+	response.SuccessWithData(ctx, preinstallDetail)
 }

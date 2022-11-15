@@ -29,6 +29,7 @@ func newPreinstallConf(db *gorm.DB, opts ...gen.DOOption) preinstallConf {
 	_preinstallConf.ALL = field.NewAsterisk(tableName)
 	_preinstallConf.ID = field.NewInt32(tableName, "id")
 	_preinstallConf.ConfName = field.NewString(tableName, "conf_name")
+	_preinstallConf.TeamID = field.NewInt64(tableName, "team_id")
 	_preinstallConf.UserID = field.NewInt64(tableName, "user_id")
 	_preinstallConf.UserName = field.NewString(tableName, "user_name")
 	_preinstallConf.TaskType = field.NewInt32(tableName, "task_type")
@@ -50,6 +51,7 @@ type preinstallConf struct {
 	ALL           field.Asterisk
 	ID            field.Int32  // 主键id
 	ConfName      field.String // 配置名称
+	TeamID        field.Int64  // 团队ID
 	UserID        field.Int64  // 用户ID
 	UserName      field.String // 用户名称
 	TaskType      field.Int32  // 任务类型
@@ -77,6 +79,7 @@ func (p *preinstallConf) updateTableName(table string) *preinstallConf {
 	p.ALL = field.NewAsterisk(table)
 	p.ID = field.NewInt32(table, "id")
 	p.ConfName = field.NewString(table, "conf_name")
+	p.TeamID = field.NewInt64(table, "team_id")
 	p.UserID = field.NewInt64(table, "user_id")
 	p.UserName = field.NewString(table, "user_name")
 	p.TaskType = field.NewInt32(table, "task_type")
@@ -110,9 +113,10 @@ func (p *preinstallConf) GetFieldByName(fieldName string) (field.OrderExpr, bool
 }
 
 func (p *preinstallConf) fillFieldMap() {
-	p.fieldMap = make(map[string]field.Expr, 11)
+	p.fieldMap = make(map[string]field.Expr, 12)
 	p.fieldMap["id"] = p.ID
 	p.fieldMap["conf_name"] = p.ConfName
+	p.fieldMap["team_id"] = p.TeamID
 	p.fieldMap["user_id"] = p.UserID
 	p.fieldMap["user_name"] = p.UserName
 	p.fieldMap["task_type"] = p.TaskType

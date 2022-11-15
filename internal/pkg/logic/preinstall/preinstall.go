@@ -1,18 +1,29 @@
 package preinstall
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/go-omnibus/proof"
 	"github.com/goccy/go-json"
 	"golang.org/x/net/context"
 	"kp-management/internal/pkg/biz/errno"
+	"kp-management/internal/pkg/biz/jwt"
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/rao"
 )
 
-func SavePreinstall(ctx context.Context, req *rao.SavePreinstallReq) (int, error) {
-	tx := dal.GetQuery().PreinstallConf
+func SavePreinstall(ctx *gin.Context, req *rao.SavePreinstallReq) (int, error) {
+	// 用户信息
+	userId := jwt.GetUserIDByCtx(ctx)
+	userTable := dal.GetQuery().User
+	userInfo, err := userTable.WithContext(ctx).Where(userTable.ID.Eq(userId)).First()
+	if err != nil {
+		proof.Errorf("保存预设配置--查询用户信息失败")
+		return errno.ErrMysqlFailed, err
+	}
 
+	// 操作数据库
+	tx := dal.GetQuery().PreinstallConf
 	// 把mode_conf压缩成字符串
 	modeConfString, err := json.Marshal(req.ModeConf)
 	if err != nil {
@@ -36,8 +47,8 @@ func SavePreinstall(ctx context.Context, req *rao.SavePreinstallReq) (int, error
 
 		insertData := &model.PreinstallConf{
 			ConfName:      req.ConfName,
-			UserID:        req.UserID,
-			UserName:      req.UserName,
+			UserID:        userId,
+			UserName:      userInfo.Nickname,
 			TaskType:      req.TaskType,
 			TaskMode:      req.TaskMode,
 			ModeConf:      string(modeConfString),
@@ -51,8 +62,8 @@ func SavePreinstall(ctx context.Context, req *rao.SavePreinstallReq) (int, error
 	} else { // 修改
 		updateData := model.PreinstallConf{
 			ConfName:      req.ConfName,
-			UserID:        req.UserID,
-			UserName:      req.UserName,
+			UserID:        userId,
+			UserName:      userInfo.Nickname,
 			TaskType:      req.TaskType,
 			TaskMode:      req.TaskMode,
 			ModeConf:      string(modeConfString),
@@ -65,4 +76,45 @@ func SavePreinstall(ctx context.Context, req *rao.SavePreinstallReq) (int, error
 		}
 	}
 	return errno.Ok, nil
+}
+
+func GetPreinstallDetail(ctx context.Context, req rao.GetPreinstallDetailReq) (*rao.PreinstallDetailResponse, error) {
+	// 查询数据
+	tx := dal.GetQuery().PreinstallConf
+	preinstallData, err := tx.WithContext(ctx).Where(tx.ID.Eq(req.ID)).First()
+	if err != nil {
+		proof.Errorf("查看预设配置详情--查询数据出错，err:", err)
+		return nil, err
+	}
+
+	// 转换数据类型
+	modeConf := new(rao.ModeConf)
+	if preinstallData.ModeConf != "" {
+		err = json.Unmarshal([]byte(preinstallData.ModeConf), &modeConf)
+		if err != nil {
+			proof.Errorf("查看预设配置详情--解析mode_conf数据失败，err：", err)
+			return nil, err
+		}
+	}
+
+	timedTaskConf := new(rao.TimedTaskConf)
+	if preinstallData.TimedTaskConf != "" {
+		err = json.Unmarshal([]byte(preinstallData.TimedTaskConf), &timedTaskConf)
+		if err != nil {
+			proof.Errorf("查看预设配置详情--解析timed_task_conf数据失败，err：", err)
+			return nil, err
+		}
+	}
+
+	res := &rao.PreinstallDetailResponse{
+		ID:            preinstallData.ID,
+		TeamID:        preinstallData.TeamID,
+		ConfName:      preinstallData.ConfName,
+		UserName:      preinstallData.UserName,
+		TaskType:      preinstallData.TaskType,
+		TaskMode:      preinstallData.TaskMode,
+		ModeConf:      modeConf,
+		TimedTaskConf: timedTaskConf,
+	}
+	return res, nil
 }

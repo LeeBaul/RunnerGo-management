@@ -16,6 +16,7 @@ const TableNamePreinstallConf = "preinstall_conf"
 type PreinstallConf struct {
 	ID            int32          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`                      // 主键id
 	ConfName      string         `gorm:"column:conf_name;not null" json:"conf_name"`                             // 配置名称
+	TeamID        int64          `gorm:"column:team_id;not null" json:"team_id"`                                 // 团队ID
 	UserID        int64          `gorm:"column:user_id;not null" json:"user_id"`                                 // 用户ID
 	UserName      string         `gorm:"column:user_name;not null" json:"user_name"`                             // 用户名称
 	TaskType      int32          `gorm:"column:task_type;not null" json:"task_type"`                             // 任务类型

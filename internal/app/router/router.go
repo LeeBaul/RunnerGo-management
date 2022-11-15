@@ -183,5 +183,5 @@ func RegisterRouter(r *gin.Engine) {
 	preinstall := api.Group("/v1/preinstall/")
 	preinstall.POST("save", handler.SavePreinstall)
 	//preinstall.POST("list", handler.GetPreinstallList)
-	preinstall.GET("detail", handler.GetPreinstallDetail)
+	preinstall.POST("detail", handler.GetPreinstallDetail)
 }
