@@ -529,8 +529,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 	} else {
 		data := dataMap["data"]
 		err = json.Unmarshal([]byte(data), &resultData)
-		analysis := dataMap["analysis"]
-		err = json.Unmarshal([]byte(analysis), &resultData.Analysis)
+		resultData.Analysis = dataMap["analysis"]
 		return
 	}
 	err = nil
