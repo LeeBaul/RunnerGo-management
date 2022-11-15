@@ -434,41 +434,6 @@ func DeleteByPlanID(ctx context.Context, teamID, planID, userID int64) error {
 	})
 }
 
-func SetPreinstall(ctx context.Context, req *rao.SetPreinstallReq) error {
-	p := packer.TransSetPreinstallReqToMaoPreinstall(req)
-
-	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectPreinstall)
-	err := collection.FindOne(ctx, bson.D{{"plan_id", req.PlanID}}).Err()
-	if err == mongo.ErrNoDocuments { // 新建
-		_, err := collection.InsertOne(ctx, p)
-
-		return err
-	}
-
-	_, err = collection.UpdateOne(ctx, bson.D{
-		{"plan_id", req.PlanID},
-	}, bson.M{"$set": p})
-
-	return err
-}
-
-func GetPreinstall(ctx context.Context, planID int64) (*rao.Preinstall, error) {
-
-	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectPreinstall)
-	var p mao.Preinstall
-	err := collection.FindOne(ctx, bson.D{{"plan_id", planID}}).Decode(&p)
-	if err == mongo.ErrNoDocuments {
-		return nil, nil
-	}
-
-	if err != nil && err != mongo.ErrNoDocuments {
-		return nil, err
-	}
-
-	return packer.TransMaoPreinstallToRaoPreinstall(&p), nil
-
-}
-
 func ClonePlan(ctx context.Context, planID, teamID, userID int64) error {
 
 	return dal.GetQuery().Transaction(func(tx *query.Query) error {

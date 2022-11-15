@@ -151,9 +151,6 @@ func RegisterRouter(r *gin.Engine) {
 	plan.POST("/email_delete", handler.PlanDeleteEmail)
 	plan.GET("/email_list", handler.PlanListEmail)
 	plan.POST("/import_scene", handler.ImportScene)
-	//// 计划预设配置
-	//plan.POST("/preinstall/save", handler.SetPreinstall)
-	//plan.GET("/preinstall/detail", handler.GetPreinstall)
 
 	// 测试报告
 	report := api.Group("/v1/report")

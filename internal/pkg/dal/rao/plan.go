@@ -205,32 +205,3 @@ type ImportSceneReq struct {
 type ImportSceneResp struct {
 	Scenes []*model.Target `json:"scenes"`
 }
-
-type SetPreinstallReq struct {
-	TeamID   int64     `json:"team_id" binding:"required,gt=0"`
-	PlanID   int64     `json:"plan_id" binding:"required,gt=0"`
-	TaskType int32     `json:"task_type" binding:"required,gt=0"`
-	CronExpr string    `json:"cron_expr"`
-	Mode     int32     `json:"mode" binding:"required,gt=0"`
-	ModeConf *ModeConf `json:"mode_conf"`
-}
-
-type SetPreinstallResp struct {
-}
-
-type GetPreinstallReq struct {
-	PlanID int64 `form:"plan_id"`
-	TeamID int64 `form:"team_id"`
-}
-
-type GetPreinstallResp struct {
-	Preinstall *Preinstall `json:"preinstall"`
-}
-
-type Preinstall struct {
-	TeamID   int64     `json:"team_id" binding:"required,gt=0"`
-	TaskType int32     `json:"task_type" binding:"required,gt=0"`
-	CronExpr string    `json:"cron_expr"`
-	Mode     int32     `json:"mode" binding:"required,gt=0"`
-	ModeConf *ModeConf `json:"mode_conf"`
-}
