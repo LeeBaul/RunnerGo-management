@@ -451,39 +451,39 @@ func PlanDeleteEmail(ctx *gin.Context) {
 	return
 }
 
-// SetPreinstall 保存预设设置
-func SetPreinstall(ctx *gin.Context) {
-	var req rao.SetPreinstallReq
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
-		return
-	}
-
-	if err := plan.SetPreinstall(ctx, &req); err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
-		return
-	}
-
-	response.Success(ctx)
-	return
-}
-
-// GetPreinstall 获取预设设置
-func GetPreinstall(ctx *gin.Context) {
-	var req rao.GetPreinstallReq
-	if err := ctx.ShouldBind(&req); err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
-		return
-	}
-
-	p, err := plan.GetPreinstall(ctx, req.PlanID)
-	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
-		return
-	}
-
-	response.SuccessWithData(ctx, rao.GetPreinstallResp{Preinstall: p})
-}
+//// SetPreinstall 保存预设设置
+//func SetPreinstall(ctx *gin.Context) {
+//	var req rao.SetPreinstallReq
+//	if err := ctx.ShouldBindJSON(&req); err != nil {
+//		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+//		return
+//	}
+//
+//	if err := plan.SetPreinstall(ctx, &req); err != nil {
+//		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+//		return
+//	}
+//
+//	response.Success(ctx)
+//	return
+//}
+//
+//// GetPreinstall 获取预设设置
+//func GetPreinstall(ctx *gin.Context) {
+//	var req rao.GetPreinstallReq
+//	if err := ctx.ShouldBind(&req); err != nil {
+//		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+//		return
+//	}
+//
+//	p, err := plan.GetPreinstall(ctx, req.PlanID)
+//	if err != nil {
+//		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+//		return
+//	}
+//
+//	response.SuccessWithData(ctx, rao.GetPreinstallResp{Preinstall: p})
+//}
 
 // 调度压力测试机进行压测的方法
 func RunStress(ctx context.Context, req RunStressReq) (int, error) {

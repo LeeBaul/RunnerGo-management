@@ -28,6 +28,7 @@ const (
 	ErrMustTaskInit      = 20008
 	ErrResourceNotEnough = 20009
 	ErrEmptyScene        = 20010
+	ErrYetPreinstall     = 20011
 )
 
 // CodeMsgMap 错误码映射错误信息，不展示给用户
@@ -57,7 +58,8 @@ var CodeMsgMap = map[int]string{
 	ErrExistsTeam:        "invite user exists team",
 	ErrMustTaskInit:      "fill in the task allocation and save it",
 	ErrResourceNotEnough: "resource not enough",
-	ErrEmptyScene:        "The scene cannot be empty",
+	ErrEmptyScene:        "the scene cannot be empty",
+	ErrYetPreinstall:     "preinstall yet exists",
 }
 
 // CodeAlertMap 错图码映射错误提示，展示给用户
@@ -88,4 +90,5 @@ var CodeAlertMap = map[int]string{
 	ErrMustTaskInit:      "请填写任务配置并保存",
 	ErrResourceNotEnough: "资源不足",
 	ErrEmptyScene:        "场景不能为空",
+	ErrYetPreinstall:     "预设配置名称已存在",
 }

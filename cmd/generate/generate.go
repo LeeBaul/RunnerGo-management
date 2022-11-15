@@ -36,6 +36,7 @@ func main() {
 		g.GenerateModel("team_user_queue"),
 		g.GenerateModel("machine"),
 		g.GenerateModel("timed_task_conf"),
+		g.GenerateModel("preinstall_conf"),
 	)
 
 	g.Execute()

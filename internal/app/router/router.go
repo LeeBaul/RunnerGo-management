@@ -151,9 +151,9 @@ func RegisterRouter(r *gin.Engine) {
 	plan.POST("/email_delete", handler.PlanDeleteEmail)
 	plan.GET("/email_list", handler.PlanListEmail)
 	plan.POST("/import_scene", handler.ImportScene)
-	// 计划预设配置
-	plan.POST("/preinstall/save", handler.SetPreinstall)
-	plan.GET("/preinstall/detail", handler.GetPreinstall)
+	//// 计划预设配置
+	//plan.POST("/preinstall/save", handler.SetPreinstall)
+	//plan.GET("/preinstall/detail", handler.GetPreinstall)
 
 	// 测试报告
 	report := api.Group("/v1/report")
@@ -178,4 +178,10 @@ func RegisterRouter(r *gin.Engine) {
 	machine := api.Group("/v1/machine/")
 	machine.POST("machine_list", handler.GetMachineList)              // 获取压力机列表
 	machine.POST("change_machine_on_off", handler.ChangeMachineOnOff) // 启用或停用机器
+
+	// 计划预设配置
+	preinstall := api.Group("/v1/preinstall/")
+	preinstall.POST("save", handler.SavePreinstall)
+	//preinstall.POST("list", handler.GetPreinstallList)
+	preinstall.GET("detail", handler.GetPreinstallDetail)
 }

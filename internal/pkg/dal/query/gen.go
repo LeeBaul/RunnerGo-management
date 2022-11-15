@@ -22,6 +22,7 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 		Operation:      newOperation(db, opts...),
 		Plan:           newPlan(db, opts...),
 		PlanEmail:      newPlanEmail(db, opts...),
+		PreinstallConf: newPreinstallConf(db, opts...),
 		Report:         newReport(db, opts...),
 		ReportMachine:  newReportMachine(db, opts...),
 		Setting:        newSetting(db, opts...),
@@ -43,6 +44,7 @@ type Query struct {
 	Operation      operation
 	Plan           plan
 	PlanEmail      planEmail
+	PreinstallConf preinstallConf
 	Report         report
 	ReportMachine  reportMachine
 	Setting        setting
@@ -65,6 +67,7 @@ func (q *Query) clone(db *gorm.DB) *Query {
 		Operation:      q.Operation.clone(db),
 		Plan:           q.Plan.clone(db),
 		PlanEmail:      q.PlanEmail.clone(db),
+		PreinstallConf: q.PreinstallConf.clone(db),
 		Report:         q.Report.clone(db),
 		ReportMachine:  q.ReportMachine.clone(db),
 		Setting:        q.Setting.clone(db),
@@ -94,6 +97,7 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 		Operation:      q.Operation.replaceDB(db),
 		Plan:           q.Plan.replaceDB(db),
 		PlanEmail:      q.PlanEmail.replaceDB(db),
+		PreinstallConf: q.PreinstallConf.replaceDB(db),
 		Report:         q.Report.replaceDB(db),
 		ReportMachine:  q.ReportMachine.replaceDB(db),
 		Setting:        q.Setting.replaceDB(db),
@@ -113,6 +117,7 @@ type queryCtx struct {
 	Operation      *operationDo
 	Plan           *planDo
 	PlanEmail      *planEmailDo
+	PreinstallConf *preinstallConfDo
 	Report         *reportDo
 	ReportMachine  *reportMachineDo
 	Setting        *settingDo
@@ -132,6 +137,7 @@ func (q *Query) WithContext(ctx context.Context) *queryCtx {
 		Operation:      q.Operation.WithContext(ctx),
 		Plan:           q.Plan.WithContext(ctx),
 		PlanEmail:      q.PlanEmail.WithContext(ctx),
+		PreinstallConf: q.PreinstallConf.WithContext(ctx),
 		Report:         q.Report.WithContext(ctx),
 		ReportMachine:  q.ReportMachine.WithContext(ctx),
 		Setting:        q.Setting.WithContext(ctx),
