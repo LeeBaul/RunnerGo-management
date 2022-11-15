@@ -161,6 +161,7 @@ func TransChangeReportConfRunToMao(req rao.ChangeTaskConfReq) *mao.ChangeTaskCon
 			StepRunTime:      req.ModeConf.StepRunTime,
 			MaxConcurrency:   req.ModeConf.MaxConcurrency,
 			Duration:         req.ModeConf.Duration,
+			CreatedTimeSec:   req.ModeConf.CreatedTimeSec,
 		},
 	}
 }
