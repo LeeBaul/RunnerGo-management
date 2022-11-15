@@ -6,6 +6,7 @@ import (
 	"github.com/go-omnibus/proof"
 	"github.com/goccy/go-json"
 	"golang.org/x/net/context"
+	"gorm.io/gen"
 	"gorm.io/gen/field"
 	"gorm.io/gorm"
 	"kp-management/internal/pkg/biz/errno"
@@ -134,7 +135,14 @@ func GetPreinstallList(ctx *gin.Context, req rao.GetPreinstallListReq) ([]*rao.P
 	offset := (req.Page - 1) * req.Size
 	sort := make([]field.Expr, 0, 6)
 	sort = append(sort, tx.CreatedAt.Desc())
-	list, total, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(req.TeamID)).Order(sort...).FindByPage(offset, limit)
+
+	conditions := make([]gen.Condition, 0)
+	conditions = append(conditions, tx.TeamID.Eq(req.TeamID))
+	if req.ConfName != "" {
+		conditions = append(conditions, tx.ConfName.Like(fmt.Sprintf("%%%s%%", req.ConfName)))
+	}
+
+	list, total, err := tx.WithContext(ctx).Where(conditions...).Order(sort...).FindByPage(offset, limit)
 	if err != nil {
 		proof.Errorf("预设配置列表--获取列表失败，err:", err)
 		return nil, 0, err
