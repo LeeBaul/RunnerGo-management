@@ -46,7 +46,7 @@ func SavePreinstall(ctx *gin.Context, req *rao.SavePreinstallReq) (int, error) {
 
 	if req.ID == 0 { // 新建
 		// 排重
-		_, err = tx.WithContext(ctx).Where(tx.ConfName.Eq(req.ConfName)).First()
+		_, err = tx.WithContext(ctx).Where(tx.TeamID.Eq(req.TeamID)).Where(tx.ConfName.Eq(req.ConfName)).First()
 		if err == nil {
 			proof.Infof("保存预设配置--查询预设配置表失败,或已存在，err:", err)
 			return errno.ErrYetPreinstall, errors.New("预设配置名称已存在")
@@ -209,7 +209,7 @@ func CopyPreinstall(ctx *gin.Context, req rao.CopyPreinstallReq) error {
 	newPreInstallName := ""
 
 	// 查询老配置相关的
-	list, err := tx.WithContext(ctx).Where(tx.ConfName.Like(fmt.Sprintf("%s%%", oldPreInstallName+"_"))).Find()
+	list, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(req.TeamID)).Where(tx.ConfName.Like(fmt.Sprintf("%s%%", oldPreInstallName+"_"))).Find()
 	if err != nil && err != gorm.ErrRecordNotFound {
 		proof.Errorf("复制预设配置--查询老配置失败，err:", err)
 		return err
