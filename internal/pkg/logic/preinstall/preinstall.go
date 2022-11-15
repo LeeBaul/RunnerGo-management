@@ -5,6 +5,7 @@ import (
 	"github.com/go-omnibus/proof"
 	"github.com/goccy/go-json"
 	"golang.org/x/net/context"
+	"gorm.io/gen/field"
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/jwt"
 	"kp-management/internal/pkg/dal"
@@ -119,13 +120,18 @@ func GetPreinstallDetail(ctx context.Context, req rao.GetPreinstallDetailReq) (*
 	return res, nil
 }
 
-func GetPreinstallList(ctx *gin.Context, req rao.GetPreinstallListReq) ([]*rao.PreinstallDetailResponse, error) {
+func GetPreinstallList(ctx *gin.Context, req rao.GetPreinstallListReq) ([]*rao.PreinstallDetailResponse, int64, error) {
 	// 查询数据库
 	tx := dal.GetQuery().PreinstallConf
-	list, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(req.TeamID)).Find()
+	// 查询数据库
+	limit := req.Size
+	offset := (req.Page - 1) * req.Size
+	sort := make([]field.Expr, 0, 6)
+	sort = append(sort, tx.CreatedAt.Desc())
+	list, total, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(req.TeamID)).Order(sort...).FindByPage(offset, limit)
 	if err != nil {
 		proof.Errorf("预设配置列表--获取列表失败，err:", err)
-		return nil, err
+		return nil, 0, err
 	}
 
 	res := make([]*rao.PreinstallDetailResponse, 0, len(list))
@@ -161,5 +167,5 @@ func GetPreinstallList(ctx *gin.Context, req rao.GetPreinstallListReq) ([]*rao.P
 		}
 		res = append(res, detailTmp)
 	}
-	return res, nil
+	return res, total, nil
 }

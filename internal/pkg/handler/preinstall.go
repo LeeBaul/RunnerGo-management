@@ -50,10 +50,14 @@ func GetPreinstallList(ctx *gin.Context) {
 		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
 		return
 	}
-	list, err := preinstall.GetPreinstallList(ctx, req)
+	list, total, err := preinstall.GetPreinstallList(ctx, req)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
 	}
-	response.SuccessWithData(ctx, list)
+	response.SuccessWithData(ctx, rao.GetPreinstallResponse{
+		PreinstallList: list,
+		Total:          total,
+	})
+	return
 }

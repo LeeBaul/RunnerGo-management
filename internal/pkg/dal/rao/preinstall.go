@@ -29,4 +29,12 @@ type PreinstallDetailResponse struct {
 
 type GetPreinstallListReq struct {
 	TeamID int64 `json:"team_id" binding:"required"`
+
+	Page int `json:"page" form:"page,default=1"`
+	Size int `json:"size" form:"size,default=10"`
+}
+
+type GetPreinstallResponse struct {
+	PreinstallList []*PreinstallDetailResponse `json:"preinstall_list"`
+	Total          int64                       `json:"total"`
 }

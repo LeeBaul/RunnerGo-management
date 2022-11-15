@@ -23,7 +23,7 @@ func GetMachineList(ctx *gin.Context, req rao.GetMachineListParam) ([]*rao.Machi
 	}
 
 	// 排序
-	sort := make([]field.Expr, 0, 5)
+	sort := make([]field.Expr, 0, 6)
 	if req.SortTag == 0 { // 默认排序(创建时间)
 		sort = append(sort, tx.CreatedAt.Desc())
 	}
