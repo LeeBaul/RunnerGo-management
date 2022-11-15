@@ -1,6 +1,7 @@
 package preinstall
 
 import (
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-omnibus/proof"
@@ -48,7 +49,7 @@ func SavePreinstall(ctx *gin.Context, req *rao.SavePreinstallReq) (int, error) {
 		_, err = tx.WithContext(ctx).Where(tx.ConfName.Eq(req.ConfName)).First()
 		if err == nil {
 			proof.Infof("保存预设配置--查询预设配置表失败,或已存在，err:", err)
-			return errno.ErrMysqlFailed, err
+			return errno.ErrYetPreinstall, errors.New("预设配置名称已存在")
 		}
 
 		insertData := &model.PreinstallConf{
