@@ -19,6 +19,8 @@ type RunAPIResp struct {
 }
 
 type StopRunnerReq struct {
+	TeamID    int64    `json:"team_id"`
+	PlanID    int64    `json:"plan_id"`
 	ReportIds []string `json:"report_ids"`
 }
 

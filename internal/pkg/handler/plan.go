@@ -147,7 +147,7 @@ func StopPlan(ctx *gin.Context) {
 		reportIDs = append(reportIDs, report.ID)
 	}
 	_, err = resty.New().R().
-		SetBody(runner.StopRunnerReq{ReportIds: omnibus.Int64sToStrings(reportIDs)}).
+		SetBody(runner.StopRunnerReq{ReportIds: omnibus.Int64sToStrings(reportIDs), TeamID: req.TeamID, PlanID: req.PlanIDs[0]}).
 		Post(conf.Conf.Clients.Runner.StopPlan)
 
 	if err != nil {

@@ -57,6 +57,7 @@ type RunPlanResp struct {
 
 type StopPlanReq struct {
 	//ReportIds []int64 `json:"report_ids"`
+	TeamID  int64   `json:"team_id"`
 	PlanIDs []int64 `json:"plan_ids"`
 }
 
