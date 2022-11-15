@@ -42,3 +42,18 @@ func GetPreinstallDetail(ctx *gin.Context) {
 	}
 	response.SuccessWithData(ctx, preinstallDetail)
 }
+
+// GetPreinstallList 获取预设配置列表
+func GetPreinstallList(ctx *gin.Context) {
+	var req rao.GetPreinstallListReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+	list, err := preinstall.GetPreinstallList(ctx, req)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+	response.SuccessWithData(ctx, list)
+}

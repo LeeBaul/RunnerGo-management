@@ -118,3 +118,48 @@ func GetPreinstallDetail(ctx context.Context, req rao.GetPreinstallDetailReq) (*
 	}
 	return res, nil
 }
+
+func GetPreinstallList(ctx *gin.Context, req rao.GetPreinstallListReq) ([]*rao.PreinstallDetailResponse, error) {
+	// 查询数据库
+	tx := dal.GetQuery().PreinstallConf
+	list, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(req.TeamID)).Find()
+	if err != nil {
+		proof.Errorf("预设配置列表--获取列表失败，err:", err)
+		return nil, err
+	}
+
+	res := make([]*rao.PreinstallDetailResponse, 0, len(list))
+	for _, detail := range list {
+		// 转换数据类型
+		modeConf := new(rao.ModeConf)
+		if detail.ModeConf != "" {
+			err = json.Unmarshal([]byte(detail.ModeConf), &modeConf)
+			if err != nil {
+				proof.Errorf("查看预设配置详情--解析mode_conf数据失败，err：", err)
+				continue
+			}
+		}
+
+		timedTaskConf := new(rao.TimedTaskConf)
+		if detail.TimedTaskConf != "" {
+			err = json.Unmarshal([]byte(detail.TimedTaskConf), &timedTaskConf)
+			if err != nil {
+				proof.Errorf("查看预设配置详情--解析timed_task_conf数据失败，err：", err)
+				continue
+			}
+		}
+
+		detailTmp := &rao.PreinstallDetailResponse{
+			ID:            detail.ID,
+			TeamID:        detail.TeamID,
+			ConfName:      detail.ConfName,
+			UserName:      detail.UserName,
+			TaskType:      detail.TaskType,
+			TaskMode:      detail.TaskMode,
+			ModeConf:      modeConf,
+			TimedTaskConf: timedTaskConf,
+		}
+		res = append(res, detailTmp)
+	}
+	return res, nil
+}

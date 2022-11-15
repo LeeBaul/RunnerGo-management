@@ -182,6 +182,6 @@ func RegisterRouter(r *gin.Engine) {
 	// 计划预设配置
 	preinstall := api.Group("/v1/preinstall/")
 	preinstall.POST("save", handler.SavePreinstall)
-	//preinstall.POST("list", handler.GetPreinstallList)
+	preinstall.POST("list", handler.GetPreinstallList)
 	preinstall.POST("detail", handler.GetPreinstallDetail)
 }

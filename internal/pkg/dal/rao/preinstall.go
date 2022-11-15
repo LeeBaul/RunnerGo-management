@@ -26,3 +26,7 @@ type PreinstallDetailResponse struct {
 	ModeConf      *ModeConf      `json:"mode_conf" binding:"required"`
 	TimedTaskConf *TimedTaskConf `json:"timed_task_conf"`
 }
+
+type GetPreinstallListReq struct {
+	TeamID int64 `json:"team_id" binding:"required"`
+}
