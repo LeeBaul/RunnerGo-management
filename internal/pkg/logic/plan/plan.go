@@ -167,7 +167,7 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 
 	// 判断任务配置类型
 	if req.TaskType == 1 { // 普通任务
-		return query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
+		err := query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
 			// 1、先去把定时任务数据删掉
 			_, err := tx.TimedTaskConf.WithContext(ctx).
 				Where(tx.TimedTaskConf.TeamID.Eq(req.TeamID)).
@@ -176,7 +176,6 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 			if err != nil {
 				proof.Infof("保存配置--不存在定时任务或删除mysql失败,err:", err)
 			}
-
 			// 2、去mg里面创建或更新配置数据
 			err = collection.FindOne(ctx, bson.D{{"scene_id", req.SceneID}}).Err()
 			if err != nil {
@@ -213,6 +212,10 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 			}
 			return nil
 		})
+		if err != nil {
+			proof.Errorf("保存配置--保存普通任务配置失败，err:", err)
+			return err
+		}
 	} else { // 定时任务
 		// 1、先去把mg里面可能存在的普通任务配置给删掉
 		_, err := collection.DeleteOne(ctx, bson.D{{"plan_id", req.PlanID}, {"scene_id", req.SceneID}})
@@ -316,7 +319,6 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 	if len(tasks) > 0 && len(timedTaskList) > 0 {
 		planType = consts.PlanTaskTypeMix
 	}
-
 	_, err = tx.Plan.WithContext(ctx).Where(tx.Plan.ID.Eq(req.PlanID)).UpdateSimple(tx.Plan.TaskType.Value(planType), tx.Plan.Mode.Value(planMode))
 	if err != nil {
 		proof.Errorf("保存配置--修改计划的任务类型和也测模式失败，err:", err)
