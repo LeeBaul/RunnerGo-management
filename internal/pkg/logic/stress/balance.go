@@ -1,6 +1,6 @@
 package stress
 
-// 压力机调度
+// DispatchMachineBalance 压力机调度
 type DispatchMachineBalance struct {
 	rss []*WeightNode
 }

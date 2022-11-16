@@ -50,6 +50,7 @@ type Baton struct {
 	reports         []*model.Report
 	balance         *DispatchMachineBalance
 	stress          []*run_plan.Stress
+	MachineList     []*HeartBeat
 }
 
 type UsableMachineMap struct {
@@ -132,6 +133,8 @@ func (s *CheckIdleMachine) Execute(baton *Baton) (int, error) {
 			proof.Infof("runner_machine_detail 数据解析失败 err：", err)
 			continue
 		}
+
+		baton.MachineList = append(baton.MachineList, &runnerMachineInfo)
 
 		// 压力机数据上报时间超过3秒，则认为服务不可用，不参与本次压力测试
 		nowTime := time.Now().Unix()
@@ -618,6 +621,8 @@ type SplitStress struct {
 }
 
 func (s *SplitStress) Execute(baton *Baton) (int, error) {
+	var allSceneTotalConcurrency int64 // 所有任务的总并发
+
 	memo := make(map[string]int32)
 	for i, stress := range baton.stress {
 		memo[stress.ReportID]++
@@ -628,6 +633,14 @@ func (s *SplitStress) Execute(baton *Baton) (int, error) {
 				apiCnt++
 			}
 		}
+
+		var oneSceneTotalConcurrency int64   // 当然任务的总并发
+		if stress.ConfigTask.TaskType == 1 { // 并发模式
+			oneSceneTotalConcurrency = apiCnt * stress.ConfigTask.ModeConf.Concurrency
+		} else { // 其他模式
+			oneSceneTotalConcurrency = apiCnt * stress.ConfigTask.ModeConf.MaxConcurrency
+		}
+		allSceneTotalConcurrency = allSceneTotalConcurrency + oneSceneTotalConcurrency
 
 		maxConcurrency := conf.Conf.Base.MaxConcurrency
 		totalConcurrency := apiCnt * stress.ConfigTask.ModeConf.Concurrency
@@ -640,6 +653,16 @@ func (s *SplitStress) Execute(baton *Baton) (int, error) {
 
 			totalConcurrency -= maxConcurrency
 		}
+	}
+
+	// 统计压力机最大的并发能力
+	var machineTotalConcurrency int64
+	for _, machineInfo := range baton.MachineList {
+		machineTotalConcurrency = machineTotalConcurrency + (machineInfo.MaxGoroutines - machineInfo.CurrentGoroutines)
+	}
+	if allSceneTotalConcurrency > machineTotalConcurrency {
+		proof.Infof("当前计划的总并发大于压力机可用并发数")
+		return errno.ErrResourceNotEnough, fmt.Errorf("资源不足")
 	}
 
 	for _, stress := range baton.stress {
@@ -956,7 +979,7 @@ func GetRunnerMachineState(addr string) bool {
 	}
 }
 
-// 删除执行失败的计划下的所有报告
+// DeletePlanReport 删除执行失败的计划下的所有报告
 func DeletePlanReport(baton *Baton) error {
 	for _, reportInfo := range baton.reports {
 		// 如果调用施压接口失败，则删除掉当前的这个报告id
