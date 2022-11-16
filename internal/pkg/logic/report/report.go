@@ -229,10 +229,19 @@ func DeleteReport(ctx context.Context, teamID, reportID, userID int64) error {
 }
 
 func GetTaskDetail(ctx context.Context, req rao.GetReportTaskDetailReq) (*rao.ReportTask, error) {
+	// 查询报告是否被删除
+	tx := dal.GetQuery().Report
+	_, err := tx.WithContext(ctx).Where(tx.ID.Eq(req.ReportID)).First()
+	if err != nil {
+		proof.Errorf("报告详情--查询报告基本信息失败，err:")
+		err = fmt.Errorf("报告不存在")
+		return nil, err
+	}
+
 	var detail mao.ReportTask
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectReportTask)
 
-	err := collection.FindOne(ctx, bson.D{{"report_id", req.ReportID}}).Decode(&detail)
+	err = collection.FindOne(ctx, bson.D{{"report_id", req.ReportID}}).Decode(&detail)
 	if err != nil {
 		proof.Error("mongo decode err", proof.WithError(err))
 		return nil, err

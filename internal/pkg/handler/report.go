@@ -93,7 +93,11 @@ func GetReportTaskDetail(ctx *gin.Context) {
 
 	ret, err := report.GetTaskDetail(ctx, req)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		if err == fmt.Errorf("报告不存在") {
+			response.ErrorWithMsg(ctx, errno.ErrReportNotFound, err.Error())
+		} else {
+			response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		}
 		return
 	}
 
