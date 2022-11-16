@@ -234,8 +234,8 @@ func GetTaskDetail(ctx context.Context, req rao.GetReportTaskDetailReq) (*rao.Re
 	_, err := tx.WithContext(ctx).Where(tx.ID.Eq(req.ReportID)).First()
 	if err != nil {
 		proof.Errorf("报告详情--查询报告基本信息失败，err:")
-		err = fmt.Errorf("报告不存在")
-		return nil, err
+		errNew := fmt.Errorf("报告不存在")
+		return nil, errNew
 	}
 
 	var detail mao.ReportTask

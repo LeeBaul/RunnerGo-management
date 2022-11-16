@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-omnibus/omnibus"
 	"github.com/go-omnibus/proof"
@@ -72,7 +71,7 @@ func ReportDetail(ctx *gin.Context) {
 	}
 	err, result := report.GetReportDetail(ctx, req)
 	if err != nil {
-		if err == fmt.Errorf("报告不存在") {
+		if err.Error() == "报告不存在" {
 			response.ErrorWithMsg(ctx, errno.ErrReportNotFound, err.Error())
 		} else {
 			response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
@@ -93,7 +92,7 @@ func GetReportTaskDetail(ctx *gin.Context) {
 
 	ret, err := report.GetTaskDetail(ctx, req)
 	if err != nil {
-		if err == fmt.Errorf("报告不存在") {
+		if err.Error() == "报告不存在" {
 			response.ErrorWithMsg(ctx, errno.ErrReportNotFound, err.Error())
 		} else {
 			response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
