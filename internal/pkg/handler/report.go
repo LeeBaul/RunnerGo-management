@@ -72,7 +72,7 @@ func ReportDetail(ctx *gin.Context) {
 	}
 	err, result := report.GetReportDetail(ctx, req)
 	if err != nil {
-		if err == fmt.Errorf("mongo里面没有查到报告详情数据") {
+		if err == fmt.Errorf("报告不存在") {
 			response.ErrorWithMsg(ctx, errno.ErrReportNotFound, err.Error())
 		} else {
 			response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())

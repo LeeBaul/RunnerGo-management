@@ -376,6 +376,16 @@ func GetReportDebugLog(ctx context.Context, report rao.GetReportReq) (err error,
 
 // GetReportDetail 从redis获取测试数据
 func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, resultData ResultData) {
+	// 查询报告是否被删除
+	tx := dal.GetQuery().Report
+	_, err = tx.WithContext(ctx).Where(tx.ID.Eq(report.ReportID)).First()
+	if err != nil {
+		proof.Errorf("报告详情--查询报告基本信息失败，err:")
+		err = fmt.Errorf("报告不存在")
+		return
+	}
+
+	// 查询报告详情数据
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectReportData)
 	filter := bson.D{{"reportid", fmt.Sprintf("%d", report.ReportID)}}
 	var resultMsg SceneTestResultDataMsg
@@ -388,7 +398,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 		dataList := rdb.LRange(ctx, key, 0, -1).Val()
 		if len(dataList) < 1 {
 			proof.Error("mongo里面没有查到报告详情数据，err:", proof.WithError(err))
-			err = fmt.Errorf("mongo里面没有查到报告详情数据")
+			err = nil
 			return
 		}
 		for i := len(dataList) - 1; i >= 0; i-- {
