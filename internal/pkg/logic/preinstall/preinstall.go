@@ -70,7 +70,7 @@ func SavePreinstall(ctx *gin.Context, req *rao.SavePreinstallReq) (int, error) {
 		}
 
 		// 保存操作日志
-		if err := record.InsertRun(ctx, req.TeamID, jwt.GetUserIDByCtx(ctx), record.OperationOperateSavePreinstall, req.ConfName); err != nil {
+		if err := record.InsertCreate(ctx, req.TeamID, jwt.GetUserIDByCtx(ctx), record.OperationOperateSavePreinstall, req.ConfName); err != nil {
 			proof.Errorf("保存预设配置--保存操作日志失败，err:", err)
 			return errno.ErrMysqlFailed, err
 		}
@@ -92,7 +92,7 @@ func SavePreinstall(ctx *gin.Context, req *rao.SavePreinstallReq) (int, error) {
 			return errno.ErrMysqlFailed, err
 		}
 		// 保存操作日志
-		if err := record.InsertRun(ctx, req.TeamID, jwt.GetUserIDByCtx(ctx), record.OperationOperateUpdatePreinstall, req.ConfName); err != nil {
+		if err := record.InsertUpdate(ctx, req.TeamID, jwt.GetUserIDByCtx(ctx), record.OperationOperateUpdatePreinstall, req.ConfName); err != nil {
 			proof.Errorf("保存预设配置--保存操作日志失败，err:", err)
 			return errno.ErrMysqlFailed, err
 		}
@@ -207,7 +207,7 @@ func DeletePreinstall(ctx *gin.Context, req rao.DeletePreinstallReq) error {
 		return err
 	}
 	// 保存操作日志
-	if err := record.InsertRun(ctx, req.TeamID, jwt.GetUserIDByCtx(ctx), record.OperationOperateDeletePreinstall, req.ConfName); err != nil {
+	if err := record.InsertDelete(ctx, req.TeamID, jwt.GetUserIDByCtx(ctx), record.OperationOperateDeletePreinstall, req.ConfName); err != nil {
 		proof.Errorf("保存预设配置--保存操作日志失败，err:", err)
 		return err
 	}
