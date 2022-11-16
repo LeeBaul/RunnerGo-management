@@ -61,7 +61,7 @@ var CodeMsgMap = map[int]string{
 	ErrResourceNotEnough: "resource not enough",
 	ErrEmptyScene:        "the scene cannot be empty",
 	ErrYetPreinstall:     "preinstall yet exists",
-	ErrReportNotFound:    "report is empty",
+	ErrReportNotFound:    "report not found",
 }
 
 // CodeAlertMap 错图码映射错误提示，展示给用户
