@@ -39,7 +39,9 @@ type GetPreinstallResponse struct {
 }
 
 type DeletePreinstallReq struct {
-	ID int32 `json:"id" binding:"required"`
+	ID       int32  `json:"id" binding:"required"`
+	TeamID   int64  `json:"team_id" binding:"required"`
+	ConfName string `json:"conf_name" binding:"required"`
 }
 
 type CopyPreinstallReq struct {

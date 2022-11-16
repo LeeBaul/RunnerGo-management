@@ -12,6 +12,7 @@ import (
 	"gorm.io/gorm"
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/jwt"
+	"kp-management/internal/pkg/biz/record"
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/rao"
@@ -67,6 +68,13 @@ func SavePreinstall(ctx *gin.Context, req *rao.SavePreinstallReq) (int, error) {
 			proof.Errorf("保存预设配置--创建数据失败，err:", err)
 			return errno.ErrMysqlFailed, err
 		}
+
+		// 保存操作日志
+		if err := record.InsertRun(ctx, req.TeamID, jwt.GetUserIDByCtx(ctx), record.OperationOperateSavePreinstall, req.ConfName); err != nil {
+			proof.Errorf("保存预设配置--保存操作日志失败，err:", err)
+			return errno.ErrMysqlFailed, err
+		}
+
 	} else { // 修改
 		updateData := model.PreinstallConf{
 			ConfName:      req.ConfName,
@@ -81,6 +89,11 @@ func SavePreinstall(ctx *gin.Context, req *rao.SavePreinstallReq) (int, error) {
 		_, err := tx.WithContext(ctx).Where(tx.ID.Eq(req.ID)).Updates(updateData)
 		if err != nil {
 			proof.Errorf("保存预设配置--修改数据失败，err:", err)
+			return errno.ErrMysqlFailed, err
+		}
+		// 保存操作日志
+		if err := record.InsertRun(ctx, req.TeamID, jwt.GetUserIDByCtx(ctx), record.OperationOperateUpdatePreinstall, req.ConfName); err != nil {
+			proof.Errorf("保存预设配置--保存操作日志失败，err:", err)
 			return errno.ErrMysqlFailed, err
 		}
 	}
@@ -193,6 +206,12 @@ func DeletePreinstall(ctx *gin.Context, req rao.DeletePreinstallReq) error {
 		proof.Errorf("删除预设配置--删除失败，err:", err)
 		return err
 	}
+	// 保存操作日志
+	if err := record.InsertRun(ctx, req.TeamID, jwt.GetUserIDByCtx(ctx), record.OperationOperateDeletePreinstall, req.ConfName); err != nil {
+		proof.Errorf("保存预设配置--保存操作日志失败，err:", err)
+		return err
+	}
+
 	return nil
 }
 

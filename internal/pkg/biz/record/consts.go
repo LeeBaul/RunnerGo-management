@@ -17,4 +17,9 @@ const (
 	OperationOperateDeletePlan   = 14 // 删除计划
 	OperationOperateRunScene     = 15 // 运行场景
 	OperationOperateRunPlan      = 16 // 运行计划
+
+	OperationOperateSavePreinstall   = 17 // 新建预设配置
+	OperationOperateUpdatePreinstall = 18 // 修改并保存预设配置
+	OperationOperateDeletePreinstall = 19 // 删除预设配置
+
 )
