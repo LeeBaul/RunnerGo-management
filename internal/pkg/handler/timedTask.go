@@ -24,7 +24,7 @@ func TimedTaskExec() {
 		// 当前时间
 		nowTime := time.Now().Unix()
 		nextTime := time.Now().Unix() + 60
-		conditions = append(conditions, tx.Status.Eq(0))
+		conditions = append(conditions, tx.Status.Eq(consts.TimedTaskInExec))
 
 		// 从数据库当中，查出当前需要执行的定时任务
 		timedTaskData, err := tx.WithContext(ctx).Where(conditions...).Find()
@@ -89,7 +89,6 @@ func TimedTaskExec() {
 				if err != nil {
 					proof.Infof("定时任务运行失败，任务信息：", timedTaskInfo, " err：", err)
 				}
-
 			}
 		} else if err != gorm.ErrRecordNotFound {
 			proof.Infof("定时任务查询数据库出错，err：", err)
@@ -114,16 +113,7 @@ func runTimedTask(ctx *gin.Context, timedTaskInfo *model.TimedTaskConf) error {
 	// 进入执行计划方法
 	_, runErr := RunStress(ctx, runStressParams)
 	if runErr != nil {
-		proof.Infof("定时任务执行失败，定时任务信息：", runStressParams, " err：", runErr)
-	} else {
-		tx := query.Use(dal.DB()).TimedTaskConf
-		_, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(timedTaskInfo.TeamID)).
-			Where(tx.PlanID.Eq(timedTaskInfo.PlanID)).
-			Where(tx.SenceID.Eq(timedTaskInfo.SenceID)).
-			UpdateColumn(tx.Status, consts.TimedTaskInExec)
-		if err != nil {
-			proof.Infof("定时任务状态修改失败，err：", err, " 参数为：", runStressParams)
-		}
+		return runErr
 	}
 	return nil
 }

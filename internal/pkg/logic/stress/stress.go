@@ -293,10 +293,9 @@ type AssembleTask struct {
 
 func (s *AssembleTask) Execute(baton *Baton) (int, error) {
 	memo := make(map[int64]*mao.Task)
-
+	tx := dal.GetQuery().TimedTaskConf
 	// 判断参数是否包含scene_ids
 	if len(baton.SceneIDs) > 0 { // 包含则说明当前任务时定时任务
-		tx := dal.GetQuery().TimedTaskConf
 		timedTaskConfInfo, err := tx.WithContext(baton.Ctx).Where(tx.SenceID.Eq(baton.SceneIDs[0])).First()
 		if err != nil {
 			return errno.ErrMysqlFailed, err
@@ -329,6 +328,25 @@ func (s *AssembleTask) Execute(baton *Baton) (int, error) {
 
 		for _, t := range task {
 			memo[t.SceneID] = t
+		}
+	}
+
+	if len(memo) == 0 {
+		// 查询是否存在定时任务，如果不存在，则返回错误，如果存在，则返回成功
+		ttc := dal.GetQuery().TimedTaskConf
+		timedTaskCount, _ := ttc.WithContext(baton.Ctx).Where(ttc.PlanID.Eq(baton.PlanID)).Count()
+		if timedTaskCount == 0 {
+			fmt.Println(333)
+			return errno.ErrEmptyScene, errors.New("场景不能为空")
+		} else {
+			_, err := tx.WithContext(baton.Ctx).Where(tx.TeamID.Eq(baton.TeamID)).
+				Where(tx.PlanID.Eq(baton.PlanID)).
+				UpdateColumn(tx.Status, consts.TimedTaskInExec)
+			if err != nil {
+				proof.Infof("定时任务状态修改失败，err：", err, " 计划ID为：", baton.PlanID)
+				return errno.ErrMysqlFailed, errors.New("修改定时任务状态失败")
+			}
+			return errno.Ok, nil
 		}
 	}
 
