@@ -388,7 +388,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 		dataList := rdb.LRange(ctx, key, 0, -1).Val()
 		if len(dataList) < 1 {
 			proof.Error("mongo里面没有查到报告详情数据，err:", proof.WithError(err))
-			err = nil
+			err = fmt.Errorf("mongo里面没有查到报告详情数据")
 			return
 		}
 		for i := len(dataList) - 1; i >= 0; i-- {
@@ -532,6 +532,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 		data := dataMap["data"]
 		err = json.Unmarshal([]byte(data), &resultData)
 		resultData.Analysis = dataMap["analysis"]
+		resultData.Description = dataMap["description"]
 		return
 	}
 	err = nil
@@ -630,17 +631,18 @@ type reportDataFmt struct {
 	Data string `json:"data" bson:"data"`
 }
 type ResultData struct {
-	End        bool                      `json:"end" bson:"end"`
-	ReportId   string                    `json:"report_id" bson:"report_id"`
-	ReportName string                    `json:"report_name" bson:"report_name"`
-	PlanId     int64                     `json:"plan_id" bson:"plan_id"`     // 任务ID
-	PlanName   string                    `json:"plan_name" bson:"plan_name"` //
-	SceneId    int64                     `json:"scene_id" bson:"scene_id"`   // 场景
-	SceneName  string                    `json:"scene_name" bson:"scene_name"`
-	Results    map[string]*ResultDataMsg `json:"results" bson:"results"`
-	TimeStamp  int64                     `json:"time_stamp" bson:"time_stamp"`
-	Analysis   string                    `json:"analysis" bson:"analysis"`
-	Msg        string                    `json:"msg" bson:"msg"`
+	End         bool                      `json:"end" bson:"end"`
+	ReportId    string                    `json:"report_id" bson:"report_id"`
+	ReportName  string                    `json:"report_name" bson:"report_name"`
+	PlanId      int64                     `json:"plan_id" bson:"plan_id"`     // 任务ID
+	PlanName    string                    `json:"plan_name" bson:"plan_name"` //
+	SceneId     int64                     `json:"scene_id" bson:"scene_id"`   // 场景
+	SceneName   string                    `json:"scene_name" bson:"scene_name"`
+	Results     map[string]*ResultDataMsg `json:"results" bson:"results"`
+	TimeStamp   int64                     `json:"time_stamp" bson:"time_stamp"`
+	Analysis    string                    `json:"analysis" bson:"analysis"`
+	Description string                    `json:"description" bson:"description"`
+	Msg         string                    `json:"msg" bson:"msg"`
 }
 
 type TimeValue struct {

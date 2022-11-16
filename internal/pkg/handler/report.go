@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-omnibus/omnibus"
 	"github.com/go-omnibus/proof"
@@ -71,7 +72,11 @@ func ReportDetail(ctx *gin.Context) {
 	}
 	err, result := report.GetReportDetail(ctx, req)
 	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		if err == fmt.Errorf("mongo里面没有查到报告详情数据") {
+			response.ErrorWithMsg(ctx, errno.ErrReportNotFound, err.Error())
+		} else {
+			response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		}
 		return
 	}
 	response.SuccessWithData(ctx, result)

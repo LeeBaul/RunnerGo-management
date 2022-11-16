@@ -29,6 +29,7 @@ const (
 	ErrResourceNotEnough = 20009
 	ErrEmptyScene        = 20010
 	ErrYetPreinstall     = 20011
+	ErrReportNotFound    = 20012
 )
 
 // CodeMsgMap 错误码映射错误信息，不展示给用户
@@ -60,6 +61,7 @@ var CodeMsgMap = map[int]string{
 	ErrResourceNotEnough: "resource not enough",
 	ErrEmptyScene:        "the scene cannot be empty",
 	ErrYetPreinstall:     "preinstall yet exists",
+	ErrReportNotFound:    "report is empty",
 }
 
 // CodeAlertMap 错图码映射错误提示，展示给用户
@@ -91,4 +93,5 @@ var CodeAlertMap = map[int]string{
 	ErrResourceNotEnough: "资源不足",
 	ErrEmptyScene:        "场景不能为空",
 	ErrYetPreinstall:     "预设配置名称已存在",
+	ErrReportNotFound:    "报告不存在",
 }
