@@ -293,7 +293,7 @@ func GetTaskDetail(ctx context.Context, req rao.GetReportTaskDetailReq) (*rao.Re
 		StepRunTime:      detail.ModeConf.StepRunTime,
 		MaxConcurrency:   detail.ModeConf.MaxConcurrency,
 		Duration:         detail.ModeConf.Duration,
-		CreatedTimeSec:   detail.ModeConf.CreatedTimeSec,
+		CreatedTimeSec:   ru.CreatedAt.Unix(),
 	}
 
 	res := &rao.ReportTask{
