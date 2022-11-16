@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"strconv"
 	"time"
 
@@ -892,4 +893,18 @@ type CompareReportResponse struct {
 	ReportBaseData      []*reportBaseFormat     `json:"report_base_data"`
 	ReportCollectData   []*reportCollectAllData `json:"report_collect_data"`
 	ReportDetailAllData []*reportDetailAllData  `json:"report_detail_all_data"`
+}
+
+// UpdateDescription 保存或更新报告描述
+func UpdateDescription(ctx *gin.Context, req rao.UpdateDescriptionReq) error {
+	updateMap := make(map[string]string, 1)
+	updateMap["description"] = req.Description
+	// 修改mg数据
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectReportData)
+	_, err := collection.UpdateOne(ctx, bson.D{{"reportid", fmt.Sprintf("%d", req.ReportID)}}, bson.M{"$set": updateMap})
+	if err != nil {
+		proof.Errorf("保存或更新报告描述--操作mg失败，err:", err)
+		return err
+	}
+	return nil
 }

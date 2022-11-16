@@ -56,6 +56,8 @@ type DeleteReportResp struct {
 }
 
 type StopReportReq struct {
+	TeamID    int64   `json:"team_id"`
+	PlanID    int64   `json:"plan_id"`
 	ReportIDs []int64 `json:"report_ids"`
 }
 
@@ -140,4 +142,9 @@ type ChangeTaskConfReq struct {
 
 type CompareReportReq struct {
 	ReportIDs []int64 `json:"report_ids"`
+}
+
+type UpdateDescriptionReq struct {
+	ReportID    int64  `json:"report_id"`
+	Description string `json:"description"`
 }

@@ -199,7 +199,7 @@ func StopReport(ctx *gin.Context) {
 	}
 
 	_, err := resty.New().R().
-		SetBody(runner.StopRunnerReq{ReportIds: omnibus.Int64sToStrings(req.ReportIDs)}).
+		SetBody(runner.StopRunnerReq{ReportIds: omnibus.Int64sToStrings(req.ReportIDs), TeamID: req.TeamID, PlanID: req.PlanID}).
 		Post(conf.Conf.Clients.Runner.StopPlan)
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrHttpFailed, err.Error())
@@ -357,4 +357,20 @@ func CompareReport(ctx *gin.Context) {
 	response.SuccessWithData(ctx, res)
 	return
 
+}
+
+// UpdateDescription 保存或更新测试结果描述
+func UpdateDescription(ctx *gin.Context) {
+	var req rao.UpdateDescriptionReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+	err := report.UpdateDescription(ctx, req)
+	if err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMongoFailed, err.Error())
+		return
+	}
+	response.Success(ctx)
+	return
 }

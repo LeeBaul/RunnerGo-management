@@ -7,7 +7,6 @@ const (
 	CollectScene            = "scene"
 	CollectTask             = "task"
 	CollectFlow             = "flow"
-	CollectPreinstall       = "preinstall"
 	CollectReportTask       = "report_task"
 	CollectChangeReportConf = "change_report_conf"
 
