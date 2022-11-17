@@ -44,7 +44,7 @@ func ListMachines(ctx context.Context, reportID int64) (*rao.ListMachineResp, er
 	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectMachineMonitorData)
 	for _, machine := range rms {
 		// 从mg里面查出来压力机监控数据
-		mmd, err := collection.Find(ctx, bson.D{{"machine_ip", bson.D{{"$in", machine.IP}}}, {"created_at", bson.D{{"$gte", startTimeSec}}}, {"created_at", bson.D{{"$lte", endTimeSec}}}})
+		mmd, err := collection.Find(ctx, bson.D{{"machine_ip", machine.IP}, {"created_at", bson.D{{"$gte", startTimeSec}}}, {"created_at", bson.D{{"$lte", endTimeSec}}}})
 		if err != nil {
 			return nil, err
 		}
