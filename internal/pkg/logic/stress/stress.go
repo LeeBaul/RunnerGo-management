@@ -336,7 +336,6 @@ func (s *AssembleTask) Execute(baton *Baton) (int, error) {
 		ttc := dal.GetQuery().TimedTaskConf
 		timedTaskCount, _ := ttc.WithContext(baton.Ctx).Where(ttc.PlanID.Eq(baton.PlanID)).Count()
 		if timedTaskCount == 0 {
-			fmt.Println(333)
 			return errno.ErrEmptyScene, errors.New("场景不能为空")
 		} else {
 			_, err := tx.WithContext(baton.Ctx).Where(tx.TeamID.Eq(baton.TeamID)).
@@ -346,6 +345,17 @@ func (s *AssembleTask) Execute(baton *Baton) (int, error) {
 				proof.Infof("定时任务状态修改失败，err：", err, " 计划ID为：", baton.PlanID)
 				return errno.ErrMysqlFailed, errors.New("修改定时任务状态失败")
 			}
+
+			// 把计划状态改为运行中
+			planTable := dal.GetQuery().Plan
+			updateData := make(map[string]interface{}, 1)
+			updateData["status"] = consts.PlanStatusUnderway
+			_, err = planTable.WithContext(baton.Ctx).Where(planTable.ID.Eq(baton.PlanID)).Updates(updateData)
+			if err != nil {
+				proof.Infof("计划状态修改失败，err：", err, " 计划ID为：", baton.PlanID)
+				return errno.ErrMysqlFailed, errors.New("修改计划状态失败")
+			}
+
 			return errno.Ok, nil
 		}
 	}
