@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-omnibus/proof"
+	"golang.org/x/net/context"
 	"gorm.io/gen"
 	"gorm.io/gorm"
 	"kp-management/internal/pkg/biz/consts"
@@ -14,11 +16,9 @@ import (
 )
 
 func TimedTaskExec() {
-	//ctx := context.Background()
-	ctx := &gin.Context{}
-
 	// 开启定时任务轮询
 	for {
+		ctx := context.Background()
 		tx := query.Use(dal.DB()).TimedTaskConf
 		// 组装查询条件
 		conditions := make([]gen.Condition, 0)
@@ -36,6 +36,8 @@ func TimedTaskExec() {
 		nowHour := nowTimeInfo.Hour()
 		nowMinute := nowTimeInfo.Minute()
 		nowWeekday := nowTimeInfo.Weekday()
+
+		fmt.Println(111, timedTaskData)
 
 		if err == nil { // 查到了数据
 			// 组装运行计划参数
@@ -88,7 +90,7 @@ func TimedTaskExec() {
 				}
 
 				// 执行定时任务计划
-				err := runTimedTask(ctx, timedTaskInfo)
+				err := runTimedTask(timedTaskInfo)
 				if err != nil {
 					proof.Infof("定时任务运行失败，任务信息：", timedTaskInfo, " err：", err)
 				}
@@ -99,11 +101,12 @@ func TimedTaskExec() {
 		}
 
 		// 睡眠一分钟，再循环执行
-		time.Sleep(60 * time.Second)
+		time.Sleep(59 * time.Second)
 	}
 }
 
-func runTimedTask(ctx *gin.Context, timedTaskInfo *model.TimedTaskConf) error {
+func runTimedTask(timedTaskInfo *model.TimedTaskConf) error {
+	ctx := &gin.Context{}
 	// 开始执行计划
 	sceneIds := make([]int64, 0, 1)
 	sceneIds = append(sceneIds, timedTaskInfo.SenceID)
