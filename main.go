@@ -16,9 +16,9 @@ func main() {
 	router.RegisterRouter(r)
 
 	//异步执行定时任务
-	go func() {
-		handler.TimedTaskExec()
-	}()
+	//go func() {
+	//	handler.TimedTaskExec()
+	//}()
 
 	// 把压力机上报的机器信息定时写入数据库
 	go func() {
