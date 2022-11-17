@@ -294,8 +294,8 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 
 	var planType int32 = 1
 	var planMode int32 = 1
-
-	if len(tasks) > 0 {
+	if len(tasks) > 0 && len(timedTaskList) > 0 { // 两种类型都有
+		planType = consts.PlanTaskTypeMix
 		planMode = tasks[0].TaskMode
 		for i, t := range tasks {
 			if i > 0 {
@@ -305,9 +305,27 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 				}
 			}
 		}
-	}
-
-	if len(timedTaskList) > 0 {
+		for _, timeTaskConf := range timedTaskList {
+			if timeTaskConf.TaskMode != planMode {
+				planMode = consts.PlanModeMix
+				break
+			}
+		}
+	} else if len(tasks) > 0 {
+		planType = consts.PlanTaskTypeNormal
+		// 模式
+		planMode = tasks[0].TaskMode
+		for i, t := range tasks {
+			if i > 0 {
+				if t.TaskMode != planMode {
+					planMode = consts.PlanModeMix
+					break
+				}
+			}
+		}
+	} else if len(timedTaskList) > 0 {
+		planType = consts.PlanTaskTypeCronjob
+		// 模式
 		for _, timeTaskConf := range timedTaskList {
 			if timeTaskConf.TaskMode != planMode {
 				planMode = consts.PlanModeMix
@@ -316,9 +334,6 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 		}
 	}
 
-	if len(tasks) > 0 && len(timedTaskList) > 0 {
-		planType = consts.PlanTaskTypeMix
-	}
 	_, err = tx.Plan.WithContext(ctx).Where(tx.Plan.ID.Eq(req.PlanID)).UpdateSimple(tx.Plan.TaskType.Value(planType), tx.Plan.Mode.Value(planMode))
 	if err != nil {
 		proof.Errorf("保存配置--修改计划的任务类型和也测模式失败，err:", err)
