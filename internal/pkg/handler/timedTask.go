@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/go-omnibus/proof"
 	"gorm.io/gen"
@@ -15,18 +14,29 @@ import (
 )
 
 func TimedTaskExec() {
-	ctx := context.Background()
-	tx := query.Use(dal.DB()).TimedTaskConf
+	//ctx := context.Background()
+	ctx := &gin.Context{}
+
 	// 开启定时任务轮询
 	for {
+		tx := query.Use(dal.DB()).TimedTaskConf
 		// 组装查询条件
 		conditions := make([]gen.Condition, 0)
 		// 当前时间
 		nowTime := time.Now().Unix()
 		conditions = append(conditions, tx.Status.Eq(consts.TimedTaskInExec))
-
 		// 从数据库当中，查出当前需要执行的定时任务
 		timedTaskData, err := tx.WithContext(ctx).Where(conditions...).Find()
+
+		// 当前时间的 时，分
+		nowTimeInfo := time.Unix(nowTime, 0)
+		nowYear := nowTimeInfo.Year()
+		nowMonth := nowTimeInfo.Month()
+		nowDay := nowTimeInfo.Day()
+		nowHour := nowTimeInfo.Hour()
+		nowMinute := nowTimeInfo.Minute()
+		nowWeekday := nowTimeInfo.Weekday()
+
 		if err == nil { // 查到了数据
 			// 组装运行计划参数
 			for _, timedTaskInfo := range timedTaskData {
@@ -38,15 +48,6 @@ func TimedTaskExec() {
 				taskHour := tm.Hour()
 				taskMinute := tm.Minute()
 				taskWeekday := tm.Weekday()
-
-				// 当前时间的 时，分
-				nowTimeInfo := time.Unix(nowTime, 0)
-				nowYear := nowTimeInfo.Year()
-				nowMonth := nowTimeInfo.Month()
-				nowDay := nowTimeInfo.Day()
-				nowHour := nowTimeInfo.Hour()
-				nowMinute := nowTimeInfo.Minute()
-				nowWeekday := nowTimeInfo.Weekday()
 
 				// 排除过期的定时任务
 				if timedTaskInfo.TaskCloseTime < nowTime {
@@ -87,8 +88,7 @@ func TimedTaskExec() {
 				}
 
 				// 执行定时任务计划
-				ctx2 := &gin.Context{}
-				err := runTimedTask(ctx2, timedTaskInfo)
+				err := runTimedTask(ctx, timedTaskInfo)
 				if err != nil {
 					proof.Infof("定时任务运行失败，任务信息：", timedTaskInfo, " err：", err)
 				}
