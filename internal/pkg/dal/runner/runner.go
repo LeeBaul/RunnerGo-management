@@ -4,6 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/gin-gonic/gin"
+	"kp-management/internal/pkg/biz/consts"
+	"kp-management/internal/pkg/biz/errno"
+	"kp-management/internal/pkg/biz/response"
+	"kp-management/internal/pkg/dal"
+	"strconv"
 
 	"github.com/go-omnibus/proof"
 	"github.com/go-resty/resty/v2"
@@ -76,20 +82,31 @@ func RunScene(ctx context.Context, body *rao.SceneFlow) (string, error) {
 	return ret.Data, nil
 }
 
-func StopScene(ctx context.Context, req *rao.StopSceneReq) error {
-	var ret RunAPIResp
-	_, err := resty.New().R().
-		SetBody(req).
-		SetResult(&ret).
-		Post(conf.Conf.Clients.Runner.StopScene)
-
+func StopScene(ctx *gin.Context, req *rao.StopSceneReq) error {
+	// 停止计划的时候，往redis里面写一条数据
+	teamIDString := strconv.Itoa(int(req.TeamID))
+	SceneIDString := strconv.Itoa(int(req.SceneID))
+	stopSceneKey := consts.StopScenePrefix + teamIDString + ":" + SceneIDString
+	_, err := dal.GetRDB().Set(ctx, stopSceneKey, 1, 0).Result()
 	if err != nil {
+		proof.Errorf("停止场景--写入redis数据失败，err:", err)
+		response.ErrorWithMsg(ctx, errno.ErrRedisFailed, err.Error())
 		return err
 	}
 
-	if ret.Code != 200 {
-		return fmt.Errorf("ret code not 200")
-	}
+	//var ret RunAPIResp
+	//_, err := resty.New().R().
+	//	SetBody(req).
+	//	SetResult(&ret).
+	//	Post(conf.Conf.Clients.Runner.StopScene)
+	//
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//if ret.Code != 200 {
+	//	return fmt.Errorf("ret code not 200")
+	//}
 
 	return nil
 }

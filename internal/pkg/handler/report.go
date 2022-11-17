@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-omnibus/omnibus"
 	"github.com/go-omnibus/proof"
-	"github.com/go-resty/resty/v2"
 	"go.mongodb.org/mongo-driver/bson"
 	"kp-management/internal/pkg/packer"
 	"strconv"
@@ -16,10 +15,8 @@ import (
 
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/response"
-	"kp-management/internal/pkg/conf"
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/rao"
-	"kp-management/internal/pkg/dal/runner"
 	"kp-management/internal/pkg/logic/report"
 )
 
@@ -206,13 +203,27 @@ func StopReport(ctx *gin.Context) {
 		return
 	}
 
-	_, err := resty.New().R().
-		SetBody(runner.StopRunnerReq{ReportIds: omnibus.Int64sToStrings(req.ReportIDs), TeamID: req.TeamID, PlanID: req.PlanID}).
-		Post(conf.Conf.Clients.Runner.StopPlan)
-	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrHttpFailed, err.Error())
-		return
+	// 停止计划的时候，往redis里面写一条数据
+	reportIDsString := omnibus.Int64sToStrings(req.ReportIDs)
+	teamIDString := strconv.Itoa(int(req.TeamID))
+	planIDString := strconv.Itoa(int(req.PlanID))
+	for _, reportID := range reportIDsString {
+		stopPlanKey := consts.StopPlanPrefix + teamIDString + ":" + planIDString + ":" + reportID
+		_, err := dal.GetRDB().Set(ctx, stopPlanKey, 1, 0).Result()
+		if err != nil {
+			proof.Errorf("停止报告--写入redis数据失败，err:", err)
+			response.ErrorWithMsg(ctx, errno.ErrRedisFailed, err.Error())
+			return
+		}
 	}
+
+	//_, err := resty.New().R().
+	//	SetBody(runner.StopRunnerReq{ReportIds: omnibus.Int64sToStrings(req.ReportIDs), TeamID: req.TeamID, PlanID: req.PlanID}).
+	//	Post(conf.Conf.Clients.Runner.StopPlan)
+	//if err != nil {
+	//	response.ErrorWithMsg(ctx, errno.ErrHttpFailed, err.Error())
+	//	return
+	//}
 
 	//tx := dal.GetQuery().Report
 	//r, err := tx.WithContext(ctx).Where(tx.ID.In(req.ReportIDs...)).First()

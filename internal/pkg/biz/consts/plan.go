@@ -20,4 +20,8 @@ const (
 	TimedTaskWaitEnable = 0 // 未启用
 	TimedTaskInExec     = 1 // 运行中
 	TimedTaskTimeout    = 2 // 已过期
+
+	// StopPlanPrefix 停止计划的redis健前缀
+	StopPlanPrefix  = "StopPlan:"
+	StopScenePrefix = "StopScene:"
 )

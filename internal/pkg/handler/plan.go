@@ -2,12 +2,11 @@ package handler
 
 import (
 	"context"
+	"github.com/go-omnibus/omnibus"
 	"github.com/go-omnibus/proof"
+	"strconv"
 	"strings"
 	"time"
-
-	"github.com/go-omnibus/omnibus"
-	"github.com/go-resty/resty/v2"
 
 	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/biz/errno"
@@ -15,11 +14,9 @@ import (
 	"kp-management/internal/pkg/biz/mail"
 	"kp-management/internal/pkg/biz/record"
 	"kp-management/internal/pkg/biz/response"
-	"kp-management/internal/pkg/conf"
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/rao"
-	"kp-management/internal/pkg/dal/runner"
 	"kp-management/internal/pkg/logic/plan"
 	"kp-management/internal/pkg/logic/stress"
 
@@ -146,14 +143,29 @@ func StopPlan(ctx *gin.Context) {
 	for _, report := range reports {
 		reportIDs = append(reportIDs, report.ID)
 	}
-	_, err = resty.New().R().
-		SetBody(runner.StopRunnerReq{ReportIds: omnibus.Int64sToStrings(reportIDs), TeamID: req.TeamID, PlanID: req.PlanIDs[0]}).
-		Post(conf.Conf.Clients.Runner.StopPlan)
 
-	if err != nil {
-		response.ErrorWithMsg(ctx, errno.ErrHttpFailed, err.Error())
-		return
+	// 停止计划的时候，往redis里面写一条数据
+	reportIDsString := omnibus.Int64sToStrings(reportIDs)
+	teamIDString := strconv.Itoa(int(req.TeamID))
+	planIDString := strconv.Itoa(int(req.PlanIDs[0]))
+	for _, reportID := range reportIDsString {
+		stopPlanKey := consts.StopPlanPrefix + teamIDString + ":" + planIDString + ":" + reportID
+		_, err := dal.GetRDB().Set(ctx, stopPlanKey, 1, 0).Result()
+		if err != nil {
+			proof.Errorf("停止计划--写入redis数据失败，err:", err)
+			response.ErrorWithMsg(ctx, errno.ErrRedisFailed, err.Error())
+			return
+		}
 	}
+
+	//_, err = resty.New().R().
+	//	SetBody(runner.StopRunnerReq{ReportIds: omnibus.Int64sToStrings(reportIDs), TeamID: req.TeamID, PlanID: req.PlanIDs[0]}).
+	//	Post(conf.Conf.Clients.Runner.StopPlan)
+	//
+	//if err != nil {
+	//	response.ErrorWithMsg(ctx, errno.ErrHttpFailed, err.Error())
+	//	return
+	//}
 
 	px := dal.GetQuery().Plan
 	_, err = px.WithContext(ctx).Where(px.ID.In(req.PlanIDs...)).UpdateColumn(px.Status, consts.PlanStatusNormal)

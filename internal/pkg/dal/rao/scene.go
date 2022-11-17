@@ -11,6 +11,7 @@ type SendSceneResp struct {
 
 type StopSceneReq struct {
 	SceneID int64 `json:"scene_id" binding:"required,gt=0"`
+	TeamID  int64 `json:"team_id" binding:"required,gt=0"`
 }
 
 type StopSceneResp struct {
