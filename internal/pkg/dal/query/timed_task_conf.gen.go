@@ -31,6 +31,7 @@ func newTimedTaskConf(db *gorm.DB, opts ...gen.DOOption) timedTaskConf {
 	_timedTaskConf.PlanID = field.NewInt64(tableName, "plan_id")
 	_timedTaskConf.SenceID = field.NewInt64(tableName, "sence_id")
 	_timedTaskConf.TeamID = field.NewInt64(tableName, "team_id")
+	_timedTaskConf.UserID = field.NewInt64(tableName, "user_id")
 	_timedTaskConf.Frequency = field.NewInt32(tableName, "frequency")
 	_timedTaskConf.TaskExecTime = field.NewInt64(tableName, "task_exec_time")
 	_timedTaskConf.TaskCloseTime = field.NewInt64(tableName, "task_close_time")
@@ -55,6 +56,7 @@ type timedTaskConf struct {
 	PlanID        field.Int64  // 计划id
 	SenceID       field.Int64  // 场景id
 	TeamID        field.Int64  // 团队id
+	UserID        field.Int64  // 用户ID
 	Frequency     field.Int32  // 任务执行频次
 	TaskExecTime  field.Int64  // 任务执行时间
 	TaskCloseTime field.Int64  // 任务结束时间
@@ -85,6 +87,7 @@ func (t *timedTaskConf) updateTableName(table string) *timedTaskConf {
 	t.PlanID = field.NewInt64(table, "plan_id")
 	t.SenceID = field.NewInt64(table, "sence_id")
 	t.TeamID = field.NewInt64(table, "team_id")
+	t.UserID = field.NewInt64(table, "user_id")
 	t.Frequency = field.NewInt32(table, "frequency")
 	t.TaskExecTime = field.NewInt64(table, "task_exec_time")
 	t.TaskCloseTime = field.NewInt64(table, "task_close_time")
@@ -119,11 +122,12 @@ func (t *timedTaskConf) GetFieldByName(fieldName string) (field.OrderExpr, bool)
 }
 
 func (t *timedTaskConf) fillFieldMap() {
-	t.fieldMap = make(map[string]field.Expr, 14)
+	t.fieldMap = make(map[string]field.Expr, 15)
 	t.fieldMap["id"] = t.ID
 	t.fieldMap["plan_id"] = t.PlanID
 	t.fieldMap["sence_id"] = t.SenceID
 	t.fieldMap["team_id"] = t.TeamID
+	t.fieldMap["user_id"] = t.UserID
 	t.fieldMap["frequency"] = t.Frequency
 	t.fieldMap["task_exec_time"] = t.TaskExecTime
 	t.fieldMap["task_close_time"] = t.TaskCloseTime

@@ -127,7 +127,7 @@ func TransTaskToRaoPlan(p *model.Plan, t *mao.Task, u *model.User) *rao.Plan {
 	}
 }
 
-func TransSaveTimingTaskConfigReqToModelData(req *rao.SavePlanConfReq) (*model.TimedTaskConf, error) {
+func TransSaveTimingTaskConfigReqToModelData(req *rao.SavePlanConfReq, userID int64) (*model.TimedTaskConf, error) {
 	// 把mode_conf压缩成字符串
 	modeConfString, err := json.Marshal(req.ModeConf)
 	if err != nil {
@@ -137,6 +137,7 @@ func TransSaveTimingTaskConfigReqToModelData(req *rao.SavePlanConfReq) (*model.T
 		PlanID:        req.PlanID,
 		SenceID:       req.SceneID,
 		TeamID:        req.TeamID,
+		UserID:        userID,
 		Frequency:     req.TimedTaskConf.Frequency,
 		TaskExecTime:  req.TimedTaskConf.TaskExecTime,
 		TaskCloseTime: req.TimedTaskConf.TaskCloseTime,

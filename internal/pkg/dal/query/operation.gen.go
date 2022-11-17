@@ -52,29 +52,11 @@ type operation struct {
 	UserID       field.Int64
 	UserIdentify field.String
 	Category     field.Int32 // 日志分组{1:新建，2:修改，3:删除，4:运行}
-	/*
-		操作类型: {1  : 创建文件夹,
-		2  : 创建接口,
-		3  : 创建分组,
-		4  : 创建计划,
-		5  : 创建场景,
-		6  : 修改文件夹,
-		7  : 修改接口,
-		8  : 修改分组,
-		9  : 修改计划,
-		10 : 修改场景,
-		11 : 克隆计划,
-		12 : 删除报告,
-		13 : 删除场景,
-		14 : 删除计划,
-		15 : 运行场景,
-		16 : 运行计划,}
-	*/
-	Operate   field.Int32
-	Name      field.String
-	CreatedAt field.Time
-	UpdatedAt field.Time
-	DeletedAt field.Field
+	Operate      field.Int32 // {"操作类型":{1:创建文件夹,2:创建接口,3:创建分组,4:创建计划,5:创建场景,6:修改文件夹,7:修改接口,8:修改分组,9:修改计划,10:修改场景,11:克隆计划,12:删除报告,13:删除场景,14:删除计划,15:运行场景,16:运行计划,17:新建预设配置,18:修改并保存预设配置,19:删除预设配置}}
+	Name         field.String
+	CreatedAt    field.Time
+	UpdatedAt    field.Time
+	DeletedAt    field.Field
 
 	fieldMap map[string]field.Expr
 }

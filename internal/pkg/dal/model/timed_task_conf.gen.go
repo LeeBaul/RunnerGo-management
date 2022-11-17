@@ -18,6 +18,7 @@ type TimedTaskConf struct {
 	PlanID        int64          `gorm:"column:plan_id;not null" json:"plan_id"`                                 // 计划id
 	SenceID       int64          `gorm:"column:sence_id;not null" json:"sence_id"`                               // 场景id
 	TeamID        int64          `gorm:"column:team_id;not null" json:"team_id"`                                 // 团队id
+	UserID        int64          `gorm:"column:user_id;not null" json:"user_id"`                                 // 用户ID
 	Frequency     int32          `gorm:"column:frequency;not null" json:"frequency"`                             // 任务执行频次
 	TaskExecTime  int64          `gorm:"column:task_exec_time;not null" json:"task_exec_time"`                   // 任务执行时间
 	TaskCloseTime int64          `gorm:"column:task_close_time;not null" json:"task_close_time"`                 // 任务结束时间

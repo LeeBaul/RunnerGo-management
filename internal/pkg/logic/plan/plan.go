@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/go-omnibus/proof"
 	"gorm.io/gorm"
 	"time"
@@ -159,7 +160,7 @@ func Save(ctx context.Context, req *rao.SavePlanReq, userID int64) (int64, error
 	return p.ID, err
 }
 
-func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error {
+func SaveTask(ctx *gin.Context, req *rao.SavePlanConfReq, userID int64) error {
 	plan := packer.TransSavePlanReqToPlanModel(req, userID)
 	task := packer.TransSavePlanReqToMaoTask(req)
 
@@ -235,7 +236,7 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 			return err
 		} else if err == gorm.ErrRecordNotFound { // 数据不存在
 			// 新增配置
-			timingTaskConfig, err := packer.TransSaveTimingTaskConfigReqToModelData(req)
+			timingTaskConfig, err := packer.TransSaveTimingTaskConfigReqToModelData(req, userID)
 			if err != nil {
 				proof.Infof("保存配置--压缩mode_conf为字符串时失败", err)
 				return err
@@ -255,6 +256,7 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 
 			// 修改配置
 			updateData := make(map[string]interface{}, 3)
+			updateData["user_id"] = userID
 			updateData["frequency"] = req.TimedTaskConf.Frequency
 			updateData["task_exec_time"] = req.TimedTaskConf.TaskExecTime
 			updateData["task_close_time"] = req.TimedTaskConf.TaskCloseTime

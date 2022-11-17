@@ -1,14 +1,11 @@
 package handler
 
 import (
-	"fmt"
-	"github.com/gin-gonic/gin"
 	"github.com/go-omnibus/proof"
 	"golang.org/x/net/context"
 	"gorm.io/gen"
 	"gorm.io/gorm"
 	"kp-management/internal/pkg/biz/consts"
-	"kp-management/internal/pkg/biz/jwt"
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/query"
@@ -36,8 +33,6 @@ func TimedTaskExec() {
 		nowHour := nowTimeInfo.Hour()
 		nowMinute := nowTimeInfo.Minute()
 		nowWeekday := nowTimeInfo.Weekday()
-
-		fmt.Println(111, timedTaskData)
 
 		if err == nil { // 查到了数据
 			// 组装运行计划参数
@@ -90,7 +85,7 @@ func TimedTaskExec() {
 				}
 
 				// 执行定时任务计划
-				err := runTimedTask(timedTaskInfo)
+				err := runTimedTask(ctx, timedTaskInfo)
 				if err != nil {
 					proof.Infof("定时任务运行失败，任务信息：", timedTaskInfo, " err：", err)
 				}
@@ -105,8 +100,7 @@ func TimedTaskExec() {
 	}
 }
 
-func runTimedTask(timedTaskInfo *model.TimedTaskConf) error {
-	ctx := &gin.Context{}
+func runTimedTask(ctx context.Context, timedTaskInfo *model.TimedTaskConf) error {
 	// 开始执行计划
 	sceneIds := make([]int64, 0, 1)
 	sceneIds = append(sceneIds, timedTaskInfo.SenceID)
@@ -114,7 +108,7 @@ func runTimedTask(timedTaskInfo *model.TimedTaskConf) error {
 		PlanID:  timedTaskInfo.PlanID,
 		TeamID:  timedTaskInfo.TeamID,
 		SceneID: sceneIds,
-		UserID:  jwt.GetUserIDByCtx(ctx),
+		UserID:  timedTaskInfo.UserID,
 	}
 	// 进入执行计划方法
 	_, runErr := RunStress(ctx, runStressParams)
