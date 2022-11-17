@@ -10,10 +10,12 @@ import (
 	"kp-management/internal/pkg/biz/errno"
 	"kp-management/internal/pkg/biz/response"
 	"kp-management/internal/pkg/dal"
+	"kp-management/internal/pkg/dal/mao"
 	"kp-management/internal/pkg/dal/model"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/logic/machine"
 	"kp-management/internal/pkg/logic/stress"
+	"kp-management/internal/pkg/packer"
 	"strconv"
 	"strings"
 	"time"
@@ -63,14 +65,12 @@ func MachineDataInsert() {
 		// 从Redis获取压力机列表
 		machineListRes := dal.RDB.HGetAll(consts.MachineListRedisKey)
 		if len(machineListRes.Val()) == 0 || machineListRes.Err() != nil {
-			// todo 需不需要改变数据库的所有数据
 			proof.Errorf("压力机数据入库--没有获取到任何压力机上报数据，err:", machineListRes.Err())
 			time.Sleep(5 * time.Second) // 5秒循环一次
 			continue
 		}
 
 		// 有数据，则入库
-
 		for machineAddr, machineDetail := range machineListRes.Val() {
 			// 获取机器IP，端口号，区域
 			machineAddrSlice := strings.Split(machineAddr, "_")
@@ -152,4 +152,48 @@ func MachineDataInsert() {
 		time.Sleep(5 * time.Second) // 5秒循环一次
 	}
 
+}
+
+// MachineMonitorInsert 压力机监控数据入库
+func MachineMonitorInsert() {
+	ctx := context.Background()
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectMachineMonitorData)
+	for {
+		machineList, _ := dal.GetRDB().Keys(ctx, consts.MachineMonitorPrefix+"*").Result()
+
+		for _, MachineMonitorKey := range machineList {
+			machineAddrSlice := strings.Split(MachineMonitorKey, ":")
+			if len(machineAddrSlice) != 2 {
+				continue
+			}
+			machineIP := machineAddrSlice[1]
+			// 从Redis获取压力机列表
+			machineListRes := dal.RDB.LRange(MachineMonitorKey, 0, -1).Val()
+			if len(machineListRes) == 0 {
+				continue
+			}
+			for _, monitorData := range machineListRes {
+				var runnerMachineInfo mao.HeartBeat
+				// 把机器详情信息解析成格式化数据
+				err := json.Unmarshal([]byte(monitorData), &runnerMachineInfo)
+				if err != nil {
+					proof.Infof("压力机监控数据入库--数据解析失败 err：", err)
+					continue
+				}
+
+				machineMonitorInsertData := packer.TransMachineMonitorToMao(machineIP, runnerMachineInfo, runnerMachineInfo.CreateTime)
+				_, err = collection.InsertOne(ctx, machineMonitorInsertData)
+				if err != nil {
+					proof.Infof("压力机监控数据入库--插入mg数据失败，err:", err)
+					continue
+				}
+			}
+			// 数据入库完毕，把redis列表删掉
+			err := dal.GetRDB().Del(ctx, MachineMonitorKey)
+			if err.Err() != nil {
+				proof.Errorf("压力机监控数据入库--删除redis列表失败，err:", err.Err())
+			}
+		}
+		time.Sleep(5 * time.Second)
+	}
 }

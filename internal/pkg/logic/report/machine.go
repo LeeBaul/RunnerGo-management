@@ -2,15 +2,12 @@ package report
 
 import (
 	"context"
-	"fmt"
-	"strconv"
+	"go.mongodb.org/mongo-driver/bson"
+	"kp-management/internal/pkg/dal/mao"
 	"time"
-
-	"github.com/go-omnibus/omnibus"
 
 	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/dal"
-	"kp-management/internal/pkg/dal/prometheus"
 	"kp-management/internal/pkg/dal/query"
 	"kp-management/internal/pkg/dal/rao"
 )
@@ -22,9 +19,13 @@ func ListMachines(ctx context.Context, reportID int64) (*rao.ListMachineResp, er
 		return nil, err
 	}
 
-	startTimeSec, endTimeSec := report.RanAt.Unix(), time.Now().Unix()
-	if report.Status == consts.ReportStatusFinish {
-		endTimeSec = report.UpdatedAt.Unix()
+	startTimeSec := report.RanAt.Unix() - 300
+	var endTimeSec int64
+	// 判断报告是否完成
+	if report.Status == consts.ReportStatusNormal { // 进行中
+		endTimeSec = time.Now().Unix()
+	} else { // 已完成
+		endTimeSec = report.UpdatedAt.Unix() + 300
 	}
 
 	resp := rao.ListMachineResp{
@@ -40,43 +41,44 @@ func ListMachines(ctx context.Context, reportID int64) (*rao.ListMachineResp, er
 		return nil, err
 	}
 
+	collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectMachineMonitorData)
 	for _, machine := range rms {
-		cpu, err := prometheus.GetCPURangeUsage(machine.IP, startTimeSec, endTimeSec)
+		// 从mg里面查出来压力机监控数据
+		mmd, err := collection.Find(ctx, bson.D{{"machine_ip", bson.D{{"$in", machine.IP}}}, {"created_at", bson.D{{"$gte", startTimeSec}}}, {"created_at", bson.D{{"$lte", endTimeSec}}}})
 		if err != nil {
 			return nil, err
 		}
-
-		mem, err := prometheus.GetMemRangeUsage(machine.IP, startTimeSec, endTimeSec)
-		if err != nil {
+		var machineMonitorSlice []*mao.MachineMonitorData
+		if err = mmd.All(ctx, &machineMonitorSlice); err != nil {
 			return nil, err
 		}
 
-		net, err := prometheus.GetNetIORangeUsage(machine.IP, startTimeSec, endTimeSec)
-		if err != nil {
-			return nil, err
-		}
+		cpu := make([][]interface{}, 0, len(machineMonitorSlice))
+		mem := make([][]interface{}, 0, len(machineMonitorSlice))
+		net := make([][]interface{}, 0, len(machineMonitorSlice))
+		disk := make([][]interface{}, 0, len(machineMonitorSlice))
+		for _, machineMonitorInfo := range machineMonitorSlice {
+			cpuTmp := make([]interface{}, 0, 2)
+			cpuTmp[0] = machineMonitorInfo.MonitorData.CreateTime
+			cpuTmp[1] = machineMonitorInfo.MonitorData.CpuUsage
+			cpu = append(cpu, cpuTmp)
 
-		disk, err := prometheus.GetDiskRangeUsage(machine.IP, startTimeSec, endTimeSec)
-		if err != nil {
-			return nil, err
-		}
+			memTmp := make([]interface{}, 0, 2)
+			memTmp[0] = machineMonitorInfo.MonitorData.CreateTime
+			memTmp[1] = machineMonitorInfo.MonitorData.MemInfo[0].UsedPercent
+			mem = append(mem, memTmp)
 
-		for _, c := range cpu {
-			c[1], _ = strconv.ParseFloat(fmt.Sprintf("%.2f", omnibus.DefiniteFloat64(c[1])*100), 64)
-		}
+			//netTmp := make([]interface{}, 0, 2)
+			//netTmp[0] = machineMonitorInfo.MonitorData.CreateTime
+			//netTmp[1] = machineMonitorInfo.MonitorData.CpuUsage
+			//net = append(net, netTmp)
 
-		for _, m := range mem {
-			m[1], _ = strconv.ParseFloat(fmt.Sprintf("%.2f", omnibus.DefiniteFloat64(m[1])*100), 64)
-		}
+			diskTmp := make([]interface{}, 0, 2)
+			diskTmp[0] = machineMonitorInfo.MonitorData.CreateTime
+			diskTmp[1] = machineMonitorInfo.MonitorData.DiskInfos[0].UsedPercent
+			disk = append(disk, diskTmp)
 
-		for _, n := range net {
-			n[1], _ = strconv.ParseFloat(fmt.Sprintf("%.2f", omnibus.DefiniteFloat64(n[1])), 64)
 		}
-
-		for _, d := range disk {
-			d[1], _ = strconv.ParseFloat(fmt.Sprintf("%.2f", omnibus.DefiniteFloat64(d[1])*100), 64)
-		}
-
 		resp.Metrics = append(resp.Metrics, &rao.Metric{
 			CPU:    cpu,
 			Mem:    mem,

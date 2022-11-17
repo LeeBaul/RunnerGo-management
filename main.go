@@ -25,6 +25,11 @@ func main() {
 		handler.MachineDataInsert()
 	}()
 
+	// 把压力机上报数据定时写入数据库
+	go func() {
+		handler.MachineMonitorInsert()
+	}()
+
 	if err := r.Run(fmt.Sprintf(":%d", conf.Conf.Http.Port)); err != nil {
 		panic(err)
 	}
