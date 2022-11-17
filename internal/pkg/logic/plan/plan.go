@@ -573,6 +573,24 @@ func ClonePlan(ctx context.Context, planID, teamID, userID int64) error {
 			}
 		}
 
+		// 克隆定时任务
+		timedTaskList, err := tx.TimedTaskConf.WithContext(ctx).Where(tx.TimedTaskConf.PlanID.Eq(planID)).Find()
+		if err != nil {
+			return err
+		}
+		for _, timedTaskInfo := range timedTaskList {
+			sceneID := timedTaskInfo.SenceID
+			timedTaskInfo.ID = 0
+			timedTaskInfo.PlanID = p.ID
+			timedTaskInfo.SenceID = targetMemo[sceneID]
+			timedTaskInfo.TeamID = teamID
+			timedTaskInfo.Status = consts.TimedTaskWaitEnable
+			timedTaskInfo.CreatedAt = time.Now()
+			timedTaskInfo.UpdatedAt = time.Now()
+			if err := tx.TimedTaskConf.WithContext(ctx).Create(timedTaskInfo); err != nil {
+				return err
+			}
+		}
 		return record.InsertCreate(ctx, p.TeamID, userID, record.OperationOperateClonePlan, p.Name)
 	})
 
