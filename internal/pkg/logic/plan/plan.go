@@ -292,21 +292,21 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 		return err
 	}
 
-	var planType int32 = 1
-	var planMode int32 = 1
+	var planType int32 = 0
+	var planMode int32 = 0
 	if len(tasks) > 0 && len(timedTaskList) > 0 { // 两种类型都有
 		planType = consts.PlanTaskTypeMix
 		planMode = tasks[0].TaskMode
 		for i, t := range tasks {
 			if i > 0 {
-				if t.TaskMode != planMode {
+				if t.TaskMode != planMode && planMode != 0 {
 					planMode = consts.PlanModeMix
 					break
 				}
 			}
 		}
 		for _, timeTaskConf := range timedTaskList {
-			if timeTaskConf.TaskMode != planMode {
+			if timeTaskConf.TaskMode != planMode && planMode != 0 {
 				planMode = consts.PlanModeMix
 				break
 			}
@@ -317,7 +317,7 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 		planMode = tasks[0].TaskMode
 		for i, t := range tasks {
 			if i > 0 {
-				if t.TaskMode != planMode {
+				if t.TaskMode != planMode && planMode != 0 {
 					planMode = consts.PlanModeMix
 					break
 				}
@@ -326,8 +326,9 @@ func SaveTask(ctx context.Context, req *rao.SavePlanConfReq, userID int64) error
 	} else if len(timedTaskList) > 0 {
 		planType = consts.PlanTaskTypeCronjob
 		// 模式
+		planMode = timedTaskList[0].TaskMode
 		for _, timeTaskConf := range timedTaskList {
-			if timeTaskConf.TaskMode != planMode {
+			if timeTaskConf.TaskMode != planMode && planMode != 0 {
 				planMode = consts.PlanModeMix
 				break
 			}
