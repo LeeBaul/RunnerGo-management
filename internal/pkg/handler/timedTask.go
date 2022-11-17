@@ -23,7 +23,6 @@ func TimedTaskExec() {
 		conditions := make([]gen.Condition, 0)
 		// 当前时间
 		nowTime := time.Now().Unix()
-		nextTime := time.Now().Unix() + 60
 		conditions = append(conditions, tx.Status.Eq(consts.TimedTaskInExec))
 
 		// 从数据库当中，查出当前需要执行的定时任务
@@ -31,9 +30,27 @@ func TimedTaskExec() {
 		if err == nil { // 查到了数据
 			// 组装运行计划参数
 			for _, timedTaskInfo := range timedTaskData {
+				// 获取定时任务的执行时间相关数据
+				tm := time.Unix(timedTaskInfo.TaskExecTime, 0)
+				taskYear := tm.Year()
+				taskMonth := tm.Month()
+				taskDay := tm.Day()
+				taskHour := tm.Hour()
+				taskMinute := tm.Minute()
+				taskWeekday := tm.Weekday()
+
+				// 当前时间的 时，分
+				nowTimeInfo := time.Unix(nowTime, 0)
+				nowYear := nowTimeInfo.Year()
+				nowMonth := nowTimeInfo.Month()
+				nowDay := nowTimeInfo.Day()
+				nowHour := nowTimeInfo.Hour()
+				nowMinute := nowTimeInfo.Minute()
+				nowWeekday := nowTimeInfo.Weekday()
+
 				// 排除过期的定时任务
 				if timedTaskInfo.TaskCloseTime < nowTime {
-					//  todo 把当前定时任务状态变成已过期
+					// 把当前定时任务状态变成已过期
 					_, err := tx.WithContext(ctx).Where(tx.TeamID.Eq(timedTaskInfo.TeamID)).
 						Where(tx.PlanID.Eq(timedTaskInfo.PlanID)).
 						Where(tx.SenceID.Eq(timedTaskInfo.SenceID)).
@@ -44,24 +61,10 @@ func TimedTaskExec() {
 					continue
 				}
 
-				// 获取定时任务的执行时间相关数据
-				tm := time.Unix(timedTaskInfo.TaskExecTime, 0)
-				taskHour := tm.Hour()
-				taskMinute := tm.Minute()
-				taskWeekday := tm.Weekday()
-				taskDay := tm.Day()
-
-				// 当前时间的 时，分
-				nowTimeInfo := time.Unix(nowTime, 0)
-				nowHour := nowTimeInfo.Hour()
-				nowMinute := nowTimeInfo.Minute()
-				nowWeekday := nowTimeInfo.Weekday()
-				nowDay := nowTimeInfo.Day()
-
 				// 根据不同的任务频次，进行不同的运行逻辑
 				switch timedTaskInfo.Frequency {
 				case 0: // 一次
-					if timedTaskInfo.TaskExecTime < nowTime || timedTaskInfo.TaskExecTime > nextTime {
+					if taskYear != nowYear || taskMonth != nowMonth || taskDay != nowDay || taskHour != nowHour || taskMinute != nowMinute {
 						continue
 					}
 				case 1: // 每天
