@@ -128,7 +128,7 @@ func RegisterRouter(r *gin.Engine) {
 	scene.POST("/stop", handler.StopScene)
 	scene.POST("/api/send", handler.SendSceneAPI)
 	scene.GET("/result", handler.GetSendSceneResult)
-	target.POST("/delete", handler.DeleteScene)
+	scene.POST("/delete", handler.DeleteScene)
 
 	// 场景管理
 	scene.POST("/save", handler.SaveScene)
