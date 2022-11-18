@@ -66,10 +66,22 @@ func ListMachines(ctx context.Context, reportID int64) (*rao.ListMachineResp, er
 			memTmp = append(memTmp, machineMonitorInfo.MonitorData.CreateTime, machineMonitorInfo.MonitorData.MemInfo[0].UsedPercent)
 			mem = append(mem, memTmp)
 
-			//netTmp := make([]interface{}, 0, 2)
-			//netTmp[0] = machineMonitorInfo.MonitorData.CreateTime
-			//netTmp[1] = machineMonitorInfo.MonitorData.CpuUsage
-			//net = append(net, netTmp)
+			//统计网络IO
+			var bytesSent uint64 = 0
+			var bytesRecv uint64 = 0
+			for _, netInfo := range machineMonitorInfo.MonitorData.Networks {
+				if netInfo.Name == "eth0" {
+					bytesSent = netInfo.BytesSent
+					bytesRecv = netInfo.BytesRecv
+					break
+				}
+			}
+
+			totalIOBytes := bytesSent + bytesRecv
+			ioBytes := totalIOBytes / (1024 * 1024)
+			netTmp := make([]interface{}, 0, 2)
+			netTmp = append(netTmp, machineMonitorInfo.MonitorData.CreateTime, ioBytes)
+			net = append(net, netTmp)
 
 			diskTmp := make([]interface{}, 0, 2)
 			diskTmp = append(diskTmp, machineMonitorInfo.MonitorData.CreateTime, machineMonitorInfo.MonitorData.DiskInfos[0].UsedPercent)
