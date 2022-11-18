@@ -1,7 +1,6 @@
 package stress
 
 import (
-	"bufio"
 	"context"
 	"encoding/json"
 	"errors"
@@ -11,16 +10,10 @@ import (
 	"github.com/go-resty/resty/v2"
 	"go.mongodb.org/mongo-driver/bson"
 	"gorm.io/gen"
-	"io"
-	"io/ioutil"
 	"kp-management/internal/pkg/biz/errno"
-	"net/http"
-	"os"
-	"path"
 	"sort"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/shirou/gopsutil/load"
@@ -710,95 +703,104 @@ type SplitImportVariable struct {
 
 func (s *SplitImportVariable) Execute(baton *Baton) (int, error) {
 
-	reportMemo := make(map[string]int)
-	pathMemo := make(map[string]string)
-	for _, stress := range baton.stress {
-		for _, pathString := range stress.Scene.Configuration.ParameterizedFile.Path {
-			pathMemo[stress.ReportID] = pathString
-			reportMemo[stress.ReportID] += 1
-		}
+	//reportMemo := make(map[string]int)
+	//pathMemo := make(map[string]string)
+	//for _, stress := range baton.stress {
+	//	for _, pathString := range stress.Scene.Configuration.ParameterizedFile.Path {
+	//		pathMemo[stress.ReportID] = pathString
+	//		reportMemo[stress.ReportID] += 1
+	//	}
+	//}
+	//
+	//var reportPathMut sync.Mutex
+	//reportPathMemo := make(map[string][]string)
+	//for reportID, p := range pathMemo {
+	//	fileExt := path.Ext(p)
+	//	if fileExt != ".txt" && fileExt != ".csv" {
+	//		continue
+	//	}
+	//
+	//	resp, err := http.Get(p)
+	//	if err != nil {
+	//		return errno.ErrHttpFailed, err
+	//	}
+	//	defer resp.Body.Close()
+	//
+	//	data, err := ioutil.ReadAll(resp.Body)
+	//	if err != nil {
+	//		return errno.ErrHttpFailed, err
+	//	}
+	//
+	//	files := omnibus.Explode("/", p)
+	//	localFilePath := fmt.Sprintf("/tmp/%s", files[len(files)-1])
+	//	if err := ioutil.WriteFile(localFilePath, data, 0644); err != nil {
+	//		return errno.ErrHttpFailed, err
+	//	}
+	//
+	//	file, _ := os.Open(localFilePath)
+	//	defer file.Close()
+	//
+	//	var wg sync.WaitGroup
+	//	ch := make(chan string)
+	//
+	//	for i := 0; i < reportMemo[reportID]; i++ {
+	//		wg.Add(1)
+	//
+	//		/*协程任务：从管道中拉取数据并写入到文件中*/
+	//		go func(indx int) {
+	//			f, err := os.OpenFile(localFilePath+strconv.Itoa(indx)+fileExt, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0666)
+	//			if err != nil {
+	//
+	//			}
+	//			defer f.Close()
+	//
+	//			for lineStr := range ch {
+	//				//向文件中写出UTF-8字符串
+	//				f.WriteString(lineStr)
+	//			}
+	//
+	//			//todo oss
+	//			reportPathMut.Lock()
+	//			defer reportPathMut.Unlock()
+	//			reportPathMemo[reportID] = append(reportPathMemo[reportID], localFilePath+strconv.Itoa(indx)+fileExt)
+	//			wg.Done()
+	//		}(i)
+	//	}
+	//
+	//	//创建缓冲读取器
+	//	reader := bufio.NewReader(file)
+	//	for {
+	//		//读取一行字符串（编码为UTF-8）
+	//		lineStr, err := reader.ReadString('\n')
+	//
+	//		//读取完毕时，关闭所有数据管道，并退出读取
+	//		if err == io.EOF {
+	//			close(ch)
+	//			break
+	//		}
+	//
+	//		ch <- lineStr
+	//	}
+	//
+	//	//阻塞等待所有协程结束任务
+	//	wg.Wait()
+	//}
+	//
+	//for _, stress := range baton.stress {
+	//	if len(stress.Scene.Configuration.ParameterizedFile.Path) > 0 {
+	//		stress.Scene.Configuration.ParameterizedFile.Path[0] = reportPathMemo[stress.ReportID][0]
+	//		reportPathMemo[stress.ReportID] = reportPathMemo[stress.ReportID][1:]
+	//	}
+	//
+	//}
+
+	pathArr := make([]string, 0, len(baton.importVariables))
+	for _, importVariableInfo := range baton.importVariables {
+		pathArr = append(pathArr, importVariableInfo.URL)
 	}
 
-	var reportPathMut sync.Mutex
-	reportPathMemo := make(map[string][]string)
-	for reportID, p := range pathMemo {
-		fileExt := path.Ext(p)
-		if fileExt != ".txt" && fileExt != ".csv" {
-			continue
-		}
-
-		resp, err := http.Get(p)
-		if err != nil {
-			return errno.ErrHttpFailed, err
-		}
-		defer resp.Body.Close()
-
-		data, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return errno.ErrHttpFailed, err
-		}
-
-		files := omnibus.Explode("/", p)
-		localFilePath := fmt.Sprintf("/tmp/%s", files[len(files)-1])
-		if err := ioutil.WriteFile(localFilePath, data, 0644); err != nil {
-			return errno.ErrHttpFailed, err
-		}
-
-		file, _ := os.Open(localFilePath)
-		defer file.Close()
-
-		var wg sync.WaitGroup
-		ch := make(chan string)
-
-		for i := 0; i < reportMemo[reportID]; i++ {
-			wg.Add(1)
-
-			/*协程任务：从管道中拉取数据并写入到文件中*/
-			go func(indx int) {
-				f, err := os.OpenFile(localFilePath+strconv.Itoa(indx)+fileExt, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0666)
-				if err != nil {
-
-				}
-				defer f.Close()
-
-				for lineStr := range ch {
-					//向文件中写出UTF-8字符串
-					f.WriteString(lineStr)
-				}
-
-				//todo oss
-				reportPathMut.Lock()
-				defer reportPathMut.Unlock()
-				reportPathMemo[reportID] = append(reportPathMemo[reportID], localFilePath+strconv.Itoa(indx)+fileExt)
-				wg.Done()
-			}(i)
-		}
-
-		//创建缓冲读取器
-		reader := bufio.NewReader(file)
-		for {
-			//读取一行字符串（编码为UTF-8）
-			lineStr, err := reader.ReadString('\n')
-
-			//读取完毕时，关闭所有数据管道，并退出读取
-			if err == io.EOF {
-				close(ch)
-				break
-			}
-
-			ch <- lineStr
-		}
-
-		//阻塞等待所有协程结束任务
-		wg.Wait()
-	}
-
-	for _, stress := range baton.stress {
-		if len(stress.Scene.Configuration.ParameterizedFile.Path) > 0 {
-			stress.Scene.Configuration.ParameterizedFile.Path[0] = reportPathMemo[stress.ReportID][0]
-			reportPathMemo[stress.ReportID] = reportPathMemo[stress.ReportID][1:]
-		}
-
+	for k := range baton.stress {
+		baton.stress[k].Configuration.ParameterizedFile.Paths = pathArr
 	}
 
 	return s.next.Execute(baton)

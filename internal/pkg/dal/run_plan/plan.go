@@ -1,16 +1,38 @@
 package run_plan
 
+import "sync"
+
 type Stress struct {
-	PlanID     int64       `json:"plan_id"`
-	PlanName   string      `json:"plan_name"`
-	ReportID   string      `json:"report_id"`
-	MachineNum int32       `json:"machine_num"`
-	TeamID     int64       `json:"team_id"`
-	ReportName string      `json:"report_name"`
-	ConfigTask *ConfigTask `json:"config_task"`
-	Variable   []*Variable `json:"variable"`
-	Scene      *Scene      `json:"scene"`
-	Partition  int32       `json:"partition"`
+	PlanID        int64          `json:"plan_id"`
+	PlanName      string         `json:"plan_name"`
+	ReportID      string         `json:"report_id"`
+	MachineNum    int32          `json:"machine_num"`
+	TeamID        int64          `json:"team_id"`
+	ReportName    string         `json:"report_name"`
+	ConfigTask    *ConfigTask    `json:"config_task"`
+	Variable      []*Variable    `json:"variable"`
+	Scene         *Scene         `json:"scene"`
+	Partition     int32          `json:"partition"`
+	Configuration *Configuration `json:"configuration" bson:"configuration"` // 变量
+}
+
+type Configuration struct {
+	ParameterizedFile *ParameterizedFile `json:"parameterizedFile" bson:"parameterizedFile"`
+	Variable          []*KV              `json:"variable" bson:"variable"`
+	Mu                sync.Mutex         `json:"mu" bson:"mu"`
+}
+
+// ParameterizedFile 参数化文件
+type ParameterizedFile struct {
+	Paths         []string       `json:"path"` // 文件地址
+	RealPaths     []string       `json:"real_paths"`
+	VariableNames *VariableNames `json:"variable_names"` // 存储变量及数据的map
+}
+
+type VariableNames struct {
+	VarMapList map[string][]string `json:"var_map_list"`
+	Index      int                 `json:"index"`
+	Mu         sync.Mutex          `json:"mu"`
 }
 
 type ConfigTask struct {
