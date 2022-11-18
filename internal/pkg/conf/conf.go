@@ -22,7 +22,7 @@ type Config struct {
 	Clients     Clients     `yaml:"clients"`
 	Proof       Proof       `yaml:"proof"`
 	Redis       Redis       `yaml:"redis"`
-	RedisReport RedisReport `yaml:"redis_report"`
+	RedisReport RedisReport `yaml:"redisReport"`
 	SMTP        SMTP        `yaml:"smtp"`
 }
 

@@ -41,7 +41,7 @@ redis:
   password: "8SqeCfrhrojJ9ylw"
   db: 0
 
-redis_report:
+redisReport:
   address: "r-2zeygktm7wb4nd5b46.redis.rds.aliyuncs.com:6379"
   password: "8SqeCfrhrojJ9ylw"
   db: 0

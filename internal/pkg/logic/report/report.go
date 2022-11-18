@@ -403,16 +403,14 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 	_, ok := dataMap["data"]
 	if err != nil || !ok {
 		rdb := dal.GetRDBForReport()
-		proof.Error("当前redis:")
 		key := fmt.Sprintf("reportData:%d:%d", report.PlanId, report.ReportID)
 		dataList := rdb.LRange(ctx, key, 0, -1).Val()
 		if len(dataList) < 1 {
-			proof.Error("mongo里面没有查到报告详情数据，err:", proof.WithError(err))
+			proof.Error("redis里面没有查到报告详情数据，err:", proof.WithError(err))
 			err = nil
 			return
 		}
 		for i := len(dataList) - 1; i >= 0; i-- {
-			proof.Infof("redis里面查到了报告数据")
 			resultMsgString := dataList[i]
 			err = json.Unmarshal([]byte(resultMsgString), &resultMsg)
 			if err != nil {
