@@ -411,6 +411,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 			return
 		}
 		for i := len(dataList) - 1; i >= 0; i-- {
+			proof.Debugf("redis里面查到了报告数据")
 			resultMsgString := dataList[i]
 			err = json.Unmarshal([]byte(resultMsgString), &resultMsg)
 			if err != nil {
