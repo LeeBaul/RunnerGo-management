@@ -19,13 +19,13 @@ func ListMachines(ctx context.Context, reportID int64) (*rao.ListMachineResp, er
 		return nil, err
 	}
 
-	startTimeSec := report.RanAt.Unix() - 300
+	startTimeSec := report.RanAt.Unix() - 60
 	var endTimeSec int64
 	// 判断报告是否完成
 	if report.Status == consts.ReportStatusNormal { // 进行中
 		endTimeSec = time.Now().Unix()
 	} else { // 已完成
-		endTimeSec = report.UpdatedAt.Unix() + 300
+		endTimeSec = report.UpdatedAt.Unix() + 60
 	}
 
 	resp := rao.ListMachineResp{
@@ -59,13 +59,11 @@ func ListMachines(ctx context.Context, reportID int64) (*rao.ListMachineResp, er
 		disk := make([][]interface{}, 0, len(machineMonitorSlice))
 		for _, machineMonitorInfo := range machineMonitorSlice {
 			cpuTmp := make([]interface{}, 0, 2)
-			cpuTmp[0] = machineMonitorInfo.MonitorData.CreateTime
-			cpuTmp[1] = machineMonitorInfo.MonitorData.CpuUsage
+			cpuTmp = append(cpuTmp, machineMonitorInfo.MonitorData.CreateTime, machineMonitorInfo.MonitorData.CpuUsage)
 			cpu = append(cpu, cpuTmp)
 
 			memTmp := make([]interface{}, 0, 2)
-			memTmp[0] = machineMonitorInfo.MonitorData.CreateTime
-			memTmp[1] = machineMonitorInfo.MonitorData.MemInfo[0].UsedPercent
+			memTmp = append(memTmp, machineMonitorInfo.MonitorData.CreateTime, machineMonitorInfo.MonitorData.MemInfo[0].UsedPercent)
 			mem = append(mem, memTmp)
 
 			//netTmp := make([]interface{}, 0, 2)
@@ -74,8 +72,7 @@ func ListMachines(ctx context.Context, reportID int64) (*rao.ListMachineResp, er
 			//net = append(net, netTmp)
 
 			diskTmp := make([]interface{}, 0, 2)
-			diskTmp[0] = machineMonitorInfo.MonitorData.CreateTime
-			diskTmp[1] = machineMonitorInfo.MonitorData.DiskInfos[0].UsedPercent
+			diskTmp = append(diskTmp, machineMonitorInfo.MonitorData.CreateTime, machineMonitorInfo.MonitorData.DiskInfos[0].UsedPercent)
 			disk = append(disk, diskTmp)
 
 		}
