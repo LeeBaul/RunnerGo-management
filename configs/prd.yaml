@@ -37,6 +37,11 @@ proof:
   err_log: "/data/logs/rg-management/err.log"
 
 redis:
+  address: "r-2zeyyzpdgra56jeqcz.redis.rds.aliyuncs.com:6379"
+  password: "r-2zeyyzpdgra56jeqcz"
+  db: 0
+
+redis_report:
   address: "r-2zeygktm7wb4nd5b46.redis.rds.aliyuncs.com:6379"
   password: "r-2zeygktm7wb4nd5b46"
   db: 0

@@ -10,19 +10,20 @@ import (
 var Conf Config
 
 type Config struct {
-	Base       Base       `yaml:"base"`
-	Http       Http       `yaml:"http"`
-	GRPC       GRPC       `yaml:"grpc"`
-	MySQL      MySQL      `yaml:"mysql"`
-	JWT        JWT        `yaml:"jwt"`
-	MongoDB    MongoDB    `yaml:"mongodb"`
-	Prometheus Prometheus `yaml:"prometheus"`
-	Kafka      Kafka      `yaml:"kafka"`
-	ES         ES         `yaml:"es"`
-	Clients    Clients    `yaml:"clients"`
-	Proof      Proof      `yaml:"proof"`
-	Redis      Redis      `yaml:"redis"`
-	SMTP       SMTP       `yaml:"smtp"`
+	Base        Base        `yaml:"base"`
+	Http        Http        `yaml:"http"`
+	GRPC        GRPC        `yaml:"grpc"`
+	MySQL       MySQL       `yaml:"mysql"`
+	JWT         JWT         `yaml:"jwt"`
+	MongoDB     MongoDB     `yaml:"mongodb"`
+	Prometheus  Prometheus  `yaml:"prometheus"`
+	Kafka       Kafka       `yaml:"kafka"`
+	ES          ES          `yaml:"es"`
+	Clients     Clients     `yaml:"clients"`
+	Proof       Proof       `yaml:"proof"`
+	Redis       Redis       `yaml:"redis"`
+	RedisReport RedisReport `yaml:"redis_report"`
+	SMTP        SMTP        `yaml:"smtp"`
 }
 
 type Base struct {
@@ -95,6 +96,11 @@ type Proof struct {
 }
 
 type Redis struct {
+	Address  string `yaml:"address"`
+	Password string `yaml:"password"`
+	DB       int    `yaml:"db"`
+}
+type RedisReport struct {
 	Address  string `yaml:"address"`
 	Password string `yaml:"password"`
 	DB       int    `yaml:"db"`

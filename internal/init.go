@@ -14,8 +14,9 @@ func InitProjects() {
 	proof.MustInitProof()
 	//dal.MustInitGRPC()
 	dal.MustInitRedis()
+	dal.MustInitRedisForReport()
 	dal.MustInitBigCache()
-	
+
 	// 初始化redis客户端
 	if err := dal.InitRedisClient(
 		conf.Conf.Redis.Address,
