@@ -4,7 +4,7 @@ base:
   max_concurrency:
 
 http:
-  port: 20123
+  port:
 
 mysql:
   username:
