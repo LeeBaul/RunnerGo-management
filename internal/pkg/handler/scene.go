@@ -175,3 +175,20 @@ func BatchGetFlow(ctx *gin.Context) {
 	response.SuccessWithData(ctx, rao.BatchGetFlowResp{Flows: flows})
 	return
 }
+
+// DeleteScene 删除计划下的场景
+func DeleteScene(ctx *gin.Context) {
+	var req rao.DeleteSceneReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrParam, err.Error())
+		return
+	}
+
+	if err := scene.DeleteScene(ctx, req.TargetID, jwt.GetUserIDByCtx(ctx)); err != nil {
+		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+		return
+	}
+
+	response.Success(ctx)
+	return
+}

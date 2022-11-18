@@ -220,3 +220,7 @@ type ConfVariable struct {
 	Var string `json:"Var"`
 	Val string `json:"Val"`
 }
+
+type DeleteSceneReq struct {
+	TargetID int64 `json:"target_id" binding:"required,gt=0"`
+}

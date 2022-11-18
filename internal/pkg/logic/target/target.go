@@ -226,18 +226,11 @@ func Trash(ctx context.Context, targetID, userID int64) error {
 			return err
 		}
 
-		if _, err := tx.Target.WithContext(ctx).Where(tx.Target.ID.Eq(targetID)).Delete(); err != nil {
+		if _, err := tx.Target.WithContext(ctx).Where(tx.Target.ID.Eq(targetID)).UpdateColumn(tx.Target.Status, consts.TargetStatusTrash); err != nil {
 			return err
 		}
 
-		if _, err = tx.Target.WithContext(ctx).Where(tx.Target.ParentID.Eq(targetID)).Delete(); err != nil {
-			return err
-		}
-
-		// 从mg里面删除当前场景对应的flow
-		collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectFlow)
-		_, err = collection.DeleteOne(ctx, bson.D{{"scene_id", targetID}})
-		if err != nil {
+		if _, err = tx.Target.WithContext(ctx).Where(tx.Target.ParentID.Eq(targetID)).UpdateColumn(tx.Target.Status, consts.TargetStatusTrash); err != nil {
 			return err
 		}
 

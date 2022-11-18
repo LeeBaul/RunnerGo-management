@@ -2,6 +2,7 @@ package scene
 
 import (
 	"context"
+	"kp-management/internal/pkg/biz/record"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -9,6 +10,7 @@ import (
 	"kp-management/internal/pkg/biz/consts"
 	"kp-management/internal/pkg/dal"
 	"kp-management/internal/pkg/dal/mao"
+	"kp-management/internal/pkg/dal/query"
 	"kp-management/internal/pkg/dal/rao"
 	"kp-management/internal/pkg/packer"
 )
@@ -60,4 +62,35 @@ func BatchGetFlow(ctx context.Context, sceneIDs []int64) ([]*rao.Flow, error) {
 	}
 
 	return packer.TransMaoFlowsToRaoFlows(flows), nil
+}
+
+func DeleteScene(ctx context.Context, targetID, userID int64) error {
+	return dal.GetQuery().Transaction(func(tx *query.Query) error {
+		t, err := tx.Target.WithContext(ctx).Where(tx.Target.ID.Eq(targetID)).First()
+		if err != nil {
+			return err
+		}
+
+		if _, err := tx.Target.WithContext(ctx).Where(tx.Target.ID.Eq(targetID)).Delete(); err != nil {
+			return err
+		}
+
+		if _, err = tx.Target.WithContext(ctx).Where(tx.Target.ParentID.Eq(targetID)).Delete(); err != nil {
+			return err
+		}
+
+		// 从mg里面删除当前场景对应的flow
+		collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectFlow)
+		_, err = collection.DeleteOne(ctx, bson.D{{"scene_id", targetID}})
+		if err != nil {
+			return err
+		}
+
+		if t.TargetType == consts.TargetTypeScene {
+			if err := record.InsertDelete(ctx, t.TeamID, userID, record.OperationOperateDeleteScene, t.Name); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }
