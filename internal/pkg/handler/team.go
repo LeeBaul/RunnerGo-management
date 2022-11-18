@@ -108,7 +108,7 @@ func GetInviteMemberURL(ctx *gin.Context) {
 	}
 
 	k := fmt.Sprintf("invite:url:%d:%d", req.TeamID, req.RoleID)
-	_, err = dal.GetRDB().Set(ctx, k, fmt.Sprintf("%d", jwt.GetUserIDByCtx(ctx)), 5*time.Minute).Result()
+	_, err = dal.GetRDB().Set(ctx, k, fmt.Sprintf("%d", jwt.GetUserIDByCtx(ctx)), 24*time.Hour).Result()
 	if err != nil {
 		response.ErrorWithMsg(ctx, errno.ErrRedisFailed, err.Error())
 		return
