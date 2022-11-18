@@ -1,6 +1,7 @@
 package dal
 
 import (
+	"fmt"
 	"github.com/go-omnibus/proof"
 	"github.com/go-redis/redis/v8"
 
@@ -15,7 +16,7 @@ func MustInitRedisForReport() {
 		Password: conf.Conf.RedisReport.Password,
 		DB:       conf.Conf.RedisReport.DB,
 	})
-
+	fmt.Println("当钱redis:", conf.Conf.RedisReport.Address, conf.Conf.RedisReport.Password, conf.Conf.RedisReport.DB)
 	proof.Infof("当前redis是：", conf.Conf.RedisReport.Address, conf.Conf.RedisReport.Password, conf.Conf.RedisReport.DB)
 }
 
