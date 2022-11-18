@@ -364,7 +364,8 @@ func GetPlanTask(ctx context.Context, planID, sceneID int64) (*rao.PlanTask, err
 			tx := query.Use(dal.DB()).TimedTaskConf
 			timingTaskConfigInfo, err = tx.WithContext(ctx).Where(tx.PlanID.Eq(planID), tx.SenceID.Eq(sceneID)).First()
 			if err != nil {
-				return nil, err
+				proof.Infof("获取任务配置详情--从mysql没有查到数据")
+				return nil, nil
 			}
 			if timingTaskConfigInfo != nil {
 				var modeConf rao.ModeConf
@@ -373,7 +374,6 @@ func GetPlanTask(ctx context.Context, planID, sceneID int64) (*rao.PlanTask, err
 					proof.Errorf("获取任务配置详情--解析定时任务详细配置失败，err:", err)
 					return nil, err
 				}
-
 				planTaskConf = &rao.PlanTask{
 					PlanID:   timingTaskConfigInfo.PlanID,
 					SceneID:  timingTaskConfigInfo.SenceID,
@@ -407,7 +407,6 @@ func GetPlanTask(ctx context.Context, planID, sceneID int64) (*rao.PlanTask, err
 			},
 		}
 	}
-
 	return planTaskConf, nil
 }
 
