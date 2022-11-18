@@ -16,7 +16,7 @@ func MustInitRedisForReport() {
 		DB:       conf.Conf.RedisReport.DB,
 	})
 
-	proof.Infof("当前redis是：", conf.Conf.RedisReport.Address)
+	proof.Infof("当前redis是：", conf.Conf.RedisReport.Address, conf.Conf.RedisReport.Password, conf.Conf.RedisReport.DB)
 }
 
 func GetRDBForReport() *redis.Client {

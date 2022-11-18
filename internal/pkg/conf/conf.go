@@ -115,7 +115,7 @@ type SMTP struct {
 
 func MustInitConf() {
 	var configFile string
-	flag.StringVar(&configFile, "c", "./configs/prd.yaml", "app config file.")
+	flag.StringVar(&configFile, "c", "./configs/dev.yaml", "app config file.")
 	if !flag.Parsed() {
 		flag.Parse()
 	}
