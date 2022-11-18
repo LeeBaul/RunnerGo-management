@@ -547,6 +547,10 @@ type MakeStress struct {
 }
 
 func (s *MakeStress) Execute(baton *Baton) (int, error) {
+	pathArr := make([]string, 0, len(baton.importVariables))
+	for _, importVariableInfo := range baton.importVariables {
+		pathArr = append(pathArr, importVariableInfo.URL)
+	}
 
 	for _, report := range baton.reports {
 		for _, scene := range baton.scenes {
@@ -621,8 +625,12 @@ func (s *MakeStress) Execute(baton *Baton) (int, error) {
 								Variable: sceneVariables,
 							},
 						},
+						Configuration: &run_plan.Configuration{
+							ParameterizedFile: &run_plan.ParameterizedFile{
+								Paths: pathArr,
+							},
+						},
 					}
-
 					baton.stress = append(baton.stress, &req)
 
 				}

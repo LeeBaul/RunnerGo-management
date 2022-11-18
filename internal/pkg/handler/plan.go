@@ -467,11 +467,11 @@ func PlanDeleteEmail(ctx *gin.Context) {
 func RunStress(ctx context.Context, req RunStressReq) (int, error) {
 	rms := &stress.RunMachineStress{}
 
-	siv := &stress.SplitImportVariable{}
-	siv.SetNext(rms)
+	//siv := &stress.SplitImportVariable{}
+	//siv.SetNext(rms)
 
 	ss := &stress.SplitStress{}
-	ss.SetNext(siv)
+	ss.SetNext(rms)
 
 	ms := &stress.MakeStress{}
 	ms.SetNext(ss)
