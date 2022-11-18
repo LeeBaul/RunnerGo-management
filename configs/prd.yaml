@@ -1,56 +1,56 @@
 base:
-  is_debug: false
-  domain: "https://pre.runner.cn/"
-  max_concurrency: 10000
+  is_debug:
+  domain:
+  max_concurrency:
 
 http:
   port: 20123
 
 mysql:
-  username: "runnergo"
-  passport: "UozGi5BW4qbTwWed"
-  host: "rm-2zev23bd3p15k1f32yo.mysql.rds.aliyuncs.com"
-  port: 3306
-  dbname: "runnergo"
-  charset: "utf8mb4"
+  username:
+  passport:
+  host:
+  port:
+  dbname:
+  charset:
 
 mongodb:
-  dsn: "mongodb://runnergo:qt0goKAHtwy4c0Gz@dds-2ze9902a2d29a7541.mongodb.rds.aliyuncs.com:3717/runnergo"
-  database: "runnergo"
-  pool_size: 20
+  dsn:
+  database:
+  pool_size:
 
 jwt:
-  issuer: "RunnerGo"
-  secret: "RunnerGo_JWT_Secret"
+  issuer:
+  secret:
 
 
 clients:
   runner:
-    run_api: "https://pre-runner.runnergo.cn/runner/run_api"
-    run_scene: "https://pre-runner.runnergo.cn/runner/run_scene"
-    stop_scene: "https://pre-runner.runnergo.cn/runner/stop_scene"
-    run_plan: "https://pre-runner.runnergo.cn/runner/run_plan"
-    stop_plan: "https://pre-runner.runnergo.cn/runner/stop"
+    run_api:
+    run_scene:
+    stop_scene:
+    run_plan:
+    stop_plan:
 
 proof:
-  info_log: "/data/logs/rg-management/info.log"
-  err_log: "/data/logs/rg-management/err.log"
+  info_log:
+  err_log:
 
 redis:
-  address: "r-2zeyyzpdgra56jeqcz.redis.rds.aliyuncs.com:6379"
-  password: "8SqeCfrhrojJ9ylw"
+  address:
+  password:
   db: 0
 
 redis_report:
-  address: "r-2zeygktm7wb4nd5b46.redis.rds.aliyuncs.com:6379"
-  password: "8SqeCfrhrojJ9ylw"
+  address:
+  password:
   db: 0
 
 smtp:
-  host: "smtpdm.aliyun.com"
-  port: 465
-  email: "findpwd@no-reply.apipost.cn"
-  password: "BIyela4341"
+  host:
+  port:
+  email:
+  password:
   #新邮箱-待启用
-  #email: "notice@no-reply.runnergo.cn"
-  #password: "BIyela43413"
+  #email: ""
+  #password: ""
