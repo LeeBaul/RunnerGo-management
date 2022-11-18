@@ -799,8 +799,10 @@ func (s *SplitImportVariable) Execute(baton *Baton) (int, error) {
 		pathArr = append(pathArr, importVariableInfo.URL)
 	}
 
-	for _, stressInfo := range baton.stress {
-		stressInfo.Configuration.ParameterizedFile.Paths = pathArr
+	if len(baton.stress) > 0 {
+		for _, stressInfo := range baton.stress {
+			stressInfo.Configuration.ParameterizedFile.Paths = pathArr
+		}
 	}
 
 	return s.next.Execute(baton)
