@@ -220,30 +220,17 @@ func ListTrashFolderAPI(ctx context.Context, teamID int64, limit, offset int) ([
 }
 
 func Trash(ctx context.Context, targetID, userID int64) error {
-	//t := query.Use(dal.DB()).Target
-	//_, err := t.WithContext(ctx).Where(t.ID.Eq(targetID)).UpdateColumn(t.Status, consts.TargetStatusTrash)
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//_, err = t.WithContext(ctx).Where(t.ParentID.Eq(targetID)).UpdateColumn(t.Status, consts.TargetStatusTrash)
-	//if err != nil {
-	//	return err
-	//}
-
-	//return nil
-
 	return dal.GetQuery().Transaction(func(tx *query.Query) error {
 		t, err := tx.Target.WithContext(ctx).Where(tx.Target.ID.Eq(targetID)).First()
 		if err != nil {
 			return err
 		}
 
-		if _, err := tx.Target.WithContext(ctx).Where(tx.Target.ID.Eq(targetID)).UpdateColumn(tx.Target.Status, consts.TargetStatusTrash); err != nil {
+		if _, err := tx.Target.WithContext(ctx).Where(tx.Target.ID.Eq(targetID)).Delete(); err != nil {
 			return err
 		}
 
-		if _, err = tx.Target.WithContext(ctx).Where(tx.Target.ParentID.Eq(targetID)).UpdateColumn(tx.Target.Status, consts.TargetStatusTrash); err != nil {
+		if _, err = tx.Target.WithContext(ctx).Where(tx.Target.ParentID.Eq(targetID)).Delete(); err != nil {
 			return err
 		}
 
@@ -252,7 +239,6 @@ func Trash(ctx context.Context, targetID, userID int64) error {
 				return err
 			}
 		}
-
 		return nil
 	})
 }
