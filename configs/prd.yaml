@@ -1,6 +1,6 @@
 base:
   is_debug: false
-  domain: "https://pre.runner.cn/"
+  domain: "https://demo.runnergo.cn/"
   max_concurrency: 10000
 
 http:
@@ -9,7 +9,7 @@ http:
 mysql:
   username: "runnergo"
   passport: "UozGi5BW4qbTwWed"
-  host: "rm-2zev23bd3p15k1f32yo.mysql.rds.aliyuncs.com"
+  host: "rm-2zev23bd3p15k1f32.mysql.rds.aliyuncs.com"
   port: 3306
   dbname: "runnergo"
   charset: "utf8mb4"
