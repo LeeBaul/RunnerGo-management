@@ -35,6 +35,7 @@ func TimedTaskExec() {
 		nowWeekday := nowTimeInfo.Weekday()
 
 		if err == nil { // 查到了数据
+			proof.Infof("定时任务--查到了数据：", timedTaskData)
 			// 组装运行计划参数
 			for _, timedTaskInfo := range timedTaskData {
 				// 获取定时任务的执行时间相关数据
@@ -56,6 +57,7 @@ func TimedTaskExec() {
 					if err != nil {
 						proof.Infof("定时任务过期状态修改失败，err：", err)
 					}
+					proof.Infof("定时任务--设置为过期：", timedTaskInfo.TaskCloseTime, " 当前时间：", nowTime)
 					continue
 				}
 
@@ -65,6 +67,7 @@ func TimedTaskExec() {
 					if taskYear != nowYear || taskMonth != nowMonth || taskDay != nowDay || taskHour != nowHour || taskMinute != nowMinute {
 						continue
 					}
+					proof.Infof("定时任务--频次一次：通过可运行")
 				case 1: // 每天
 					// 比较当前时间是否等于定时任务的时间
 					if taskHour != nowHour || taskMinute != nowMinute {
@@ -110,8 +113,10 @@ func runTimedTask(ctx context.Context, timedTaskInfo *model.TimedTaskConf) error
 		SceneID: sceneIds,
 		UserID:  timedTaskInfo.UserID,
 	}
+	proof.Infof("定时任务--开始执行计划，参数：", runStressParams)
 	// 进入执行计划方法
 	_, runErr := RunStress(ctx, runStressParams)
+	proof.Infof("定时任务--执行结果，runErr：", runErr)
 	if runErr != nil {
 		return runErr
 	}
