@@ -403,6 +403,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 	_, ok := dataMap["data"]
 	if err != nil || !ok {
 		rdb := dal.GetRDBForReport()
+		proof.Error("当前redis:")
 		key := fmt.Sprintf("reportData:%d:%d", report.PlanId, report.ReportID)
 		dataList := rdb.LRange(ctx, key, 0, -1).Val()
 		if len(dataList) < 1 {
@@ -411,7 +412,7 @@ func GetReportDetail(ctx context.Context, report rao.GetReportReq) (err error, r
 			return
 		}
 		for i := len(dataList) - 1; i >= 0; i-- {
-			proof.Debugf("redis里面查到了报告数据")
+			proof.Infof("redis里面查到了报告数据")
 			resultMsgString := dataList[i]
 			err = json.Unmarshal([]byte(resultMsgString), &resultMsg)
 			if err != nil {
