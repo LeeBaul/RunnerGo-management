@@ -1,0 +1,51 @@
+base:
+  is_debug: false
+  domain: "https://pre.runner.cn/"
+  max_concurrency: 10000
+
+http:
+  port: 20123
+
+mysql:
+  username: "runnergo"
+  passport: "UozGi5BW4qbTwWed"
+  host: "rm-2zev23bd3p15k1f32yo.mysql.rds.aliyuncs.com"
+  port: 3306
+  dbname: "runnergo"
+  charset: "utf8mb4"
+
+mongodb:
+  dsn: "mongodb://runnergo:qt0goKAHtwy4c0Gz@dds-2ze9902a2d29a7541.mongodb.rds.aliyuncs.com:3717/runnergo"
+  database: "runnergo"
+  pool_size: 20
+
+jwt:
+  issuer: "RunnerGo"
+  secret: "RunnerGo_JWT_Secret"
+
+
+clients:
+  runner:
+    run_api: "https://pre-runner.runnergo.cn/runner/run_api"
+    run_scene: "https://pre-runner.runnergo.cn/runner/run_scene"
+    stop_scene: "https://pre-runner.runnergo.cn/runner/stop_scene"
+    run_plan: "https://pre-runner.runnergo.cn/runner/run_plan"
+    stop_plan: "https://pre-runner.runnergo.cn/runner/stop"
+
+proof:
+  info_log: "/data/logs/rg-management/info.log"
+  err_log: "/data/logs/rg-management/err.log"
+
+redis:
+  address: "r-2zeygktm7wb4nd5b46.redis.rds.aliyuncs.com:6379"
+  password: "r-2zeygktm7wb4nd5b46"
+  db: 0
+
+smtp:
+  host: "smtpdm.aliyun.com"
+  port: 465
+  email: "findpwd@no-reply.apipost.cn"
+  password: "BIyela4341"
+  #新邮箱-待启用
+  #email: "notice@no-reply.runnergo.cn"
+  #password: "BIyela43413"
