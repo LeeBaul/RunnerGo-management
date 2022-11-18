@@ -527,6 +527,8 @@ func NotifyStopStress(ctx *gin.Context) {
 		return
 	}
 
+	reportInfo := new(model.Report)
+
 	err := query.Use(dal.DB()).Transaction(func(tx *query.Query) error {
 		r := tx.Report
 		// 修改报告状态
@@ -542,6 +544,7 @@ func NotifyStopStress(ctx *gin.Context) {
 			proof.Errorf("NotifyStopStress--查找报告对应计划失败")
 			return err
 		}
+		reportInfo = report
 
 		// 统计报告是否全部完成
 		reportCnt, err := r.WithContext(ctx).Where(r.PlanID.Eq(report.PlanID)).Count()
@@ -580,6 +583,22 @@ func NotifyStopStress(ctx *gin.Context) {
 		proof.Errorf("NotifyStopStress整体事务失败")
 		response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
 		return
+	} else {
+		// 判断当前计划下是否有定时任务
+		ttc := dal.GetQuery().TimedTaskConf
+		TimedTaskConfInfo, err2 := ttc.WithContext(ctx).Where(ttc.SenceID.Eq(reportInfo.SceneID)).First()
+		if err2 == nil { // 查到定时任务了
+			if TimedTaskConfInfo.Status == 1 { // 定时任务还没有过期
+				p := dal.GetQuery().Plan
+				_, err := p.WithContext(ctx).Where(p.ID.Eq(reportInfo.PlanID)).UpdateSimple(p.Status.Value(consts.PlanStatusUnderway), p.UpdatedAt.Value(time.Now()))
+				if err != nil {
+					proof.Infof("NotifyStopStress计划下--有定时任务没有完成")
+					response.ErrorWithMsg(ctx, errno.ErrMysqlFailed, err.Error())
+					return
+				}
+			}
+
+		}
 	}
 	response.Success(ctx)
 	return
