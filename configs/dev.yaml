@@ -52,7 +52,7 @@ redis:
   password: "apipost"
   db: 0
 
-redis_report:
+redisReport:
   address: "172.17.101.191:6398"
   password: "apipost"
   db: 0
