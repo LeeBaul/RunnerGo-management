@@ -234,6 +234,13 @@ func Trash(ctx context.Context, targetID, userID int64) error {
 			return err
 		}
 
+		// 从mg里面删除当前场景对应的flow
+		collection := dal.GetMongo().Database(dal.MongoDB()).Collection(consts.CollectFlow)
+		_, err = collection.DeleteOne(ctx, bson.D{{"scene_id", targetID}})
+		if err != nil {
+			return err
+		}
+
 		if t.TargetType == consts.TargetTypeScene {
 			if err := record.InsertDelete(ctx, t.TeamID, userID, record.OperationOperateDeleteScene, t.Name); err != nil {
 				return err
