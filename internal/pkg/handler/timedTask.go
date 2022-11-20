@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/go-omnibus/proof"
 	"golang.org/x/net/context"
 	"gorm.io/gen"
@@ -85,6 +86,13 @@ func TimedTaskExec() {
 					if taskDay != nowDay || taskHour != nowHour || taskMinute != nowMinute {
 						continue
 					}
+				}
+
+				// 给当前任务加分布式锁，防止重复执行
+				timedTaskKey := "TimeTaskRun:" + fmt.Sprintf("%d", timedTaskInfo.SenceID)
+				setRedisErr := dal.GetRDB().SetNX(ctx, timedTaskKey, 1, time.Second*65).Err()
+				if setRedisErr != nil {
+					continue
 				}
 
 				// 执行定时任务计划
