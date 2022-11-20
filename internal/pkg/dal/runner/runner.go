@@ -87,7 +87,7 @@ func StopScene(ctx *gin.Context, req *rao.StopSceneReq) error {
 	teamIDString := strconv.Itoa(int(req.TeamID))
 	SceneIDString := strconv.Itoa(int(req.SceneID))
 	stopSceneKey := consts.StopScenePrefix + teamIDString + ":" + SceneIDString
-	_, err := dal.GetRDB().Set(ctx, stopSceneKey, 1, 0).Result()
+	_, err := dal.GetRDB().Set(ctx, stopSceneKey, "stop", 0).Result()
 	if err != nil {
 		proof.Errorf("停止场景--写入redis数据失败，err:", err)
 		response.ErrorWithMsg(ctx, errno.ErrRedisFailed, err.Error())
