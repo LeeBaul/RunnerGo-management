@@ -209,7 +209,7 @@ func StopReport(ctx *gin.Context) {
 	planIDString := strconv.Itoa(int(req.PlanID))
 	for _, reportID := range reportIDsString {
 		stopPlanKey := consts.StopPlanPrefix + teamIDString + ":" + planIDString + ":" + reportID
-		_, err := dal.GetRDB().Set(ctx, stopPlanKey, 1, 0).Result()
+		_, err := dal.GetRDB().Set(ctx, stopPlanKey, "stop", 0).Result()
 		if err != nil {
 			proof.Errorf("停止报告--写入redis数据失败，err:", err)
 			response.ErrorWithMsg(ctx, errno.ErrRedisFailed, err.Error())
