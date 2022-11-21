@@ -41,7 +41,7 @@ redis:
   password:
   db: 0
 
-redis_report:
+redisReport:
   address:
   password:
   db: 0
